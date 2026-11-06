@@ -3,6 +3,56 @@
 > Documentación viva: cada cambio relevante de código o documentación en este proyecto debe
 > dejar una entrada aquí, describiendo el impacto para cualquier persona del equipo.
 
+## [2026-11-06] — Mapa de capacidades previo a especificaciones
+
+### Añadido
+- `CAPABILITY_MAP.md`: delimita `commission-engine`, `historical-parity` e
+  `interfaz-minima`, con el motor y la paridad en `mvp/` y la aplicación Streamlit en
+  `interfaz_minima/`, según las carpetas aprobadas.
+- Se fijaron IDs estables, dependencias unidireccionales, orden de construcción, supuestos y
+  decisiones pendientes de aprobación, incluida la puerta obligatoria de paridad histórica
+  al 100%.
+
+### Impacto
+- Solo documentación de Phase 0. No se crearon specs, planes, tareas, código, tests,
+  dependencias ni directorios de implementación.
+
+## [2026-11-06] — Exclusiones contables, reglas Internacional y seguimiento de letras
+
+### Verificado en Odoo (solo lectura)
+- Nuevo script reproducible y paginado `investigation/investigacion_reglas_adicionales_odoo.py`.
+  Confirmó los campos técnicos de factura/línea/cuenta/producto/partner/país; la factura de
+  interés moratorio `F F15-00000495` en `7599009`; cuentas reales de recupero de exportación,
+  flete y seguro; y la composición por línea de una muestra de 80 Notas de Débito.
+- Las 372 facturas Internacional posted de 2026 analizadas resolvieron país mediante
+  `commercial_partner_id.country_id`, sin faltantes. Se documentó la estrategia bulk y el
+  fallback controlado.
+- El SKU `31018PER00002 AMINOPLEX FORTE (X 100 ML, STD)` está facturado y Odoo lo clasifica
+  hoy como AGROVET, en conflicto con la decisión de negocio PETMEDICA; se modeló un override
+  versionado y auditable, no una corrección silenciosa.
+
+### Cambiado en el PRD
+- Exclusión por línea de intereses, flete, seguro, gastos de exportación,
+  administrativos/financieros y reajustes; Notas de Débito solo por venta real de producto,
+  validando cuenta contable y artículo/concepto.
+- Internacional queda definido por experiencia y alcance: Ariana, Vanessa, Sandra, Umberto e
+  Ivonne sobre TODOS; Luis sobre América + PETMEDICA; Mayumi al 0,5% sobre AVIVET + LATAM.
+- Reglas permanentes y overrides de periodo con vigencia, prioridad, evidencia, aprobación,
+  precedencia determinista, audit log e inmutabilidad de periodos cerrados.
+- RRHH y Dirección Comercial usan el mismo resumen persona/puesto con Contado, Crédito,
+  Letras y Total, pero con permisos y trazabilidad distintos.
+- Letras incorporan mart de seguimiento por factura/planilla: emitidas, pagadas históricas,
+  pagadas en periodo, faltantes, monto/estado y control anti-duplicado.
+- La base usa impuestos reales: `1,18` solo cuando existe IGV 18%, nunca para exportación
+  exonerada. CI pasa a ser agnóstico; GitHub Actions es opcional.
+- El brochure Data Engineer respalda Python/SQL/ETL/DataOps/DAG, pero no acredita Dagster/dbt;
+  se añadió spike/capacitación y alternativa pragmática sin cambiar la arquitectura por
+  marketing.
+
+### Impacto
+- Solo documentación y scripts de investigación de lectura. No se modificaron credenciales ni
+  datos remotos.
+
 ## [2026-11-03] — Flujo AS-IS de setiembre escrito; arquitectura confirmada
 
 ### Contexto
