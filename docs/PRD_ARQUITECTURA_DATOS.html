@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRD — Arquitectura de Datos | Finanzas AGV</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --agv-primary: #714B67;
+      --agv-primary-dark: #5a3d52;
+      --agv-primary-light: #9a6b8e;
+      --agv-accent: #c084a8;
+      --bg: #faf8f9;
+      --bg-card: #ffffff;
+      --bg-alt: #f3eef1;
+      --text: #2d2428;
+      --text-muted: #6b5f65;
+      --border: #e8dfe5;
+      --success: #2d6a4f;
+      --warning: #b45309;
+      --danger: #b91c1c;
+      --info: #1e4d7b;
+      --shadow: 0 2px 12px rgba(113, 75, 103, 0.08);
+      --radius: 10px;
+      --toc-width: 280px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #1a1418;
+      --bg-card: #261f24;
+      --bg-alt: #322830;
+      --text: #f5eef2;
+      --text-muted: #b8a8b0;
+      --border: #4a3d45;
+      --shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 16px;
+    }
+
+    /* Header */
+    .site-header {
+      background: linear-gradient(135deg, var(--agv-primary) 0%, var(--agv-primary-dark) 100%);
+      color: #fff;
+      padding: 2rem 2rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .site-header::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 90% 20%, rgba(255,255,255,0.12) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .header-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+    .site-header h1 { margin: 0 0 0.5rem; font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 700; }
+    .site-header .subtitle { opacity: 0.92; font-size: 1.05rem; max-width: 720px; }
+    .meta-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.25rem; }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+    .badge-light { background: rgba(255,255,255,0.2); color: #fff; }
+    .badge-warn { background: #fef3c7; color: #92400e; }
+    [data-theme="dark"] .badge-warn { background: #78350f; color: #fde68a; }
+
+    .header-actions {
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      z-index: 2;
+    }
+    .theme-toggle {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      padding: 0.4rem 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+    .theme-toggle:hover { background: rgba(255,255,255,0.25); }
+
+    /* Layout */
+    .layout {
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto;
+      gap: 2rem;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* TOC */
+    .toc {
+      width: var(--toc-width);
+      flex-shrink: 0;
+      position: sticky;
+      top: 1rem;
+      align-self: flex-start;
+      max-height: calc(100vh - 2rem);
+      overflow-y: auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+    }
+    .toc h2 {
+      margin: 0 0 0.75rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--agv-primary);
+    }
+    .toc ul { list-style: none; padding: 0; margin: 0; }
+    .toc li { margin: 0; }
+    .toc a {
+      display: block;
+      padding: 0.35rem 0.5rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      border-radius: 6px;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+    }
+    .toc a:hover { color: var(--agv-primary); background: var(--bg-alt); }
+    .toc a.active { color: var(--agv-primary); border-left-color: var(--agv-primary); font-weight: 600; background: var(--bg-alt); }
+    .toc .toc-group { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+    .toc .toc-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--agv-primary-light);
+      padding: 0.25rem 0.5rem;
+    }
+
+    /* Main content */
+    .content { flex: 1; min-width: 0; }
+
+    section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    section.audience-executive { border-top: 4px solid var(--agv-primary); }
+    section.audience-business { border-top: 4px solid var(--agv-accent); }
+    section.audience-technical { border-top: 4px solid var(--info); }
+    section.audience-cross { border-top: 4px solid var(--success); }
+
+    .audience-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      margin-bottom: 0.75rem;
+    }
+    .tag-exec { background: #ede4ea; color: var(--agv-primary); }
+    .tag-biz { background: #f5e6ef; color: #8b4a72; }
+    .tag-tech { background: #e0ecf5; color: var(--info); }
+    .tag-cross { background: #d8f3dc; color: var(--success); }
+    [data-theme="dark"] .tag-exec { background: #3d2f38; }
+    [data-theme="dark"] .tag-biz { background: #3d2835; }
+    [data-theme="dark"] .tag-tech { background: #1e3347; }
+    [data-theme="dark"] .tag-cross { background: #1a3d2a; }
+
+    h2 { color: var(--agv-primary); margin: 0 0 1rem; font-size: 1.55rem; }
+    h3 { color: var(--text); margin: 1.75rem 0 0.75rem; font-size: 1.15rem; }
+    h4 { margin: 1.25rem 0 0.5rem; font-size: 1rem; color: var(--text-muted); }
+
+    p { margin: 0 0 1rem; }
+    ul, ol { margin: 0 0 1rem; padding-left: 1.5rem; }
+    li { margin-bottom: 0.35rem; }
+
+    .lead { font-size: 1.1rem; color: var(--text-muted); }
+
+    /* Cards & grids */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+    .card {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+    }
+    .card h4 { margin: 0 0 0.5rem; color: var(--agv-primary); font-size: 0.95rem; }
+    .card p { margin: 0; font-size: 0.92rem; }
+    .card .metric {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--agv-primary);
+      line-height: 1.2;
+    }
+
+    .status-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius);
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
+    .status-no-go { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+    .status-info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
+    [data-theme="dark"] .status-no-go { background: #3b1515; border-color: #7f1d1d; color: #fca5a5; }
+    [data-theme="dark"] .status-info { background: #172554; border-color: #1e40af; color: #93c5fd; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 0.65rem 0.85rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: var(--bg-alt);
+      color: var(--agv-primary);
+      font-weight: 600;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    tr:hover td { background: var(--bg-alt); }
+
+    /* Code */
+    code {
+      background: var(--bg-alt);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.88em;
+      font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+      color: var(--agv-primary-dark);
+    }
+    [data-theme="dark"] code { color: var(--agv-accent); }
+
+    pre {
+      background: #1e1a1d;
+      color: #e8e0e4;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius);
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      margin: 1rem 0;
+    }
+    pre code { background: none; padding: 0; color: inherit; }
+
+    /* Mermaid */
+    .mermaid-wrap {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1rem;
+      margin: 1.25rem 0;
+      overflow-x: auto;
+    }
+    .mermaid { text-align: center; }
+
+    /* Checklist */
+    .checklist { list-style: none; padding: 0; }
+    .checklist li {
+      padding: 0.6rem 0.85rem 0.6rem 2.5rem;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.92rem;
+    }
+    .checklist li::before {
+      content: "☐";
+      position: absolute;
+      left: 0.75rem;
+      color: var(--agv-primary);
+      font-size: 1.1rem;
+    }
+
+    /* Glossary */
+    dl { margin: 0; }
+    dt { font-weight: 700; color: var(--agv-primary); margin-top: 0.75rem; }
+    dd { margin: 0.25rem 0 0 0; color: var(--text-muted); font-size: 0.95rem; }
+
+    /* Footer */
+    .doc-footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .layout { flex-direction: column; }
+      .toc {
+        width: 100%;
+        position: relative;
+        top: 0;
+        max-height: none;
+      }
+      .header-actions { position: static; margin-bottom: 1rem; }
+      section { padding: 1.25rem; }
+    }
+
+    @media print {
+      .toc, .theme-toggle, .header-actions { display: none; }
+      .layout { display: block; }
+      section { break-inside: avoid; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">🌙 Modo oscuro</button>
+    </div>
+    <div class="header-inner">
+      <h1>PRD — Arquitectura de Datos Finanzas AGV</h1>
+      <p class="subtitle">Flujos Odoo ↔ Supabase, sincronización local/producción y control de acceso para el módulo de Cobranzas (piloto Fase 3).</p>
+      <div class="meta-badges">
+        <span class="badge badge-light">Versión 1.0</span>
+        <span class="badge badge-light">Julio 2026</span>
+        <span class="badge badge-warn">Go-live: paridad 1/3 — ver DEPLOY_DEVSECOPS.md</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Tabla de contenidos">
+      <h2>Contenido</h2>
+      <ul>
+        <li><a href="#resumen">Respuesta directa</a></li>
+        <li class="toc-group"><span class="toc-label">Ejecutivos</span></li>
+        <li><a href="#ejecutivos">Resumen ejecutivo</a></li>
+        <li class="toc-group"><span class="toc-label">Negocio</span></li>
+        <li><a href="#negocio">Para el equipo de negocio</a></li>
+        <li><a href="#acceso-negocio">Control de acceso</a></li>
+        <li><a href="#glosario">Glosario</a></li>
+        <li class="toc-group"><span class="toc-label">Técnicos</span></li>
+        <li><a href="#tecnicos">Arquitectura técnica</a></li>
+        <li><a href="#matriz-fuentes">Matriz de fuentes</a></li>
+        <li><a href="#esquema">Esquema Supabase</a></li>
+        <li><a href="#env-flags">Variables de entorno</a></li>
+        <li><a href="#operaciones">Comandos operativos</a></li>
+        <li><a href="#limitaciones">Limitaciones conocidas</a></li>
+        <li><a href="#modos-trabajo">Modos A / B / C</a></li>
+        <li class="toc-group"><span class="toc-label">Transversal</span></li>
+        <li><a href="#no-funcionales">Requisitos no funcionales</a></li>
+        <li><a href="#lista-blanca">Lista blanca (6 usuarios)</a></li>
+        <li><a href="#go-live">Checklist go-live Render</a></li>
+        <li><a href="DEPLOY_DEVSECOPS.md">Guía DevSecOps (deploy)</a></li>
+        <li><a href="#estado-actual">Estado y bloqueadores</a></li>
+      </ul>
+    </nav>
+
+    <main class="content">
+
+      <!-- Respuesta directa -->
+      <section id="resumen">
+        <h2>¿En local, Odoo o Supabase?</h2>
+        <p class="lead"><strong>Hoy, por defecto en local se consulta Odoo</strong> para Cobranzas y Tesorería. Supabase solo entra si se activa explícitamente con <code>COLLECTIONS_SOURCE=supabase</code>.</p>
+        <p>La decisión la toma una sola variable en el backend Flask (<code>get_collections_provider()</code> en <code>app/collections/routes.py</code>):</p>
+        <pre><code>source = (current_app.config.get('COLLECTIONS_SOURCE') or 'odoo').strip().lower()
+if source == 'supabase':
+    return CollectionsSupabaseProvider(current_app.config.get('SUPABASE_DB_URI'))
+return CollectionsService(odoo_repo)  # Odoo en vivo</code></pre>
+
+        <div class="mermaid-wrap">
+          <pre class="mermaid">
+flowchart TB
+  subgraph localDefault ["Local por defecto (python run.py)"]
+    UI1[Usuario en navegador]
+    Next1[Next.js localhost:3000]
+    Flask1[Flask localhost:5000]
+    Odoo1[Odoo ERP XML-RPC]
+    SB1[Supabase]
+    UI1 --> Next1
+    Next1 -->|"collectionsApi / treasuryApi"| Flask1
+    Flask1 -->|"COLLECTIONS_SOURCE=odoo"| Odoo1
+    Flask1 -->|"Tesorería siempre"| Odoo1
+    Next1 -.->|"solo /diagnostics"| SB1
+  end
+
+  subgraph localSupabase ["Local probando Supabase (COLLECTIONS_SOURCE=supabase)"]
+    UI2[Usuario]
+    Next2[Next.js]
+    Flask2[Flask]
+    SB2[Supabase Postgres]
+    Odoo2[Odoo solo para ETL]
+    UI2 --> Next2 --> Flask2
+    Flask2 -->|"Cobranzas"| SB2
+    Flask2 -->|"Tesorería"| Odoo2
+    CronLocal[ETL manual o Celery local] --> Odoo2
+    CronLocal --> SB2
+  end
+
+  subgraph prod ["Producción Render"]
+    UI3[Usuario]
+    Next3[Next.js Render]
+    Flask3[Flask Render]
+    SB3[Supabase]
+    Odoo3[Odoo]
+    Cron[Render Cron cada 15 min]
+    UI3 --> Next3 --> Flask3
+    Flask3 -->|"COLLECTIONS_SOURCE=supabase"| SB3
+    Flask3 -->|"Tesorería"| Odoo3
+    Cron --> Odoo3
+    Cron --> SB3
+  end
+          </pre>
+        </div>
+      </section>
+
+      <!-- EJECUTIVOS -->
+      <section id="ejecutivos" class="audience-executive">
+        <span class="audience-tag tag-exec">Audiencia: Ejecutivos</span>
+        <h2>Resumen ejecutivo (1 página)</h2>
+
+        <div class="card-grid">
+          <div class="card">
+            <h4>Problema</h4>
+            <p>Cada filtro en Cobranzas golpeaba Odoo en vivo → respuestas lentas, frágiles y con riesgo de sobrecarga al ERP.</p>
+          </div>
+          <div class="card">
+            <h4>Solución</h4>
+            <p>Odoo se consulta <strong>una vez cada 15 min</strong> vía ETL; los usuarios filtran sobre una copia optimizada en Supabase (PostgreSQL).</p>
+          </div>
+          <div class="card">
+            <h4>Beneficio</h4>
+            <p>Respuestas rápidas, menor riesgo de caída de Odoo, experiencia fluida para el equipo de Créditos/Cobranzas.</p>
+          </div>
+          <div class="card">
+            <h4>Costo infraestructura</h4>
+            <p class="metric">~$15/mes</p>
+            <p>Render Starter (backend + frontend + cron ETL), sin worker Celery ni Redis en producción.</p>
+          </div>
+        </div>
+
+        <h3>Flujo simplificado</h3>
+        <div class="mermaid-wrap">
+          <pre class="mermaid">
+flowchart LR
+  Odoo[Odoo ERP] -->|"ETL cada 15 min"| Almacen[Supabase / almacén]
+  Almacen --> Pantalla[Pantalla Cobranzas]
+  Usuario[Usuario] --> Pantalla
+          </pre>
+        </div>
+
+        <h3>Estado del proyecto</h3>
+        <div class="status-banner status-no-go">
+          <div>
+            <strong>Piloto Cobranzas: código listo — Go-live pendiente.</strong><br>
+            Paridad actual <strong>1/3 MATCH</strong> (<code>con_cutoff</code> OK; <code>sin_fecha_limit_200</code> y <code>ultimo_mes</code> en DIFF). Veredicto <strong>NO-GO</strong> para <code>COLLECTIONS_SOURCE=supabase</code> hasta 3/3. Guía operativa: <a href="DEPLOY_DEVSECOPS.md">docs/DEPLOY_DEVSECOPS.md</a>.
+          </div>
+        </div>
+
+        <h3>Acceso restringido</h3>
+        <p>Solo <strong>6 usuarios autorizados</strong> del equipo de Créditos/Cobranzas pueden iniciar sesión en producción (lista blanca corporativa). Alta/baja de usuarios: agregar o quitar correo en la variable <code>ALLOWED_USERS</code> en Render, sin cambiar código.</p>
+      </section>
+
+      <!-- NEGOCIO -->
+      <section id="negocio" class="audience-business">
+        <span class="audience-tag tag-biz">Audiencia: Negocio / No técnicos</span>
+        <h2>¿Qué ve el usuario en Cobranzas?</h2>
+
+        <h3>Pantalla principal</h3>
+        <ul>
+          <li><strong>Filtros:</strong> fechas, cliente, canal de venta, tipo de documento, sub-canal (Nacional/Internacional), método de pago, número de documento, cuentas contables 12x, fecha de corte histórico.</li>
+          <li><strong>KPIs y resumen:</strong> totales de débito, crédito, saldo pendiente, antigüedad de cartera.</li>
+          <li><strong>Tabla de líneas:</strong> facturas, notas, letras y movimientos de cuentas por cobrar con estado de pago, vencimiento y saldo residual.</li>
+          <li><strong>Exportación Excel:</strong> descarga del reporte filtrado desde el mismo conjunto de datos.</li>
+        </ul>
+
+        <h3>¿De dónde salen los números?</h3>
+        <p>Los números provienen de una <strong>copia sincronizada</strong> de Odoo almacenada en Supabase — <em>no</em> son consultas en vivo al ERP en cada clic. En producción (cuando se active), la copia se actualiza automáticamente cada <strong>~15 minutos</strong>.</p>
+
+        <div class="status-banner status-info">
+          <div>
+            <strong>Retraso máximo de datos:</strong> ~15 minutos respecto a Odoo. Si un pago se registró hace 5 minutos en Odoo, puede no aparecer aún en Cobranzas hasta la próxima sincronización.
+          </div>
+        </div>
+
+        <h3>¿Qué pasa si los números no cuadran?</h3>
+        <ol>
+          <li>El equipo técnico ejecuta el script de <strong>paridad</strong> (<code>test_collections_parity.py</code>) que compara totales Odoo vs Supabase.</li>
+          <li>Si hay diferencias (DIFF), se investiga: reset de watermark, re-sync histórico, auditoría de filas discrepantes.</li>
+          <li>Solo cuando hay <strong>3/3 MATCH</strong> en totales (débito, crédito, saldo/residual) se autoriza el go-live con Supabase como fuente.</li>
+        </ol>
+
+        <h3>Excepciones en la interfaz</h3>
+        <ul>
+          <li><strong>/diagnostics:</strong> página técnica que cuenta filas en Supabase directamente (solo diagnóstico, no alimenta el reporte principal).</li>
+          <li><strong>Tesorería:</strong> sigue leyendo Odoo en vivo; no usa Supabase aún.</li>
+        </ul>
+      </section>
+
+      <section id="acceso-negocio" class="audience-business">
+        <span class="audience-tag tag-biz">Audiencia: Negocio</span>
+        <h2>¿Quién puede entrar?</h2>
+        <p>Solo el equipo de <strong>Créditos/Cobranzas</strong> autorizado puede iniciar sesión en producción con su correo corporativo <code>@agrovetmarket.com</code>. Cualquier otro usuario recibe rechazo al intentar login con Google.</p>
+        <p>El acceso se controla con una lista blanca de 6 correos (ver sección <a href="#lista-blanca">Lista blanca</a>). Para dar de alta o baja a alguien, el administrador de Render actualiza la variable de entorno — no requiere despliegue de código.</p>
+
+        <div class="mermaid-wrap">
+          <pre class="mermaid">
+sequenceDiagram
+  participant U as Usuario
+  participant FE as Frontend Next.js
+  participant BE as Flask Backend
+  participant G as Google OAuth
+
+  U->>FE: Clic Iniciar sesión
+  FE->>BE: GET /api/v1/auth/google
+  BE->>G: Redirect consentimiento
+  G->>BE: Callback con email
+  BE->>BE: email en dominio agrovetmarket.com?
+  BE->>BE: email en ALLOWED_USERS?
+  alt Autorizado
+    BE->>FE: Cookie JWT + redirect dashboard
+    FE->>U: Acceso a Cobranzas/Tesorería
+  else No autorizado
+    BE->>FE: Redirect login con error
+    FE->>U: Acceso denegado
+  end
+          </pre>
+        </div>
+      </section>
+
+      <section id="glosario" class="audience-business">
+        <span class="audience-tag tag-biz">Audiencia: Negocio</span>
+        <h2>Glosario</h2>
+        <dl>
+          <dt>ETL (Extract, Transform, Load)</dt>
+          <dd>Proceso automático que extrae datos de Odoo, los transforma al formato necesario y los carga en Supabase. Corre cada 15 minutos en producción.</dd>
+
+          <dt>Supabase</dt>
+          <dd>Base de datos PostgreSQL en la nube que actúa como "almacén" de la copia de datos de Cobranzas. Permite consultas rápidas sin tocar Odoo.</dd>
+
+          <dt>Fecha de corte (cutoff)</dt>
+          <dd>Filtro que limita el reporte a movimientos hasta una fecha específica, útil para análisis histórico de cartera a una fecha determinada.</dd>
+
+          <dt>KPI (Indicador clave)</dt>
+          <dd>Métricas resumidas en la parte superior del reporte: totales de débito, crédito, saldo pendiente y distribución por antigüedad.</dd>
+
+          <dt>Paridad</dt>
+          <dd>Prueba automatizada que verifica que los totales en Supabase coinciden exactamente con los de Odoo antes de activar la copia en producción.</dd>
+
+          <dt>Watermark (marca de agua)</dt>
+          <dd>Registro de la última fecha sincronizada por tipo de dato. Permite que el ETL solo traiga registros nuevos o modificados (sync incremental).</dd>
+        </dl>
+      </section>
+
+      <!-- TÉCNICOS -->
+      <section id="tecnicos" class="audience-technical">
+        <span class="audience-tag tag-tech">Audiencia: Técnicos</span>
+        <h2>Arquitectura técnica</h2>
+        <p>Finanzas AGV es una aplicación Flask (backend) + Next.js (frontend) desplegada en Render. El piloto Fase 3 desacopla Cobranzas de Odoo en vivo mediante un ETL que puebla tablas en Supabase PostgreSQL.</p>
+
+        <h3>Componentes clave</h3>
+        <ul>
+          <li><code>app/collections/routes.py</code> — endpoints REST de Cobranzas; delega a Odoo o Supabase según <code>COLLECTIONS_SOURCE</code>.</li>
+          <li><code>app/collections/supabase_provider.py</code> — proveedor alternativo que lee Postgres vía psycopg2 (SQL directo, no PostgREST).</li>
+          <li><code>scripts/etl/etl_sync_threading.py</code> — ETL Odoo → Supabase con sync incremental por watermark.</li>
+          <li><code>render.yaml</code> — Blueprint: backend web, frontend Node, cron ETL cada 15 min.</li>
+          <li><code>config.py</code> — carga de .env según <code>APP_ENV</code>; flags <code>COLLECTIONS_SOURCE</code>, <code>ALLOWED_USERS</code>, etc.</li>
+        </ul>
+      </section>
+
+      <section id="matriz-fuentes" class="audience-technical">
+        <span class="audience-tag tag-tech">Audiencia: Técnicos</span>
+        <h2>Matriz de fuentes de datos</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Escenario</th>
+                <th>Archivo env</th>
+                <th>COLLECTIONS_SOURCE</th>
+                <th>Cobranzas lee de</th>
+                <th>Tesorería lee de</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>python run.py</code> (default)</td>
+                <td>.env.desarrollo</td>
+                <td>no definido → <strong>odoo</strong></td>
+                <td><strong>Odoo</strong></td>
+                <td><strong>Odoo</strong></td>
+              </tr>
+              <tr>
+                <td><code>python run.py production</code></td>
+                <td>.env.produccion</td>
+                <td>no definido → <strong>odoo</strong></td>
+                <td><strong>Odoo</strong></td>
+                <td><strong>Odoo</strong></td>
+              </tr>
+              <tr>
+                <td>Local con flag explícito</td>
+                <td>el .env del modo activo</td>
+                <td><code>supabase</code></td>
+                <td><strong>Supabase</strong></td>
+                <td><strong>Odoo</strong> (sin migrar)</td>
+              </tr>
+              <tr>
+                <td>Render producción</td>
+                <td>env del dashboard</td>
+                <td><code>supabase</code> (render.yaml L35-36)</td>
+                <td><strong>Supabase</strong></td>
+                <td><strong>Odoo</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Excepciones frontend (no alimentan reporte principal)</h3>
+        <ul>
+          <li><code>/diagnostics</code> — cuenta filas en Supabase directo (anon key).</li>
+          <li><code>useRealtimeSubscription</code> — escucha cambios en <code>fact_moves</code>; invalida caché, no alimenta tabla Cobranzas.</li>
+        </ul>
+      </section>
+
+      <section id="esquema" class="audience-technical">
+        <span class="audience-tag tag-tech">Audiencia: Técnicos</span>
+        <h2>Esquema de tablas Supabase</h2>
+        <p>Definido en <code>scripts/etl/supabase_schema_collections.sql</code>, <code>supabase_schema_etl_state.sql</code> y archivos relacionados.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Tabla</th>
+                <th>Propósito</th>
+                <th>Grano / clave</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>fact_move_lines</code></td>
+                <td>Líneas de asiento CxC (cuentas 12x)</td>
+                <td><code>id</code> (account.move.line de Odoo)</td>
+              </tr>
+              <tr>
+                <td><code>fact_moves</code></td>
+                <td>Cabecera de facturas/movimientos</td>
+                <td><code>id</code> (account.move)</td>
+              </tr>
+              <tr>
+                <td><code>fact_partial_reconciles</code></td>
+                <td>Conciliaciones parciales</td>
+                <td><code>id</code> (account.partial.reconcile)</td>
+              </tr>
+              <tr>
+                <td><code>dim_accounts</code></td>
+                <td>Plan de cuentas</td>
+                <td><code>id</code></td>
+              </tr>
+              <tr>
+                <td><code>dim_sales_channels</code></td>
+                <td>Canales de venta</td>
+                <td><code>id</code></td>
+              </tr>
+              <tr>
+                <td><code>dim_doc_types</code></td>
+                <td>Tipos de documento LATAM</td>
+                <td><code>id</code></td>
+              </tr>
+              <tr>
+                <td><code>dim_credit_customers</code></td>
+                <td>Clientes de crédito / sub-canal</td>
+                <td><code>id</code></td>
+              </tr>
+              <tr>
+                <td><code>dim_sale_orders</code></td>
+                <td>Órdenes de venta (sub-canal, línea comercial)</td>
+                <td><code>id</code></td>
+              </tr>
+              <tr>
+                <td><code>etl_sync_state</code></td>
+                <td>Watermarks incrementales por modelo</td>
+                <td><code>model_name</code> (PK)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>Claves de watermark (etl_sync_state)</h4>
+        <ul>
+          <li><code>account.move.line.collections</code> — líneas CxC</li>
+          <li><code>account.partial.reconcile</code> — conciliaciones</li>
+          <li><code>dim.accounts</code>, <code>dim.sales_channels</code>, <code>dim.doc_types</code>, <code>dim.credit_customers</code>, <code>dim.sale_orders</code></li>
+          <li><code>account.move.invoices</code>, <code>account.move.letters</code> — facturas y letras (sync general)</li>
+        </ul>
+
+        <h4>Prefijos de cuenta Cobranzas</h4>
+        <p><code>122, 1212, 123, 1312, 132, 13</code> — deben coincidir entre ETL (<code>COLLECTIONS_ACCOUNT_CODE_PREFIXES</code>) y <code>CollectionsService._parse_account_codes</code>.</p>
+      </section>
+
+      <section id="env-flags" class="audience-technical">
+        <span class="audience-tag tag-tech">Audiencia: Técnicos</span>
+        <h2>Variables de entorno y flags</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Variable</th>
+                <th>Default</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>COLLECTIONS_SOURCE</code></td>
+                <td><code>odoo</code></td>
+                <td><code>odoo</code> = Odoo en vivo; <code>supabase</code> = tablas ETL. Definido en config.py L76 y render.yaml L35-36.</td>
+              </tr>
+              <tr>
+                <td><code>SUPABASE_DB_URI</code></td>
+                <td>—</td>
+                <td>Connection string Postgres (pooler <code>:6543</code>). Usado por supabase_provider vía psycopg2.</td>
+              </tr>
+              <tr>
+                <td><code>SUPABASE_URL</code> / <code>SUPABASE_KEY</code></td>
+                <td>—</td>
+                <td>Cliente supabase-py para ETL. <code>SUPABASE_KEY</code> = service role (solo backend/cron).</td>
+              </tr>
+              <tr>
+                <td><code>ALLOWED_USERS</code></td>
+                <td>—</td>
+                <td>Emails separados por coma (normalizados a lowercase). Lista blanca OAuth.</td>
+              </tr>
+              <tr>
+                <td><code>ADMIN_EMAILS</code></td>
+                <td>—</td>
+                <td>Rol admin en JWT. No sustituye ALLOWED_USERS.</td>
+              </tr>
+              <tr>
+                <td><code>JWT_SECRET_KEY</code></td>
+                <td>SECRET_KEY fallback</td>
+                <td>Firma de tokens JWT en cookies HttpOnly.</td>
+              </tr>
+              <tr>
+                <td><code>LETTERS_MODULE_ENABLED</code></td>
+                <td><code>false</code></td>
+                <td>Módulo Letras oculto (404 OWASP). <code>false</code> en render.yaml.</td>
+              </tr>
+              <tr>
+                <td><code>APP_ENV</code></td>
+                <td><code>development</code></td>
+                <td><code>production</code> carga .env.produccion. ETL standalone respeta este flag.</td>
+              </tr>
+              <tr>
+                <td><code>ODOO_URL</code>, <code>ODOO_DB</code>, <code>ODOO_USER</code>, <code>ODOO_PASSWORD</code></td>
+                <td>—</td>
+                <td>Credenciales Odoo XML-RPC (ETL + Tesorería + fallback Odoo).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>Archivos de configuración</h4>
+        <ul>
+          <li><code>.env.desarrollo</code> — local default; mantener <code>COLLECTIONS_SOURCE=odoo</code> documentado.</li>
+          <li><code>.env.produccion</code> — producción local / referencia para Render.</li>
+          <li><code>.env.supabase.desarrollo</code> — opcional, referenciado en config.py L278-279.</li>
+          <li><code>render.yaml</code> — Blueprint con variables <code>sync: false</code> para secretos.</li>
+        </ul>
+      </section>
+
+      <section id="operaciones" class="audience-technical">
+        <span class="audience-tag tag-tech">Audiencia: Técnicos</span>
+        <h2>Comandos operativos</h2>
+
+        <h3>Scripts PowerShell (scripts/etl/)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Script</th><th>Propósito</th><th>Comando</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>run_etl.ps1</code></td>
+                <td>Ejecutar ETL completo</td>
+                <td><code>$env:APP_ENV="production"; python scripts/etl/etl_sync_threading.py</code></td>
+              </tr>
+              <tr>
+                <td><code>reset_watermark.ps1</code></td>
+                <td>Reset watermark move_lines para re-sync histórico</td>
+                <td>SQL sobre <code>etl_sync_state</code> donde <code>model_name = 'account.move.line.collections'</code></td>
+              </tr>
+              <tr>
+                <td><code>run_parity.ps1</code></td>
+                <td>Test de paridad Odoo vs Supabase</td>
+                <td><code>python test_collections_parity.py --env desarrollo|produccion</code></td>
+              </tr>
+              <tr>
+                <td><code>check_odoo.ps1</code></td>
+                <td>Confirmar credenciales y consulta de lectura a Odoo</td>
+                <td><code>python scripts/etl/check_odoo.py --env desarrollo|produccion</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Secuencia pre-go-live (re-sync + paridad)</h3>
+        <ol>
+          <li>Reset watermark <code>account.move.line.collections</code> en Supabase.</li>
+          <li>Re-ejecutar ETL completo (<code>sync_move_lines</code> + <code>sync_partial_reconciles</code> + dimensiones).</li>
+          <li>Correr <code>test_collections_parity.py</code> hasta <strong>3/3 MATCH</strong> (débito, crédito, pending_cutoff/residual histórico).</li>
+          <li>Si persisten diferencias: auditar filas discrepantes (move_id solo en Odoo o solo en Supabase).</li>
+          <li>Solo entonces: <code>COLLECTIONS_SOURCE=supabase</code> en Render.</li>
+        </ol>
+      </section>
+
+      <section id="limitaciones" class="audience-technical">
+        <span class="audience-tag tag-tech">Audiencia: Técnicos</span>
+        <h2>Limitaciones conocidas — supabase_provider.py</h2>
+
+        <h3>1. Cuenta 123 / Letras — trazabilidad factura-origen</h3>
+        <p>La trazabilidad factura-origen para letras (cuenta <code>123</code>, vía <code>_build_trace_invoice_map</code> en Odoo: <code>bill_form_id → account.bill.form → invoice_ids</code>, con fallback por <code>l10n_latam_boe_number</code>) <strong>NO se reproduce</strong> en Supabase.</p>
+        <p>Para cuentas <code>122/1212/1312/132/13</code> el resultado es idéntico a Odoo. Para cuenta <code>123</code>, campos como <code>invoice_origin</code>, <code>invoice_payment_term_id</code>, <code>invoice_user_name</code>, <code>sales_channel_name</code>, <code>linea_comercial</code> muestran valores propios de la letra (pueden venir vacíos).</p>
+
+        <h3>2. Filtro sub_channel en Python (post-proceso)</h3>
+        <p>El filtro <code>sub_channel</code> no se traduce completamente a SQL. Se aplica en Python después de la consulta (<code>get_report_lines</code> L306-309), lo que puede afectar rendimiento con volúmenes muy grandes.</p>
+
+        <h3>3. _collapse_1212_lines</h3>
+        <p>Se reutiliza el método estático de <code>CollectionsService</code> importado sin modificar — misma lógica de colapso de líneas 1212 que en Odoo en vivo.</p>
+
+        <h3>4. Cuenta excluida 1239001</h3>
+        <p>SQL incluye <code>COALESCE(da.code, '') != '1239001'</code> — misma exclusión que el dominio Odoo.</p>
+
+        <h3>5. Decisión psycopg2 vs PostgREST</h3>
+        <p>Se usa SQL directo parametrizado porque los filtros complejos (prefijos OR, ILIKE, rangos, corte histórico, joins a 6 dimensiones) son más legibles y eficientes que N llamadas HTTP PostgREST.</p>
+      </section>
+
+      <section id="modos-trabajo" class="audience-technical">
+        <span class="audience-tag tag-tech">Audiencia: Técnicos</span>
+        <h2>Modos de trabajo A / B / C</h2>
+        <div class="mermaid-wrap">
+          <pre class="mermaid">
+flowchart LR
+  subgraph modoA [Modo A - Desarrollo UI]
+    A1[COLLECTIONS_SOURCE=odoo]
+    A2[python run.py]
+    A3[Datos en vivo de Odoo]
+    A1 --> A2 --> A3
+  end
+
+  subgraph modoB [Modo B - Validar Supabase]
+    B1[Correr ETL con APP_ENV=production]
+    B2[COLLECTIONS_SOURCE=supabase]
+    B3[python run.py production]
+    B4[run_parity.ps1]
+    B1 --> B2 --> B3 --> B4
+  end
+
+  subgraph modoC [Modo C - Producción]
+    C1[Cron Render 15 min]
+    C2[Backend COLLECTIONS_SOURCE=supabase]
+    C1 --> C2
+  end
+          </pre>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Modo</th><th>Cuándo usar</th><th>COLLECTIONS_SOURCE</th><th>Datos Cobranzas</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>A — Desarrollo UI</strong></td>
+                <td>Cambios de interfaz, filtros, estilos</td>
+                <td><code>odoo</code> (default)</td>
+                <td>Odoo en vivo</td>
+              </tr>
+              <tr>
+                <td><strong>B — Validar Supabase</strong></td>
+                <td>Probar paridad antes de go-live</td>
+                <td><code>supabase</code></td>
+                <td>Supabase (ETL previo requerido)</td>
+              </tr>
+              <tr>
+                <td><strong>C — Producción</strong></td>
+                <td>Usuarios finales en Render</td>
+                <td><code>supabase</code></td>
+                <td>Supabase (cron ETL cada 15 min)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- NO FUNCIONALES -->
+      <section id="no-funcionales" class="audience-cross">
+        <span class="audience-tag tag-cross">Transversal — Requisitos no funcionales</span>
+        <h2>Requisitos no funcionales</h2>
+
+        <h3>Seguridad</h3>
+        <ul>
+          <li><code>SUPABASE_KEY</code> (service role) solo en backend y cron ETL — nunca en frontend.</li>
+          <li>Frontend usa <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code> (solo lectura limitada por RLS).</li>
+          <li>JWT en cookies HttpOnly (<code>finanzas_agv_access_token</code>, refresh 30 días).</li>
+          <li>OWASP: módulo Letras deshabilitado (<code>LETTERS_MODULE_ENABLED=false</code>) responde 404.</li>
+          <li>Protección CSRF vía chequeo Origin + Content-Type en <code>app/__init__.py</code>.</li>
+          <li>Tabla <code>etl_sync_state</code> con RLS deny-by-default (solo service role).</li>
+        </ul>
+
+        <h3>Control de acceso (lista blanca)</h3>
+        <ul>
+          <li>Función <code>_is_email_allowed</code> en <code>app/auth/oauth.py</code>: dominio <code>@agrovetmarket.com</code> + presencia en <code>ALLOWED_USERS</code>.</li>
+          <li>Producción: solo 6 usuarios del equipo Créditos/Cobranzas (ver tabla).</li>
+          <li>Desarrollo local puede tener lista más amplia (IT/desarrolladores).</li>
+          <li><code>ADMIN_EMAILS</code> es opcional y separado; define rol admin en JWT, no sustituye la whitelist.</li>
+        </ul>
+
+        <h3>Disponibilidad</h3>
+        <ul>
+          <li>ETL como Render Cron Job cada 15 min (<code>*/15 * * * *</code>) — sin worker Celery persistente.</li>
+          <li>Fallback operativo: cambiar <code>COLLECTIONS_SOURCE=odoo</code> en Render sin redeploy de código.</li>
+          <li>Health check backend: <code>/api/health</code>.</li>
+        </ul>
+
+        <h3>Rendimiento</h3>
+        <ul>
+          <li>Flask lee Postgres vía pooler Supabase (<code>:6543</code>) — conexiones eficientes.</li>
+          <li>Odoo solo se consulta en sync batch (ETL), no en cada request de usuario.</li>
+          <li>Caché Flask 300s en endpoints de reporte (<code>@cache.cached</code>).</li>
+        </ul>
+
+        <h3>Consistencia</h3>
+        <ul>
+          <li>Paridad automatizada (<code>test_collections_parity.py</code>) con exit code 1 si hay DIFF.</li>
+          <li>Watermark incremental en <code>etl_sync_state</code> — sync solo registros con <code>write_date</code> posterior.</li>
+          <li>Prefijos de cuenta sincronizados entre ETL y servicio Odoo.</li>
+        </ul>
+
+        <h3>Observabilidad</h3>
+        <ul>
+          <li><code>/diagnostics</code> — conteo de filas Supabase desde frontend.</li>
+          <li>Logs ETL en stdout (Render cron logs).</li>
+          <li>Script de paridad con salida tabular y exit code para CI/manual.</li>
+          <li><strong>Uso de app (v1)</strong>: tabla <code>user_activity_logs</code>, API <code>/api/v1/analytics</code> y tablero <code>/observability</code> solo admin (logins, page views, horarios, top usuarios/módulos). Ver skill <code>finanzas-observabilidad</code>.</li>
+        </ul>
+      </section>
+
+      <!-- LISTA BLANCA -->
+      <section id="lista-blanca" class="audience-cross">
+        <span class="audience-tag tag-cross">Entregable 4 — Lista blanca</span>
+        <h2>Usuarios autorizados — Equipo Créditos/Cobranzas</h2>
+        <p>Requisito de go-live: solo estos 6 usuarios pueden autenticarse en producción Render.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>#</th><th>Email autorizado</th><th>Estado</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>kattya.barcena@agrovetmarket.com</td><td>Autorizado</td></tr>
+              <tr><td>2</td><td>jancarlo.pariasca@agrovetmarket.com</td><td>Autorizado</td></tr>
+              <tr><td>3</td><td>eigly.pereira@agrovetmarket.com</td><td>Autorizado</td></tr>
+              <tr><td>4</td><td>augusto.matto@agrovetmarket.com</td><td>Autorizado</td></tr>
+              <tr><td>5</td><td>jhosselyn.paliza@agrovetmarket.com</td><td>Autorizado</td></tr>
+              <tr><td>6</td><td>maria.alvarez@agrovetmarket.com</td><td>Autorizado</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Valor para Render (ALLOWED_USERS)</h3>
+        <p>Pegar en el dashboard del servicio <code>finanzas-agv-backend</code> (render.yaml L55-56, <code>sync: false</code>):</p>
+        <pre><code>kattya.barcena@agrovetmarket.com,jancarlo.pariasca@agrovetmarket.com,eigly.pereira@agrovetmarket.com,augusto.matto@agrovetmarket.com,jhosselyn.paliza@agrovetmarket.com,maria.alvarez@agrovetmarket.com</code></pre>
+
+        <h3>Verificación pre-go-live</h3>
+        <ol>
+          <li>Login con email de la lista → acceso OK a <code>/collections</code>.</li>
+          <li>Login con email <code>@agrovetmarket.com</code> fuera de la lista → rechazado.</li>
+          <li>Login con Gmail personal → rechazado (dominio incorrecto).</li>
+        </ol>
+      </section>
+
+      <!-- GO-LIVE CHECKLIST -->
+      <section id="go-live" class="audience-cross">
+        <span class="audience-tag tag-cross">Checklist go-live Render</span>
+        <h2>Checklist de despliegue a producción</h2>
+        <p>Completar <strong>después</strong> de lograr paridad 3/3 MATCH en totales. Paso a paso (paridad, switch en Render, rollback, secrets CI): <a href="DEPLOY_DEVSECOPS.md"><strong>docs/DEPLOY_DEVSECOPS.md</strong></a>.</p>
+        <p><strong>Estado paridad:</strong> 1/3 MATCH — mantener <code>COLLECTIONS_SOURCE=odoo</code> en Render hasta corregir los dos escenarios DIFF.</p>
+
+        <ul class="checklist">
+          <li><strong>SUPABASE_DB_URI</strong> — connection string pooler <code>aws-1-ca-central-1.pooler.supabase.com:6543</code> (no direct connection :5432)</li>
+          <li><strong>JWT_SECRET_KEY</strong> — clave segura única (no usar default); cargada en dashboard Render</li>
+          <li><strong>SECRET_KEY</strong> — clave Flask segura</li>
+          <li><strong>COLLECTIONS_SOURCE=supabase</strong> — activar lectura Cobranzas desde Supabase (ya en render.yaml, verificar en dashboard)</li>
+          <li><strong>ALLOWED_USERS</strong> — los 6 correos del equipo Créditos/Cobranzas (valor completo arriba)</li>
+          <li><strong>ODOO_URL / ODOO_DB / ODOO_USER / ODOO_PASSWORD</strong> — credenciales producción lectura</li>
+          <li><strong>SUPABASE_URL / SUPABASE_KEY</strong> — service role para ETL y backend</li>
+          <li><strong>GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET</strong> — OAuth Google</li>
+          <li><strong>OAuth redirect URI</strong> — configurar en Google Cloud Console la URL de callback de producción Render</li>
+          <li><strong>FRONTEND_URL</strong> — URL del frontend Render para redirects post-login</li>
+          <li><strong>NEXT_PUBLIC_FLASK_API_URL</strong> — URL del backend en el servicio frontend</li>
+          <li><strong>LETTERS_MODULE_ENABLED=false</strong> — módulo Letras oculto (OWASP)</li>
+          <li><strong>Cron ETL</strong> — verificar que <code>finanzas-agv-etl</code> corre cada 15 min sin errores</li>
+          <li><strong>Paridad final</strong> — ejecutar <code>test_collections_parity.py</code> contra producción: 3/3 MATCH</li>
+        </ul>
+      </section>
+
+      <!-- ESTADO ACTUAL -->
+      <section id="estado-actual" class="audience-cross">
+        <span class="audience-tag tag-cross">Estado actual y bloqueadores</span>
+        <h2>Estado de la validación reciente</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Ítem</th><th>Estado</th><th>Detalle</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>ETL histórico</td>
+                <td>✅ Completado</td>
+                <td>~117k moves, ~78k líneas CxC cargadas en Supabase</td>
+              </tr>
+              <tr>
+                <td>Paridad Odoo vs Supabase</td>
+                <td>⚠️ 1/3 MATCH</td>
+                <td><code>con_cutoff</code> OK; <code>sin_fecha_limit_200</code> y <code>ultimo_mes</code> en DIFF → NO-GO. Ver <a href="DEPLOY_DEVSECOPS.md">DEPLOY_DEVSECOPS.md</a></td>
+              </tr>
+              <tr>
+                <td>.env.desarrollo</td>
+                <td>⚠️ Pendiente</td>
+                <td>ODOO_DB staging muerta; SUPABASE_DB_URI mal configurada</td>
+              </tr>
+              <tr>
+                <td>.env.produccion</td>
+                <td>✅ Corregido</td>
+                <td>URI pooler corregida (aws-1-ca-central-1.pooler.supabase.com:6543)</td>
+              </tr>
+              <tr>
+                <td>test_collections_parity.py</td>
+                <td>⚠️ Mejora pendiente</td>
+                <td>Fuerza .env.produccion; falta flag --env y comparar pending_cutoff</td>
+              </tr>
+              <tr>
+                <td>ALLOWED_USERS producción</td>
+                <td>⚠️ Pendiente</td>
+                <td>Hoy solo incluye jose.montero; falta lista completa de 6 usuarios</td>
+              </tr>
+              <tr>
+                <td>Go-live Render</td>
+                <td>🔴 Bloqueado</td>
+                <td>Requiere paridad 3/3 MATCH + checklist completo</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Criterios de éxito</h3>
+        <ul>
+          <li>Cualquier miembro del equipo puede responder "en local, ¿de dónde salen los datos?" usando este PRD.</li>
+          <li><code>run_etl.ps1</code> y <code>run_parity.ps1</code> funcionan en Windows con venv.</li>
+          <li>Paridad 3/3 MATCH en totales antes de go-live.</li>
+          <li>Producción Render con <code>COLLECTIONS_SOURCE=supabase</code> solo tras criterio anterior.</li>
+          <li>Solo los 6 usuarios de Créditos/Cobranzas pueden autenticarse en producción.</li>
+        </ul>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="doc-footer">
+    Finanzas AGV — PRD Arquitectura de Datos · Agrovet Market · Julio 2026<br>
+    Documento generado para uso interno. Abrir directamente en navegador sin build step.
+  </footer>
+
+  <script>
+    // Mermaid init
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default',
+      securityLevel: 'loose',
+      flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
+      sequence: { useMaxWidth: true }
+    });
+
+    // Theme toggle
+    const toggle = document.getElementById('themeToggle');
+    const saved = localStorage.getItem('prd-theme');
+    if (saved === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      toggle.textContent = '☀️ Modo claro';
+    }
+    toggle.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      if (isDark) {
+        document.documentElement.removeAttribute('data-theme');
+        toggle.textContent = '🌙 Modo oscuro';
+        localStorage.setItem('prd-theme', 'light');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        toggle.textContent = '☀️ Modo claro';
+        localStorage.setItem('prd-theme', 'dark');
+      }
+      location.reload(); // re-render mermaid with new theme
+    });
+
+    // TOC active link on scroll
+    const sections = document.querySelectorAll('section[id]');
+    const tocLinks = document.querySelectorAll('.toc a');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(link => link.classList.remove('active'));
+          const active = document.querySelector('.toc a[href="#' + entry.target.id + '"]');
+          if (active) active.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -60% 0px' });
+    sections.forEach(s => observer.observe(s));
+  </script>
+</body>
+</html>

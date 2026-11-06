@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRD — Comisiones Nacional e Internacional | Agrovet Market</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --agv-primary: #714B67;
+      --agv-primary-dark: #5a3d52;
+      --agv-primary-light: #9a6b8e;
+      --agv-accent: #c084a8;
+      --bg: #faf8f9;
+      --bg-card: #ffffff;
+      --bg-alt: #f3eef1;
+      --text: #2d2428;
+      --text-muted: #6b5f65;
+      --border: #e8dfe5;
+      --success: #2d6a4f;
+      --warning: #b45309;
+      --danger: #b91c1c;
+      --info: #1e4d7b;
+      --shadow: 0 2px 12px rgba(113, 75, 103, 0.08);
+      --radius: 10px;
+      --toc-width: 280px;
+    }
+
+    [data-theme="dark"] {
+      --bg: #1a1418;
+      --bg-card: #261f24;
+      --bg-alt: #322830;
+      --text: #f5eef2;
+      --text-muted: #b8a8b0;
+      --border: #4a3d45;
+      --shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 16px;
+    }
+
+    /* Header */
+    .site-header {
+      background: linear-gradient(135deg, var(--agv-primary) 0%, var(--agv-primary-dark) 100%);
+      color: #fff;
+      padding: 2rem 2rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .site-header::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 90% 20%, rgba(255,255,255,0.12) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .header-inner { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+    .site-header h1 { margin: 0 0 0.5rem; font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 700; }
+    .site-header .subtitle { opacity: 0.92; font-size: 1.05rem; max-width: 760px; }
+    .meta-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.25rem; }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+    .badge-light { background: rgba(255,255,255,0.2); color: #fff; }
+    .badge-warn { background: #fef3c7; color: #92400e; }
+    [data-theme="dark"] .badge-warn { background: #78350f; color: #fde68a; }
+
+    .header-actions {
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      z-index: 2;
+    }
+    .theme-toggle {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      padding: 0.4rem 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+    .theme-toggle:hover { background: rgba(255,255,255,0.25); }
+
+    /* Layout */
+    .layout {
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto;
+      gap: 2rem;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* TOC */
+    .toc {
+      width: var(--toc-width);
+      flex-shrink: 0;
+      position: sticky;
+      top: 1rem;
+      align-self: flex-start;
+      max-height: calc(100vh - 2rem);
+      overflow-y: auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      box-shadow: var(--shadow);
+    }
+    .toc h2 {
+      margin: 0 0 0.75rem;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--agv-primary);
+    }
+    .toc ul { list-style: none; padding: 0; margin: 0; }
+    .toc li { margin: 0; }
+    .toc a {
+      display: block;
+      padding: 0.35rem 0.5rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.88rem;
+      border-radius: 6px;
+      border-left: 3px solid transparent;
+      transition: all 0.15s;
+    }
+    .toc a:hover { color: var(--agv-primary); background: var(--bg-alt); }
+    .toc a.active { color: var(--agv-primary); border-left-color: var(--agv-primary); font-weight: 600; background: var(--bg-alt); }
+    .toc .toc-group { margin-top: 0.75rem; padding-top: 0.75rem; border-top: 1px solid var(--border); }
+    .toc .toc-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--agv-primary-light);
+      padding: 0.25rem 0.5rem;
+    }
+
+    /* Main content */
+    .content { flex: 1; min-width: 0; }
+
+    section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow);
+    }
+
+    section.audience-executive { border-top: 4px solid var(--agv-primary); }
+    section.audience-business { border-top: 4px solid var(--agv-accent); }
+    section.audience-technical { border-top: 4px solid var(--info); }
+    section.audience-cross { border-top: 4px solid var(--success); }
+
+    .audience-tag {
+      display: inline-block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      margin-bottom: 0.75rem;
+    }
+    .tag-exec { background: #ede4ea; color: var(--agv-primary); }
+    .tag-biz { background: #f5e6ef; color: #8b4a72; }
+    .tag-tech { background: #e0ecf5; color: var(--info); }
+    .tag-cross { background: #d8f3dc; color: var(--success); }
+    [data-theme="dark"] .tag-exec { background: #3d2f38; }
+    [data-theme="dark"] .tag-biz { background: #3d2835; }
+    [data-theme="dark"] .tag-tech { background: #1e3347; }
+    [data-theme="dark"] .tag-cross { background: #1a3d2a; }
+
+    h2 { color: var(--agv-primary); margin: 0 0 1rem; font-size: 1.55rem; }
+    h3 { color: var(--text); margin: 1.75rem 0 0.75rem; font-size: 1.15rem; }
+    h4 { margin: 1.25rem 0 0.5rem; font-size: 1rem; color: var(--text-muted); }
+
+    p { margin: 0 0 1rem; }
+    ul, ol { margin: 0 0 1rem; padding-left: 1.5rem; }
+    li { margin-bottom: 0.35rem; }
+
+    .lead { font-size: 1.1rem; color: var(--text-muted); }
+
+    /* Cards & grids */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      margin: 1.25rem 0;
+    }
+    .card {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+    }
+    .card h4 { margin: 0 0 0.5rem; color: var(--agv-primary); font-size: 0.95rem; }
+    .card p { margin: 0; font-size: 0.92rem; }
+    .card .metric {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--agv-primary);
+      line-height: 1.2;
+    }
+
+    .status-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius);
+      margin: 1rem 0;
+      font-size: 0.95rem;
+    }
+    .status-no-go { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+    .status-info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
+    .status-warn { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+    .status-ok { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+    [data-theme="dark"] .status-no-go { background: #3b1515; border-color: #7f1d1d; color: #fca5a5; }
+    [data-theme="dark"] .status-info { background: #172554; border-color: #1e40af; color: #93c5fd; }
+    [data-theme="dark"] .status-warn { background: #3f2d05; border-color: #78350f; color: #fde68a; }
+    [data-theme="dark"] .status-ok { background: #14532d; border-color: #166534; color: #86efac; }
+
+    /* Tables */
+    .table-wrap { overflow-x: auto; margin: 1rem 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 0.65rem 0.85rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: var(--bg-alt);
+      color: var(--agv-primary);
+      font-weight: 600;
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    tr:hover td { background: var(--bg-alt); }
+
+    /* Code */
+    code {
+      background: var(--bg-alt);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.88em;
+      font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+      color: var(--agv-primary-dark);
+    }
+    [data-theme="dark"] code { color: var(--agv-accent); }
+
+    pre {
+      background: #1e1a1d;
+      color: #e8e0e4;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius);
+      overflow-x: auto;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      margin: 1rem 0;
+    }
+    pre code { background: none; padding: 0; color: inherit; }
+
+    /* Mermaid */
+    .mermaid-wrap {
+      background: var(--bg-alt);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem 1rem;
+      margin: 1.25rem 0;
+      overflow-x: auto;
+    }
+    .mermaid { text-align: center; }
+
+    /* Checklist */
+    .checklist { list-style: none; padding: 0; }
+    .checklist li {
+      padding: 0.6rem 0.85rem 0.6rem 2.5rem;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.92rem;
+    }
+    .checklist li::before {
+      content: "☐";
+      position: absolute;
+      left: 0.75rem;
+      color: var(--agv-primary);
+      font-size: 1.1rem;
+    }
+
+    /* Priority pills */
+    .pill {
+      display: inline-block;
+      padding: 0.1rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .pill-must { background: #fee2e2; color: #991b1b; }
+    .pill-should { background: #fef3c7; color: #92400e; }
+    .pill-could { background: #dbeafe; color: #1e40af; }
+    .pill-wont { background: #e5e7eb; color: #374151; }
+    [data-theme="dark"] .pill-must { background: #3b1515; color: #fca5a5; }
+    [data-theme="dark"] .pill-should { background: #3f2d05; color: #fde68a; }
+    [data-theme="dark"] .pill-could { background: #172554; color: #93c5fd; }
+    [data-theme="dark"] .pill-wont { background: #374151; color: #e5e7eb; }
+
+    /* Glossary */
+    dl { margin: 0; }
+    dt { font-weight: 700; color: var(--agv-primary); margin-top: 0.75rem; }
+    dd { margin: 0.25rem 0 0 0; color: var(--text-muted); font-size: 0.95rem; }
+
+    /* Footer */
+    .doc-footer {
+      text-align: center;
+      padding: 2rem;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .layout { flex-direction: column; }
+      .toc {
+        width: 100%;
+        position: relative;
+        top: 0;
+        max-height: none;
+      }
+      .header-actions { position: static; margin-bottom: 1rem; }
+      section { padding: 1.25rem; }
+    }
+
+    @media print {
+      .toc, .theme-toggle, .header-actions { display: none; }
+      .layout { display: block; }
+      section { break-inside: avoid; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">🌙 Modo oscuro</button>
+    </div>
+    <div class="header-inner">
+      <h1>PRD — Comisiones Nacional e Internacional</h1>
+      <p class="subtitle">Automatización end-to-end del cálculo, aprobación y pago de comisiones de los canales Nacional (PEN) e Internacional (USD), hoy 100% manuales sobre Excel y correo, con datos fuente en Odoo (AMAH / Agrovet Market).</p>
+      <div class="meta-badges">
+        <span class="badge badge-light">Versión 1.0 — Borrador</span>
+        <span class="badge badge-light">Octubre 2026</span>
+        <span class="badge badge-warn">Fase 0: levantamiento de reglas pendiente — ver sección Riesgos</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <nav class="toc" aria-label="Tabla de contenidos">
+      <h2>Contenido</h2>
+      <ul>
+        <li><a href="#resumen">Respuesta directa</a></li>
+        <li class="toc-group"><span class="toc-label">Ejecutivos</span></li>
+        <li><a href="#ejecutivos">Resumen ejecutivo</a></li>
+        <li><a href="#alcance">Alcance y fuera de alcance</a></li>
+        <li class="toc-group"><span class="toc-label">Negocio</span></li>
+        <li><a href="#as-is">Proceso actual (AS-IS)</a></li>
+        <li><a href="#calendario">Calendarios por canal</a></li>
+        <li><a href="#dolores">Dolores y causa raíz</a></li>
+        <li><a href="#evidencia-odoo">Evidencia verificada en Odoo</a></li>
+        <li><a href="#glosario">Glosario</a></li>
+        <li class="toc-group"><span class="toc-label">Producto / Funcional</span></li>
+        <li><a href="#to-be">Visión TO-BE</a></li>
+        <li><a href="#ciclo-vida">Ciclo de vida de un periodo</a></li>
+        <li><a href="#requisitos-funcionales">Requisitos funcionales (MoSCoW)</a></li>
+        <li><a href="#reglas-negocio">Reglas de negocio propuestas</a></li>
+        <li><a href="#roles-rbac">Roles y RBAC</a></li>
+        <li class="toc-group"><span class="toc-label">Técnicos</span></li>
+        <li><a href="#arquitectura">Arquitectura técnica</a></li>
+        <li><a href="#modelo-datos">Modelo de datos</a></li>
+        <li><a href="#etl">Estrategia de ETL</a></li>
+        <li><a href="#hallazgos-seguridad">Hallazgos de seguridad detectados</a></li>
+        <li class="toc-group"><span class="toc-label">Transversal</span></li>
+        <li><a href="#no-funcionales">Requisitos no funcionales</a></li>
+        <li><a href="#roadmap">Roadmap por fases</a></li>
+        <li><a href="#riesgos">Riesgos y supuestos</a></li>
+        <li><a href="#preguntas-abiertas">Preguntas abiertas</a></li>
+        <li><a href="#criterios-exito">Criterios de éxito</a></li>
+        <li><a href="CHANGELOG.md">Historial de cambios</a></li>
+      </ul>
+    </nav>
+
+    <main class="content">
+
+      <!-- RESPUESTA DIRECTA -->
+      <section id="resumen">
+        <h2>¿Qué problema resuelve este PRD y cómo se verificó?</h2>
+        <p class="lead">Hoy el cálculo de comisiones de los canales <strong>Nacional</strong> (soles) e <strong>Internacional</strong> (dólares) es 100% manual: se extraen 5 reportes de Odoo, se cruzan a mano en Excel, se envían por correo y pasan por 3 personas antes de llegar a RRHH. El proceso completo tarda hasta 20 días calendario por canal y depende de personas puntuales sin respaldo.</p>
+        <p>Toda la evidencia de este documento (catálogos, campos, volúmenes y casuísticas) se verificó <strong>en vivo contra el Odoo real</strong> de Agrovet Market usando las credenciales de solo lectura de <code>.env</code> y el script <code>investigation/test_odoo_connection.py</code> ya existente en el repositorio. El detalle reproducible está en <code>investigation/investigacion_comisiones_odoo.py</code> (nuevo, de solo lectura).</p>
+
+        <div class="status-banner status-info">
+          <div>
+            <strong>Dato de infraestructura corregido:</strong> el servidor responde <code>server_version: "16.0+e"</code> (Odoo 16 Enterprise SaaS), no Odoo 17 como indican otros informes de <code>auditoria/</code>. El motor de reglas y el ETL de este proyecto deben validarse contra Odoo 16, no 17.
+          </div>
+        </div>
+
+        <div class="mermaid-wrap">
+          <pre class="mermaid">
+flowchart LR
+  Odoo[("Odoo ERP\nfacturas, pagos, letras")] -->|"ETL incremental\n(write_date)"| Raw["Capa raw\nSupabase/Postgres"]
+  Raw --> Rules["Motor de reglas\nparametrizable"]
+  Rules --> Calc["Calculo automatico\nde comisiones por periodo"]
+  Calc --> Review["Workflow de aprobacion\nGerente / Direccion Comercial"]
+  Review -->|"Aprobado"| Export["Layout final\npara RRHH / Nomina"]
+  Review -->|"Rechazado con comentario"| Calc
+  Calc --> Dash["Dashboards en tiempo real\nVendedor / Gerencia"]
+  Calc --> Disputas["Modulo de disputas\n(tickets por factura)"]
+  Disputas -->|"Resuelta"| Calc
+  Review --> Audit[("Audit log\nquien, cuando, que cambio")]
+  Calc --> Audit
+          </pre>
+        </div>
+      </section>
+
+      <!-- EJECUTIVOS -->
+      <section id="ejecutivos" class="audience-executive">
+        <span class="audience-tag tag-exec">Audiencia: Ejecutivos</span>
+        <h2>Resumen ejecutivo</h2>
+
+        <div class="card-grid">
+          <div class="card">
+            <h4>Problema</h4>
+            <p>5 reportes de Odoo cruzados a mano en Excel, por 3 personas en serie, con riesgo de pagos indebidos y cierres retrasados.</p>
+          </div>
+          <div class="card">
+            <h4>Solución</h4>
+            <p>ETL automático desde Odoo + motor de reglas parametrizable + workflow de aprobación de un clic + exportación directa a RRHH.</p>
+          </div>
+          <div class="card">
+            <h4>Punto único de falla hoy</h4>
+            <p class="metric">1 persona</p>
+            <p>El cálculo nacional depende de 2 personas sin respaldo (hoy, 1 lo ejecuta y 1 lo valida); si falta alguna, el proceso se detiene.</p>
+          </div>
+          <div class="card">
+            <h4>Ciclo manual hoy</h4>
+            <p class="metric">~20 días</p>
+            <p>Nacional: extracción día 7-8, cálculo hasta el 15, validación hasta el 20, luego RRHH. Internacional corta del 21 al 22 del mes siguiente.</p>
+          </div>
+        </div>
+
+        <h3>Lo que cambia para cada audiencia</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Rol</th><th>Hoy (AS-IS)</th><th>Con el sistema (TO-BE)</th></tr></thead>
+            <tbody>
+              <tr><td>Vendedor</td><td>Pregunta por correo cuánto ganó</td><td>Dashboard propio en tiempo real, con proyección y ticket de disputa si falta algo</td></tr>
+              <tr><td>Jefe de equipo / Gerencia comercial</td><td>Revisa un Excel completo sin filtros por rol</td><td>Ve solo su equipo; aprueba o rechaza con un clic y comentario</td></tr>
+              <tr><td>Analista de comisiones (hoy: Jefa de Aplicaciones)</td><td>Cruza manualmente 5 reportes</td><td>Valida un cálculo ya hecho por el motor de reglas; gestiona disputas</td></tr>
+              <tr><td>RRHH</td><td>Recibe un correo con el reporte final</td><td>Recibe un layout de nómina generado automáticamente tras la aprobación</td></tr>
+              <tr><td>Finanzas / Auditoría</td><td>No tiene visibilidad del proceso</td><td>Ve el consolidado total y el historial completo de auditoría (quién aprobó, qué se ajustó y por qué)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="status-banner status-warn">
+          <div>
+            <strong>Fase 0 prácticamente cerrada para el motor de cálculo:</strong> las matrices de % de Nacional (4 roles × 27 combinaciones Línea/Zona) e Internacional (6 colaboradores × 3 líneas), y las fórmulas de base/prorrateo/letras, ya están confirmadas con evidencia real de Excel y de Odoo (ver <a href="#evidencia-odoo">Evidencia verificada en Odoo</a>). Solo falta el <strong>formato exacto del layout para RRHH</strong> y confirmar la ambigüedad de atribución "SI/TODOS" en Internacional antes de pasar a Fase 2 (ver <a href="#roadmap">Roadmap</a>).
+          </div>
+        </div>
+      </section>
+
+      <!-- ALCANCE -->
+      <section id="alcance" class="audience-executive">
+        <span class="audience-tag tag-exec">Audiencia: Ejecutivos</span>
+        <h2>Alcance de la versión 1</h2>
+
+        <h3>Dentro de alcance</h3>
+        <ul>
+          <li>Canal <strong>NACIONAL</strong> (moneda PEN): facturas + letras de cambio.</li>
+          <li>Canal <strong>INTERNACIONAL</strong> (moneda USD): facturas, con el soporte residual de letras que hoy existe (menos del 5% de los casos, confirmado en Odoo con 1.9% de facturas trazadas a letra en el ciclo analizado).</li>
+          <li>Las 9 mejoras solicitadas: dashboards, RBAC, workflow de aprobación, SSO/2FA, motor de reglas, ETL automatizado, auditoría y disputas, más la exportación al layout de RRHH.</li>
+        </ul>
+
+        <h3>Fuera de alcance de la v1 (decisión confirmada con el solicitante)</h3>
+        <ul>
+          <li><strong>Canal DIGITAL</strong> (ecommerce / marketplaces: Falabella, Ripley, Mercado Libre, etc.). En Odoo existe como tercer <code>agr.sales.channel</code> con 330 facturas en septiembre 2026, un solo vendedor (equipo ECOMMERCE) y 100% de condición "100% PAGO ADELANTADO". Confirmado: <strong>no se comisiona hoy y no se automatiza</strong> hasta que Dirección Comercial lo solicite explícitamente mediante un análisis propio.</li>
+          <li>Definición final del formato exacto del layout para RRHH, y confirmación de la base de atribución "SI/TODOS" en Internacional (es lo último de la Fase 0, no la v1 de software — ver <a href="#preguntas-abiertas">Preguntas abiertas</a>).</li>
+          <li>Integración con el ERP de nómina de RRHH más allá de generar el layout de archivo (no se asume qué sistema de nómina se usa).</li>
+        </ul>
+      </section>
+
+      <!-- AS-IS -->
+      <section id="as-is" class="audience-business">
+        <span class="audience-tag tag-biz">Audiencia: Negocio</span>
+        <h2>Proceso actual (AS-IS) — 100% manual en ambos canales</h2>
+
+        <div class="status-banner status-info">
+          <div>
+            <strong>Corrección importante: son 2 personas en serie, no 1.</strong> El cálculo Nacional no lo hace una sola persona: el <strong>Supervisor de Proyectos de Finanzas</strong> (quien levanta este PRD) hace la extracción y el primer cálculo; la <strong>Jefa de Aplicaciones</strong> procesa y valida ese cálculo antes de pasarlo a Dirección Comercial. Ambos roles son puntos únicos de falla independientes.
+          </div>
+        </div>
+
+        <h3>Canal Nacional</h3>
+        <ol>
+          <li><strong>Supervisor de Proyectos de Finanzas — día 8 al 10 del mes siguiente:</strong> extrae de Odoo <strong>2 reportes de Facturas</strong>: (a) pago de facturas con los campos Factura, F.Pago, Cliente, Importe (plantilla real de exportación: <code>Creditos_Comi_Nacional_Pagos</code>); (b) líneas de producto por factura, con ~28 columnas, de las cuales 3-4 son creadas manualmente para cruzar con las facturas pagadas. Elimina del reporte de líneas todo lo que no está pagado según el periodo de corte correspondiente. Aquí aparece la casuística más compleja: condiciones de contado o <strong>"100% PAGO ADELANTADO"</strong> donde la fecha del pago puede ser anterior o posterior a la fecha de emisión de la factura. Extrae también <strong>3 reportes de Letras</strong> (pago de letras, líneas de factura, total de letras emitidas a la fecha) y hace el primer cálculo de comisiones de Facturas y de Letras.</li>
+          <li><strong>Jefa de Aplicaciones — día 11 al 15:</strong> procesa y valida el cálculo recibido del Supervisor de Proyectos de Finanzas.</li>
+          <li><strong>Dirección Comercial — hasta el día 20:</strong> confirma que el cálculo es correcto porque conoce el giro de negocio y las ventas.</li>
+          <li><strong>RRHH:</strong> recibe el reporte ya confirmado y procesa el pago en nómina.</li>
+        </ol>
+
+        <h3 id="as-is-flujo-nacional">Flujo real del cálculo Nacional (setiembre 2026, leído de los Excel)</h3>
+        <p>El primer cálculo del Supervisor no es una sola hoja. Empieza en <code>Proceso_Manual/nacional/SEP</code>, cruza la tabla de porcentajes y termina en <code>Proceso_Manual/nacional/calculo_vendedores/COMISIONES 2026 SETIEMBRE (1).xlsx</code>. Ese último archivo es el que produce el monto por persona. Se leyó la estructura del libro (hojas, fórmulas, tabla dinámica y valores guardados) y se cruzó fila a fila con los reportes de SEP.</p>
+
+        <div class="mermaid-wrap">
+          <pre class="mermaid">
+flowchart LR
+  subgraph sep ["Carpeta SEP"]
+    PF["PAGO FACTURAS sep"]
+    RF["Reporte FT\ncontado y credito"]
+    LTot["LETRAS TOTALES"]
+    PL["PAGO LETRAS"]
+    RL["Reporte LT"]
+    PF --> RF
+    LTot --> RL
+    PL --> RL
+  end
+  PCT["Tabla de Comisiones.xlsx"]
+  subgraph libro ["COMISIONES 2026 SETIEMBRE"]
+    TC["Tabla Comisiones\nhoja oculta, copia"]
+    CC["CONTADO - CREDITO\n% x subtotal de linea"]
+    LE["LETRAS\n% x subtotal / Cant LT"]
+    CO["CONSOLIDADO\n4 filas por linea, valores"]
+    RE["RESUMEN COMISIONES\ntabla dinamica"]
+  end
+  RF --> CC
+  RL --> LE
+  PCT --> TC
+  TC --> CC
+  TC --> LE
+  CC --> CO
+  LE --> CO
+  CO --> RE
+          </pre>
+        </div>
+
+        <h4>1. Lo que sale de SEP</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Archivo</th><th>Qué aporta al cálculo</th></tr></thead>
+            <tbody>
+              <tr><td><code>SEP/FACTURAS/PAGO FACTURAS sep.xlsx</code></td><td>Listado de pagos del corte (factura, fecha, socio, importe). La hoja <code>SEPTIEMBRE</code> es el periodo. Alimenta el reporte de facturas; no entra directo al libro de comisiones.</td></tr>
+              <tr><td><code>SEP/FACTURAS/REPORTE DE COMISIONES NACIONAL FT CONTADO Y CREDITO -SEP-26.xlsx</code></td><td>Grano de línea de producto (2.649 filas). Ya calcula <code>Monto.Pagado Sin IGV = Monto Pagado / 1,18</code> y <code>Base para el cálculo = Monto sin IGV × (Subtotal del producto / Subtotal de la factura)</code>. También trae <code>Dias de Diferencia</code> y <code>Motivo de Diferencia</code> (texto libre: <code>OK</code>, <code>DIFERENCIA PAGADA EN AGOSTO</code>, etc.).</td></tr>
+              <tr><td><code>SEP/LETRAS/LETRAS TOTALES SEP-26.xlsx</code></td><td>Inventario de letras de la factura (número, origen, monto, cantidad de letras).</td></tr>
+              <tr><td><code>SEP/LETRAS/PAGO LETRAS SEP-26.xlsx</code></td><td>Letras cobradas en el periodo: estado (<code>Cobranza</code>, <code>Descuento</code>, <code>Cartera</code>, <code>Protestado</code>), importe, total de la factura y total de letras.</td></tr>
+              <tr><td><code>SEP/LETRAS/REPORTE DE COMISIONES NACIONAL LT -SEP-26.xlsx</code></td><td>Grano de línea de producto de las facturas con letras (2.360 filas). Trae <code>Letras Pagadas</code>, <code>Letras Totales</code> y la misma <code>Base para el cálculo</code> que el reporte de facturas.</td></tr>
+              <tr><td><code>Porcentajes/Tabla de Comisiones.xlsx</code></td><td>26 combinaciones de Línea comercial + Zona. Cada fila nombra hasta 4 personas y su porcentaje: Representante, Jefe Técnico, Jefe Comercial y Gerente. Algunos roles quedan vacíos (PET NUTRISCIENCE no tiene nombre de gerente; EQUESTRIA no tiene porcentaje de representante).</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>2. Cómo está armado el libro de setiembre</h4>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Hoja</th><th>Filas</th><th>Rol en el cálculo</th></tr></thead>
+            <tbody>
+              <tr><td><code>Tabla Comisiones</code> (oculta)</td><td>26</td><td>Copia pegada de <code>Tabla de Comisiones.xlsx</code>. Los <code>BUSCARV</code> leen esta hoja. Cambiar el Excel de porcentajes no actualiza el libro hasta que alguien vuelva a copiar la hoja.</td></tr>
+              <tr><td><code>CONTADO - CREDITO</code></td><td>2.404</td><td>Valores pegados del reporte de facturas, más 8 columnas con fórmula. Una fila por línea de producto. El tipo es <code>CONTADO</code> o <code>CREDITO</code>.</td></tr>
+              <tr><td><code>LETRAS</code></td><td>6.275</td><td>Valores pegados del reporte de letras, abiertos a una fila por letra pagada, más las mismas 8 columnas. Por eso hay más filas que en el reporte (2.360).</td></tr>
+              <tr><td><code>CONSOLIDADO</code> (oculta)</td><td>34.716</td><td>Las 4 comisiones de cada línea, apiladas en una sola tabla: <code>Puesto</code>, <code>Nombre</code>, <code>Comision</code>. 2.404 × 4 + 6.275 × 4 = 34.716. Son valores, no fórmulas.</td></tr>
+              <tr><td><code>RESUMEN COMISIONES</code></td><td>tabla dinámica</td><td>Suma de <code>Comision</code> con filtro <code>FILTRO = COMISIONA</code>. Filas: Puesto → Línea comercial → Nombre. Columnas: Contado, Crédito, Letras, Total. Este es el monto a pagar.</td></tr>
+              <tr><td><code>Detalle1</code> y <code>Detalle2</code></td><td>miles</td><td>Resultado de hacer doble clic en la tabla dinámica. No calculan; son una foto del detalle de una celda.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h4>3. Las fórmulas que producen la comisión</h4>
+        <p>La clave de búsqueda del porcentaje es <code>Línea Comercial Zona</code> (columna A de la tabla, por ejemplo <code>PETMEDICA/NORTE Y NOR ORIENTE</code>). El monto sale de esa fila. El nombre del jefe se busca por el nombre del representante, y Excel se queda con la primera coincidencia. En la tabla actual cada representante tiene una sola jerarquía, así que el nombre coincide; si un representante cubriera dos zonas con jefes distintos, el nombre quedaría mal y el monto seguiría bien.</p>
+        <pre><code>CONTADO y CREDITO
+  Comision_rol = %_rol(zona) × Subtotal_x_Linea
+
+LETRAS
+  Comision_rol = %_rol(zona) × (Subtotal_x_Linea / Cant_LT)
+
+Cant_LT = letras totales de la factura, no las pagadas en el mes.</code></pre>
+        <p><code>Subtotal x Linea</code> del libro es el subtotal del producto sin IGV. Se cruzó con el reporte de facturas: 2.399 filas coinciden con <code>Subtotal X Producto</code> y ninguna con <code>Base para el cálculo</code>. El libro de pago no usa la base prorrateada que el reporte SEP ya calculó.</p>
+        <p>Cuando la factura está pagada completa, <code>Monto Pagado / 1,18</code> es igual al subtotal de la factura, y las dos lecturas dan el mismo número. Por eso el ejemplo de agosto (<code>F F01-00007214</code>, pagada al 100%) coincide con el prorrateo y también con <code>% × subtotal</code>. En un pago parcial, el libro de setiembre sigue multiplicando el subtotal entero: 145 filas parciales están en <code>NO COMISIONA</code> y 8 siguen en <code>COMISIONA</code>.</p>
+        <p>En letras, dividir entre <code>Cant LT</code> reparte la línea en partes iguales. <code>Cant LT</code> coincide con <code>Letras Totales</code> del reporte en las 6.192 filas cruzadas. Si en el mes se pagan 2 de 11 letras, entran 2 filas y el mes paga 2/11 de la línea. Si las letras fueran de montos distintos, esta división por cantidad no pesa el valor de cada letra.</p>
+        <pre><code>Factura F F01-00007705, zona PET NUTRISCIENCE/LIMA NORTE Y NORTE DEL PAÍS
+  Subtotal x Linea = 75,66   (factura pagada completa)
+  Representante Sharon, 3%     →  75,66 × 0,03 = 2,27
+  Gerente, 2%                  →  75,66 × 0,02 = 1,51
+  La fila de PET NUTRISCIENCE tiene el 2% y el nombre de gerente vacío.
+  El BUSCARV devuelve 0. Esos 1,51 quedan sin persona.
+
+Letra 202603174, factura F F01-00006938, 6 letras
+  Subtotal x Linea = 1.360,00   zona PETMEDICA/NORTE Y NOR ORIENTE
+  Base de esa letra = 1.360 / 6 = 226,67
+  Representante 0,65% → 1,47    Jefe técnico 0,12% → 0,27
+  Jefe comercial 0,15% → 0,34   Gerente 0,20% → 0,45</code></pre>
+
+        <h4>4. Qué entra a la suma y qué se queda afuera</h4>
+        <p>La columna <code>FILTRO</code> (<code>COMISIONA</code> / <code>NO COMISIONA</code>) es un valor pegado, no una fórmula. En <code>CONTADO - CREDITO</code> hay 1.814 filas que comisionan (1.496 contado y 318 crédito) y 590 que no. En <code>LETRAS</code> hay 4.645 que comisionan y 1.630 que no.</p>
+        <p>En letras la marca es casi mecánica (6.273 de 6.275 filas): queda en <code>NO COMISIONA</code> si el impuesto es <code>TTG_BONIFICACION</code>, si el estado es <code>Protestado</code>, si la línea es AVIVET, GENVET, OTROS o está vacía, o si los días de atraso pasan de 30. <code>Descuento</code> y <code>Cartera</code> sí comisionan cuando el resto de la fila pasa esos filtros. En contado y crédito la misma lectura explica 2.270 de 2.404 filas; las otras 134 (AVIVET y facturas concretas de PETMEDICA, por ejemplo <code>F F01-00007698</code>) están marcadas a mano, con IGV y sin atraso.</p>
+        <p><code>CONSOLIDADO</code> suma S/ 77.886,13 en filas <code>COMISIONA</code>. La tabla dinámica muestra <strong>S/ 74.710,24</strong> (contado S/ 39.382,96, crédito S/ 6.727,32, letras S/ 28.599,96), en 25 personas visibles. La diferencia son tres exclusiones de la propia dinámica:</p>
+        <ul>
+          <li><strong>S/ 3.076,36</strong> a nombre <code>0</code>: el 2% de gerente de PET NUTRISCIENCE, sin persona en la tabla de porcentajes. El monto se calcula y la dinámica oculta el nombre.</li>
+          <li><strong>S/ 98,75</strong> de Chamán Comotto (gerente de EQUESTRIA y de AGROVET suelto), oculto en la dinámica.</li>
+          <li><strong>S/ 0,79</strong> en una línea en blanco, también oculta.</li>
+        </ul>
+        <p>Dentro de los S/ 74.710,24, por puesto: representantes S/ 31.280,95, jefes comerciales S/ 28.701,96, gerentes S/ 9.533,17 y jefes técnicos S/ 5.194,16. Ríos Germán cobra dos veces, como gerente de PETMEDICA (S/ 4.981,52) y de INTERPET (S/ 398,90).</p>
+
+        <div class="status-banner status-warn">
+          <div>
+            <strong>Dos fragilidades del libro, que el TO-BE no debe copiar.</strong> <code>CONSOLIDADO</code> es una foto: si cambia un porcentaje, <code>CONTADO - CREDITO</code> y <code>LETRAS</code> se recalculan, y la tabla dinámica sigue mostrando el consolidado viejo hasta que alguien lo vuelva a armar. Y un porcentaje sin nombre (el gerente de PET NUTRISCIENCE) produce plata que la dinámica esconde en vez de avisar. La fórmula que automatiza el sistema sigue siendo el prorrateo ya adoptado en <a href="#reglas-negocio">Reglas de negocio</a>, no el atajo <code>% × subtotal</code> de este libro. El encaje con la arquitectura está en <a href="#arquitectura-confirmacion">Arquitectura: qué confirma este flujo</a>.
+          </div>
+        </div>
+
+        <h3>Canal Internacional</h3>
+        <p>El procedimiento de extracción de facturas es análogo al de Nacional, pero el cálculo y la ruta de aprobación son distintos:</p>
+        <ul>
+          <li>El <strong>Supervisor de Proyectos de Finanzas</strong> calcula directamente la comisión de cada vendedor aplicando una <strong>matriz de porcentajes fijos por vendedor y línea comercial</strong> (AGROVET / PETMEDICA / AVIVET) — ver la matriz real en <a href="#reglas-negocio">Reglas de negocio confirmadas</a>. Nacional también usa una matriz de porcentajes, con 4 roles y clave de zona; el recorrido de archivos está en <a href="#as-is-flujo-nacional">el flujo de setiembre</a>.</li>
+          <li>En los últimos meses se han ido agregando <strong>letras también en Internacional</strong>, aunque hoy representan menos del 5% de los casos (confirmado: 1,9% de las facturas internacionales del ciclo analizado tienen planilla de letras asociada).</li>
+          <li><strong>El cálculo NO pasa por Dirección Comercial.</strong> El Supervisor lo envía directamente a la <strong>Gerencia de Ventas Internacional</strong> para su revisión y aprobación, y de ahí pasa a RRHH.</li>
+        </ul>
+
+        <h3>Diagrama consolidado del proceso manual (2 personas en Nacional, ruta distinta en Internacional)</h3>
+        <div class="mermaid-wrap">
+          <pre class="mermaid">
+flowchart TB
+  subgraph nacional ["Canal NACIONAL (PEN)"]
+    N1["Supervisor Finanzas:\ndias 8-10 del mes siguiente\nextrae 5 reportes de Odoo\ny hace 1er calculo del mes anterior"]
+    N2["Jefa de Aplicaciones:\ndias 11-15\nprocesa y valida el calculo"]
+    N3["Direccion Comercial:\nhasta el dia 20\nconfirma segun giro de negocio"]
+    N4["RRHH:\nrecibe reporte final\npara pago en nomina"]
+    N1 --> N2 --> N3 --> N4
+  end
+
+  subgraph internacional ["Canal INTERNACIONAL (USD) - ciclo 21 a 22 del mes siguiente"]
+    I1["Supervisor Finanzas:\nextrae reportes y calcula\ncon matriz de % por vendedor\ny linea comercial"]
+    I2["Gerencia de Ventas\nInternacional:\nrevisa y aprueba\n(NO pasa por Direccion Comercial)"]
+    I3["RRHH:\nrecibe reporte final\npara pago en nomina"]
+    I1 --> I2 --> I3
+  end
+
+  style N1 fill:#fef3c7
+  style I1 fill:#fef3c7
+  style N2 fill:#dbeafe
+  style I2 fill:#dbeafe
+          </pre>
+        </div>
+        <p style="font-size:0.85rem;color:var(--text-muted);">En amarillo: el Supervisor de Proyectos de Finanzas, punto único de falla en ambos canales (extrae y hace el primer cálculo). En azul: el segundo punto único de falla — Jefa de Aplicaciones en Nacional, Gerencia de Ventas Internacional en Internacional. Nótese que Internacional nunca pasa por Dirección Comercial.</p>
+      </section>
+
+      <!-- CALENDARIO -->
+      <section id="calendario" class="audience-business">
+        <span class="audience-tag tag-biz">Audiencia: Negocio</span>
+        <h2>Calendarios por canal (periodos distintos y monedas distintas)</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Canal</th><th>Moneda</th><th>Corte / periodo</th><th>Hitos del calendario actual</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Nacional</strong></td>
+                <td>PEN (soles)</td>
+                <td>Mensual, mes calendario</td>
+                <td>
+                  Día 8-10 del mes siguiente: Supervisor de Proyectos de Finanzas extrae y hace el 1er cálculo del mes anterior.<br>
+                  Día 11-15: Jefa de Aplicaciones procesa y valida el cálculo.<br>
+                  Hasta el día 20: Dirección Comercial confirma y entrega a RRHH.
+                </td>
+              </tr>
+              <tr>
+                <td><strong>Internacional</strong></td>
+                <td>USD (dólares)</td>
+                <td>Del 21 de un mes al 22 del mes siguiente</td>
+                <td>
+                  Ciclo desplazado respecto a Nacional; no coincide con el mes calendario ni con el corte de Nacional.<br>
+                  Supervisor de Proyectos de Finanzas extrae y calcula con la matriz de % por vendedor/línea.<br>
+                  <strong>Aprueba Gerencia de Ventas Internacional</strong> (no Dirección Comercial) y entrega a RRHH.
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="status-banner status-info">
+          <div>
+            <strong>Implicación de diseño:</strong> el sistema no puede asumir "un periodo = un mes calendario" para ambos canales. El modelo de datos debe tratar <code>fecha_corte_inicio</code> / <code>fecha_corte_fin</code> como configurables por canal (ver <a href="#modelo-datos">tabla <code>periodos_comision</code></a>), no como una constante de mes.
+          </div>
+        </div>
+      </section>
+
+      <!-- DOLORES -->
+      <section id="dolores" class="audience-business">
+        <span class="audience-tag tag-biz">Audiencia: Negocio</span>
+        <h2>Dolores actuales y su causa raíz</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Dolor reportado</th><th>Causa raíz (verificada o inferida)</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>El proceso es manual y demora ~1 día por corrida</td><td>5 reportes de Odoo se descargan y cruzan a mano en Excel, sin automatización de extracción ni transformación.</td></tr>
+              <tr><td>2</td><td>El cálculo depende de 2 personas en serie; si faltan, nadie más puede hacerlo</td><td>El Supervisor de Proyectos de Finanzas hace la extracción y el 1er cálculo; la Jefa de Aplicaciones lo procesa y valida. Las reglas ya están documentadas en este PRD (ver Evidencia), pero hoy viven en Excel sin control de versiones ni un tercer backup capacitado para ejecutarlas.</td></tr>
+              <tr><td>3</td><td>Descarga, transformación y carga manuales generan errores</td><td>Sin ETL automatizado; cada cruce Excel es una oportunidad de error humano (fórmulas, copy-paste, filtros olvidados).</td></tr>
+              <tr><td>4</td><td>Pagos indebidos</td><td>La casuística de contado / pago adelantado (verificada: 241 de 794 facturas de contado tuvieron pago con fecha anterior a la factura) se maneja a mano y es fácil de perder o duplicar.</td></tr>
+              <tr><td>5</td><td>Cierres contables o fechas de corte retrasados</td><td>El proceso secuencial de 3 personas (Aplicaciones → Dirección Comercial → RRHH) no tiene paralelismo ni SLA forzado por sistema.</td></tr>
+              <tr><td>6</td><td>Falta de visibilidad desde Dirección Comercial</td><td>No existe un dashboard; Dirección Comercial solo ve el resultado final en Excel, sin trazabilidad de cómo se calculó.</td></tr>
+              <tr><td>7</td><td>Crecimiento no escalable</td><td>Cada vendedor o cliente nuevo añade más filas a cruzar manualmente; el esfuerzo crece linealmente con el volumen de negocio.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- EVIDENCIA ODOO -->
+      <section id="evidencia-odoo" class="audience-business">
+        <span class="audience-tag tag-biz">Audiencia: Negocio y Técnicos</span>
+        <h2>Evidencia verificada en Odoo (conexión real, solo lectura)</h2>
+        <p>Toda la información de esta sección se obtuvo ejecutando consultas de solo lectura contra el Odoo productivo de Agrovet Market (servidor <code>amah.odoo.com</code>, Odoo <strong>16.0+e</strong>), usando el usuario de <code>.env</code>. El script reproducible es <code>investigation/investigacion_comisiones_odoo.py</code>.</p>
+
+        <h3>Mapeo de los 5 reportes manuales a Odoo</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Reporte manual (AS-IS)</th><th>Modelo Odoo</th><th>Campos clave verificados</th></tr></thead>
+            <tbody>
+              <tr><td>Pago de facturas</td><td><code>account.move</code> (<code>out_invoice</code>) + <code>invoice_payments_widget</code></td><td><code>name</code>, <code>partner_id</code>, <code>amount_total</code>, <code>payment_state</code></td></tr>
+              <tr><td>Líneas de producto por factura (~28 columnas)</td><td><code>account.move.line</code> (líneas tipo <code>product</code>)</td><td><code>product_id</code>, <code>quantity</code>, <code>price_unit</code>, <code>discount</code>, <code>price_subtotal</code>, <code>price_total</code></td></tr>
+              <tr><td>Pago de letras</td><td><code>account.move</code> (<code>out_bill</code>) + <code>invoice_payments_widget</code></td><td><code>l10n_latam_boe_number</code>, <code>payment_state</code>, <code>state</code> (ciclo: to_accept → collection/portfolio/discount → protested)</td></tr>
+              <tr><td>Líneas de factura relacionadas a letras</td><td><code>account.bill.form</code> → <code>invoice_ids</code> / <code>move_ids</code></td><td><code>bills_qty</code>, <code>total_bills</code>, <code>total_invoices</code></td></tr>
+              <tr><td>Total de letras emitidas a la fecha</td><td><code>account.move</code> (<code>out_bill</code>), agregado por fecha</td><td><code>date</code>, <code>amount_total</code>, <code>state</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Campos de clasificación por canal / vendedor / línea comercial</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Modelo</th><th>Campo</th><th>Tipo</th><th>Uso en comisiones</th></tr></thead>
+            <tbody>
+              <tr><td><code>account.move</code></td><td><code>sales_channel_id</code></td><td>many2one → <code>agr.sales.channel</code></td><td>Discrimina NACIONAL (1) / INTERNACIONAL (2) / DIGITAL (3)</td></tr>
+              <tr><td><code>account.move</code></td><td><code>sub_channel_id</code></td><td>many2one → <code>agr.sales.channel.sub</code></td><td>20 sub-canales (marketplaces, ecommerce); hoy vacío en las facturas Nacional/Internacional muestreadas</td></tr>
+              <tr><td><code>account.move</code></td><td><code>sale_type_id</code></td><td>many2one → <code>agr.sales.type</code></td><td>PDV, PPR, TTG, PVE — define exclusiones (ver reglas de negocio)</td></tr>
+              <tr><td><code>account.move</code></td><td><code>invoice_user_id</code></td><td>many2one → <code>res.users</code></td><td>Vendedor nominal de la factura (requiere regla de atribución, ver dolor #6)</td></tr>
+              <tr><td><code>account.move</code></td><td><code>team_id</code></td><td>many2one → <code>crm.team</code></td><td>Equipo comercial; 14 equipos, cada uno con líder (<code>user_id</code>)</td></tr>
+              <tr><td><code>account.move</code></td><td><code>invoice_payment_term_id</code></td><td>many2one → <code>account.payment.term</code></td><td>116 condiciones de pago reales en Odoo; clasificadas por <code>payment_type</code> (contado/crédito)</td></tr>
+              <tr><td><code>product.template</code></td><td><code>commercial_line_national_id</code> / <code>commercial_line_international_id</code> / <code>line_commercial_id</code></td><td>many2one → <code>agr.sales.comercial.division</code></td><td>9 líneas comerciales (AGROVET, PETMEDICA, AVIVET, PET NUTRISCIENCE, OTROS, GENVET, INTERPET, MARCA BLANCA, EQUESTRIA)</td></tr>
+              <tr><td><code>sale.order</code></td><td><code>is_national_seller</code> / <code>is_international_seller</code></td><td>boolean</td><td>Marca si el pedido de origen fue vendido por un vendedor nacional o internacional</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Volumetría real por canal (periodo de referencia analizado)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Canal</th><th>Periodo</th><th>Facturas posted</th><th>Vendedores distintos</th><th>Moneda</th><th>% con planilla de letras</th></tr></thead>
+            <tbody>
+              <tr><td>Nacional</td><td>Septiembre 2026 (mes calendario)</td><td>897</td><td>22</td><td>99,9% PEN</td><td>10,0% (90 de 897)</td></tr>
+              <tr><td>Internacional</td><td>21-ago a 22-sep 2026 (ciclo real)</td><td>53</td><td>6</td><td>100% USD</td><td>1,9% (1 de 53)</td></tr>
+              <tr><td>Digital <em>(fuera de alcance v1)</em></td><td>Septiembre 2026</td><td>330</td><td>1</td><td>100% PEN</td><td>0%</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="status-banner status-warn">
+          <div>
+            <strong>Importante — estos conteos son de extracción, no de transformación:</strong> incluyen boletas, TTG, Nota de Crédito y todo lo demás que luego se excluye en la etapa de transformación (ver <a href="#reglas-negocio">Reglas de negocio</a>). Al revisar los tipos de documento por canal (incluyendo <code>out_refund</code>) se encontró que <strong>el 45,8% de los documentos Nacional de la muestra son Boletas</strong> (422 de 922: 473 Facturas, 422 Boletas, 18 NC, 7 NC-Boleta, 2 ND) — un hallazgo nuevo que reduce de forma importante el volumen realmente comisionable de lo que este PRD reportaba antes como "facturas posted". En Internacional la muestra no mostró boletas (48 de 56 son Facturas, 5 ND, 3 NC).</div>
+        </div>
+
+        <h3>Hallazgo crítico: la fecha efectiva de cobro NO es la fecha del pago</h3>
+        <p>Se verificó directamente con <code>account.partial.reconcile</code> que la fecha que aparece en el widget de pagos de una factura puede ser <strong>anterior</strong> a la fecha de la propia factura (caso de "100% PAGO ADELANTADO"), mientras que el campo <code>max_date</code> de la conciliación contable siempre refleja la fecha correcta de cierre contable:</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Factura</th><th>Fecha factura</th><th>Fecha del pago (widget)</th><th><code>partial_reconcile.max_date</code></th><th>¿Comisiona?</th></tr></thead>
+            <tbody>
+              <tr><td>F F01-00007706</td><td>2026-09-30</td><td>2026-10-05 (mes siguiente)</td><td>2026-10-05</td><td>Sí — verificado <code>move_type='entry'</code> vía BCP/Interbank, no NC</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Sobre una muestra de 1.313 facturas Nacional (15-ago a 16-oct-2026): de las 794 facturas en condición "contado", <strong>241 (30,4%)</strong> tuvieron al menos un pago con fecha anterior a la factura, y 5 tuvieron el pago registrado en un mes calendario distinto al de la factura. Esto confirma, con datos reales, la casuística que describiste como "complicada" para condición contado / 100% pago adelantado.</p>
+
+        <div class="status-banner status-warn">
+          <div>
+            <strong>Corrección importante sobre los ejemplos de esta tabla:</strong> una versión anterior de este PRD incluía <code>F F01-00007416</code> y <code>F F01-00007452</code> como ejemplos válidos de "pago adelantado". Al añadir la verificación de <code>move_type</code> exacto de cada conciliación al script de evidencia (no solo el nombre del diario), se descubrió que <strong>ambas son 100% Nota de Crédito</strong> (<code>move_type='out_refund'</code>: 7 de 7 conciliaciones en la primera, 3 de 3 en la segunda) — ninguna de las dos es comisionable. Solo <code>F F01-00007706</code> quedó verificada como un caso real de pago adelantado que sí comisiona (<code>move_type='entry'</code>, vía diarios de banco reales). Lección para el ETL, ahora codificada como <code>seccion_5_evidencia_conciliacion</code> en el script: <strong>nunca inferir el origen de una conciliación solo por el nombre del diario contable — siempre verificar el <code>move_type</code> del asiento</strong>, porque un diario de ventas (<code>F110</code>) puede alojar tanto facturas como Notas de Crédito.</div>
+        </div>
+
+        <div class="status-banner status-info">
+          <div>
+            <strong>Regla recomendada:</strong> usar <code>account.partial.reconcile.max_date</code> como la "fecha efectiva de cobro" en el ETL, en vez de la fecha de la factura o la fecha cruda del widget de pago. Esto resuelve de forma automática y consistente la casuística de contado/pago adelantado que hoy se revisa caso por caso a mano.
+          </div>
+        </div>
+
+        <h3>Letra → Planilla → Factura → Pedido: la trazabilidad SÍ llega hasta el número de pedido</h3>
+        <p>Corrección sobre una versión anterior de este PRD: no es que "no se pueda" trazar la letra hasta el pedido — la cadena completa <strong>sí llega hasta el número de pedido/OV</strong>, solo que requiere 2 saltos, no 1. Se verificó con un ejemplo real:</p>
+        <pre><code>Letra "LT RCB-00020013" (BOE 202604092)
+  → invoice_origin PROPIO de la letra = "FLC-02726"  (es el nombre de la Planilla, no el pedido)
+  → account.bill.form "FLC-02726".invoice_ids → Factura "F F01-00007792"
+  → Factura.invoice_origin = "S24241"   ← este SÍ es el número de pedido/OV real</code></pre>
+        <p>Dato adicional útil para el ETL: el campo <code>invoice_origin</code> de la propia letra <strong>no está vacío</strong> (390 de 500 letras muestreadas, 78%, lo tienen poblado) y contiene directamente el nombre de la Planilla (ej. <code>FLC-02726</code>) — se puede usar como acceso directo a la planilla sin pasar por <code>bill_form_id</code>, aunque el campo relacional sigue siendo la fuente más confiable. Lo que <strong>no existe</strong> es un campo de canal/tipo de venta propio en la letra (<code>sales_channel_id</code>, <code>sale_type_id</code> vacíos) — eso sí hay que heredarlo de la factura al final de la cadena.</p>
+
+        <h3>Vendedores "genéricos": se descartan directamente en ambos canales, sin regla de atribución</h3>
+        <p>En septiembre 2026, el 49,2% de las facturas Nacional (441 de 897) quedó bajo los equipos <strong>MARKETING</strong> (227, 25,3%) y <strong>OFICINA</strong> (214, 23,9%) — equipos administrativos, no de venta directa. Confirmado con el solicitante: estas facturas <strong>no son comisionables</strong> y se descartan por completo del cálculo (filtro simple por <code>team_id</code>, no una regla de reatribución a otro vendedor). <strong>La regla aplica igual en Internacional</strong>: en el ciclo analizado apareció el equipo <strong>MARKETING INT</strong> (2 de 53 facturas) — mismo criterio de exclusión, variando solo el nombre del equipo según el canal. El filtro del ETL debe matchear por patrón (<code>team_id.name ILIKE 'MARKETING%'</code> o <code>= 'OFICINA'</code>), no por una lista fija de nombres por canal.</p>
+
+        <h3>Diarios contables excluidos del cálculo (hallazgo nuevo, confirmado en Odoo)</h3>
+        <p>Se verificó en <code>account.journal</code> (dominio <code>type='sale'</code>) y se cruzó contra la volumetría real de septiembre 2026 que los diarios <strong>"Facturas Sunat"</strong> (código <code>001</code>) y <strong>"F060 (Venta exterior)"</strong> (código <code>060</code>) tienen volumen no trivial en ambos canales:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Diario excluido</th><th>Código</th><th>Nacional (sep-2026)</th><th>Internacional (ciclo 21ago-22sep)</th></tr></thead>
+            <tbody>
+              <tr><td>Facturas Sunat</td><td><code>001</code></td><td>87 de 897 (9,7%)</td><td>6 de 53 (11,3%)</td></tr>
+              <tr><td>F060 (Venta exterior)</td><td><code>060</code></td><td>0</td><td>4 de 53 (7,5%)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Es un volumen demasiado alto para ignorar: el ETL debe filtrar explícitamente por <code>account.move.journal_id.code NOT IN ('001', '060')</code> (o el nombre equivalente), no solo por canal/tipo de venta.</p>
+
+        <h3>Cómo distinguir "pagado con Nota de Crédito" de "pagado con transferencia o saldo a favor" (hallazgo nuevo, confirmado en Odoo)</h3>
+        <p>Confirmaste que una factura pagada mediante una Nota de Crédito (NC) <strong>no genera comisión</strong>, pero sí la genera si se pagó por transferencia o aplicación de un saldo a favor. Se verificó en Odoo cómo distinguir ambos casos de forma 100% programática, sin depender de texto libre: cada conciliación en <code>invoice_payments_widget.content[].move_id</code> apunta al asiento que canceló la factura. Sobre una muestra de 400 facturas Nacional pagadas (jul-sep 2026), con 286 asientos de pago distintos:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Origen de la conciliación</th><th>Cómo se identifica</th><th>Ocurrencias en la muestra</th><th>¿Comisiona?</th></tr></thead>
+            <tbody>
+              <tr><td>Nota de Crédito</td><td><code>move_type = 'out_refund'</code> (diario asociado: <code>F110 Venta nacional</code>)</td><td>19 (6,6%)</td><td><strong>No</strong></td></tr>
+              <tr><td>Transferencia bancaria</td><td><code>journal_id</code> = diario de banco (BCP, Interbank, Continental, Scotiabank)</td><td>180 (62,9%)</td><td>Sí</td></tr>
+              <tr><td>Aplicación de saldo a favor / anticipo</td><td><code>journal_id.name = 'Aplicación'</code></td><td>20 (7,0%)</td><td>Sí</td></tr>
+              <tr><td>Traspaso contable Factura → Letra</td><td><code>journal_id.name = 'Transitory receivable and payable'</code> (código <code>TRP</code>), <code>move_type='entry'</code></td><td>67 (23,4%)</td><td><strong>No</strong> (confirmado: no es cobro real, ver detalle abajo)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:0.85rem;color:var(--text-muted);">Los 286 asientos de la muestra suman exacto: 19 + 180 + 20 + 67 = 286. El diario "F110 (Venta nacional)" no es una categoría aparte: es el mismo diario donde Odoo registra las 19 Notas de Crédito (misma fila que "Nota de Crédito" arriba) — una versión anterior de este PRD las contaba por separado, lo que generaba confusión sobre a qué refería cada fila.</p>
+        <p>La regla de exclusión queda: <strong>si la única conciliación (o todas las conciliaciones) de la factura provienen de un asiento <code>move_type = 'out_refund'</code>, se excluye del cálculo</strong>; si hay una mezcla de NC + transferencia, solo se comisiona la porción pagada por transferencia/aplicación de saldo, nunca la porción cubierta por la NC.</p>
+
+        <h3>Evidencia del proceso manual real: los 9 Excel de <code>Proceso_Manual/</code></h3>
+        <p>Revisamos (solo lectura, con <code>openpyxl</code>) los 9 archivos Excel reales que hoy produce y consume el proceso de septiembre 2026, tanto Nacional como Internacional. Esto permitió confirmar, con fórmulas de celda reales (no supuestos), exactamente cómo se calcula hoy la base de comisión.</p>
+
+        <h4>Fórmula real de la base de cálculo (Nacional) — confirmada en <code>REPORTE DE COMISIONES NACIONAL FT/LT -SEP-26.xlsx</code></h4>
+        <p>Ambos reportes (Facturas y Letras) ya traen columnas calculadas que confirman, con un ejemplo real, la fórmula exacta:</p>
+        <pre><code>Monto_Pagado_Sin_IGV = Monto_Pagado / 1.18
+Base_para_el_calculo (por linea de producto) = Monto_Pagado_Sin_IGV × (Subtotal_X_Producto_linea / Sub_Total_General_factura)
+
+# Ejemplo real verificado (factura B B01-00011058):
+#   Monto Pagado = 383  →  Monto.Pagado Sin IGV = 383 / 1.18 = 324.576271...
+#   Subtotal X Producto (linea) = 72.03  |  Sub Total General (factura) = 324.57
+#   Base para el calculo = 324.576271 × (72.03 / 324.57) = 72.035290...  ✔ coincide con la celda real</code></pre>
+        <p>El reporte Nacional también incluye <code>Dias de Diferencia</code> (puede ser negativo, ej. <code>-2</code>, <code>-1</code>, <code>-90</code> en la muestra real — confirma de forma independiente el hallazgo de "fecha de pago anterior a la factura"), <code>Diferencia de Pago</code> y <code>Motivo de Diferencia</code> (campo de texto libre donde hoy el analista anota a mano por qué el monto pagado no coincide con el total — ej. <code>"OK"</code> en el caso sin diferencia). Este campo de juicio manual es exactamente el tipo de regla que el motor de reglas debe codificar explícitamente en el TO-BE.</p>
+
+        <h4>Fórmula real de letras por periodo — confirmada en <code>REPORTE DE COMISIONES NACIONAL LT -SEP-26.xlsx</code></h4>
+        <p>Esto confirma, con una fórmula de celda real, exactamente lo que describiste: la comisión de letras se reconoce sobre las letras pagadas <strong>en el periodo</strong>, no sobre un acumulado hasta completar el total:</p>
+        <pre><code>Monto_Pagado_factura_en_el_periodo = Total_General_factura × (Letras_Pagadas_en_el_periodo / Letras_Totales_factura)
+
+# Ejemplo real verificado (factura F F01-00007219, periodo sep-2026):
+#   Letras Pagadas (este periodo) = 2   |   Letras Totales (de la factura) = 11
+#   Total General de la factura = 244,075.20
+#   Monto Pagado (este periodo) = 244,075.20 × (2 / 11) = 44,377.31  ✔ coincide con la celda real
+#   Luego se aplica el mismo prorrateo sin IGV por linea de producto que en Facturas.</code></pre>
+        <p>Cuando en un periodo posterior se paguen más letras de esa misma factura (ej. 3 letras más), ese periodo siguiente reconoce comisión sobre esas 3 nuevas letras — nunca se "retiene" la comisión esperando que la factura termine de pagarse al 100%.</p>
+
+        <h4>Fórmula real de prorrateo del pago por artículo — confirmada en <code>Reporte Comisiones Internacionales - ODOO -SEPTIEMBRE.xlsx</code></h4>
+        <pre><code>PAGO_POR_ARTICULO_USD (por linea) = PAGO_USD × (MONTO_VENTA_linea_US$ / TOTAL_POR_FACTURA_USD$)
+BASE_PARA_CALCULO_COMISIONES_S/ = PAGO_POR_ARTICULO_USD × TC_FECHA_DE_PAGO   (equivalente en soles, para control contable)
+
+# Ejemplo real verificado (factura F F15-00000511, linea PETMEDICA):
+#   Monto venta linea = 16,051.20 USD  |  Total factura = 63,023 USD  |  Pago USD = 58,235
+#   TC fecha de pago = 3.368 (tipo de cambio del dia 2026-09-18, mismo dia del pago)
+#   Pago por articulo USD = 58,235 × (16,051.20 / 63,023) = 14,831.75  ✔ coincide con la celda real
+#   Base para calculo en soles = 14,831.75 × 3.368 = 49,953.35  ✔ coincide con la celda real</code></pre>
+        <p>Esto confirma de forma independiente tu respuesta: "el tipo de cambio se extrae de un campo y se utiliza la misma que el día que pagaron" — el campo real en el Excel se llama <code>TC FECHA DE PAGO</code> y coincide exactamente con el tipo de cambio registrado para esa fecha en el reporte de pagos (<code>PAGO FT INTERNACIONAL - SEP 2026.xlsx</code>).</p>
+
+        <div class="status-banner status-info">
+          <div>
+            <strong>Evidencia adicional de juicio manual (a codificar en el TO-BE):</strong> la hoja <code>SEPTIEMBRE</code> de <code>PAGO FT INTERNACIONAL - SEP 2026.xlsx</code> marca manualmente algunos pagos pequeños (entre USD 20 y USD 90) con la etiqueta <code>"NO VA"</code> en una columna de comentarios, excluyéndolos del cálculo a criterio del analista. Hoy no existe una regla escrita que defina cuándo aplica esta exclusión (¿diferencias de redondeo de tipo de cambio?, ¿comisiones bancarias?) — queda como pregunta abierta de Fase 0.
+          </div>
+        </div>
+
+        <h3>Matriz real de porcentajes de comisión — Internacional (ciclo 20-ago al 21-sep 2026)</h3>
+        <p>Confirmada en la hoja <code>COMISIONES</code> de <code>COMISION EXTERIOR 20 AGOSTO 2026 AL 20 SEPTIEMBRE 2026.xlsx</code>. Cada colaborador tiene un porcentaje fijo distinto por línea comercial:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Colaborador</th><th>AGROVET</th><th>PETMEDICA</th><th>AVIVET</th></tr></thead>
+            <tbody>
+              <tr><td>Ariana Carmona</td><td>0,010%</td><td>0,015%</td><td>0,020%</td></tr>
+              <tr><td>Ivonne Panta</td><td>0,010%</td><td>0,015%</td><td>0,020%</td></tr>
+              <tr><td>Sandra Meneses</td><td>0,080%</td><td>0,120%</td><td>0,160%</td></tr>
+              <tr><td>Luis Chávez</td><td>0,000%</td><td>0,500%</td><td>0,000%</td></tr>
+              <tr><td>Vanessa Parker</td><td>0,020%</td><td>0,030%</td><td>0,040%</td></tr>
+              <tr><td>Umberto Calderón</td><td>0,160%</td><td>0,240%</td><td>0,320%</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Totales reales de la base ("PAGO POR ARTICULO USD") por línea comercial en ese ciclo:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Línea</th><th>Total pagado por artículo (USD)</th></tr></thead>
+            <tbody>
+              <tr><td>AGROVET</td><td>808.065,28</td></tr>
+              <tr><td>PETMEDICA</td><td>1.074.864,36</td></tr>
+              <tr><td>AVIVET</td><td>132.678,72</td></tr>
+              <tr><td><strong>Total general</strong></td><td><strong>2.015.608,36</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Comisión final calculada ese ciclo (hoja <code>DETALLE DE COBRANZA</code>, resumen por colaborador):</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Clientes para comisión</th><th>Colaborador</th><th>AGROVET</th><th>PETMEDICA</th><th>AVIVET</th><th>Total USD</th></tr></thead>
+            <tbody>
+              <tr><td>SI (clientes asignados)</td><td>Vanessa Parker</td><td>161,61</td><td>322,46</td><td>53,07</td><td>537,14</td></tr>
+              <tr><td>SI (clientes asignados)</td><td>Ariana Carmona</td><td>80,81</td><td>161,23</td><td>26,54</td><td>268,57</td></tr>
+              <tr><td>SI (clientes asignados)</td><td>Ivonne Panta</td><td>-</td><td>2,20</td><td>-</td><td>2,20</td></tr>
+              <tr><td>SI (clientes asignados)</td><td>Luis Chávez</td><td>-</td><td>5.085,75</td><td>-</td><td>5.085,75</td></tr>
+              <tr><td>TODOS (cartera completa)</td><td>Sandra Meneses</td><td>646,45</td><td>1.289,84</td><td>212,29</td><td>2.148,58</td></tr>
+              <tr><td>TODOS (cartera completa)</td><td>Umberto Calderón</td><td>1.292,90</td><td>2.579,67</td><td>424,57</td><td>4.297,15</td></tr>
+              <tr><td colspan="5" style="text-align:right;"><strong>Total ciclo</strong></td><td><strong>12.339,38</strong></td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="status-banner status-warn">
+          <div>
+            <strong>Ambigüedad detectada, pendiente de confirmar en Fase 0:</strong> el reporte distingue colaboradores con clientes asignados explícitamente ("SI", marcados factura por factura en la columna de cada colaborador) de colaboradores que cobran sobre "TODOS" los clientes. Para Vanessa Parker y Ariana Carmona, su comisión final coincide casi exactamente con el total de línea completo × su porcentaje — lo que sugiere que sus clientes asignados cubren casi toda la línea ese ciclo, pero no es matemáticamente idéntico. <strong>El sistema debe implementar la base real (suma de "PAGO POR ARTICULO USD" de las facturas marcadas "SI" para ese colaborador, o el total completo de la línea si es "TODOS")</strong>, y debe validarse con el Supervisor que esta interpretación coincide con la intención de negocio antes de automatizarla.
+          </div>
+        </div>
+
+        <h3>Matriz real de comisiones — Nacional (confirmada: jerarquía de 4 roles por línea/zona)</h3>
+        <p>Se recibieron y revisaron (solo lectura) <code>Proceso_Manual/nacional/Porcentajes/Tabla de Comisiones.xlsx</code> y <code>Proceso_Manual/nacional/calculo_vendedores/COMISIONES 2026 AGOSTO.xlsx</code>. Esto resuelve por completo la pregunta que estaba pendiente ("aún no lo tengo"): <strong>Nacional usa la misma lógica de jerarquía fija por porcentaje que Internacional</strong>, pero con <strong>4 roles en vez de 1</strong> y con la clave de búsqueda a nivel de <strong>Línea Comercial + Zona</strong> (no solo línea comercial).</p>
+
+        <p>La tabla real tiene 27 combinaciones de Línea Comercial/Zona. Cada combinación define hasta 4 personas con su propio porcentaje fijo — <strong>Representante de Venta</strong>, <strong>Jefe Técnico</strong>, <strong>Jefe Comercial</strong> y <strong>Gerente</strong> — y algunos roles pueden quedar sin porcentaje asignado para ciertas líneas (ej. AVIVET no tiene Jefe Técnico; EQUESTRIA no tiene Representante de Venta con %):</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Línea Comercial/Zona</th><th>Representante</th><th>%</th><th>Jefe Técnico</th><th>%</th><th>Jefe Comercial</th><th>%</th><th>Gerente</th><th>%</th></tr></thead>
+            <tbody>
+              <tr><td>AGROVET/LIMA METROPOLITANA - SUR</td><td>Sánchez Champi, Kevin</td><td>0,500%</td><td>Espinoza Andrade, Jorge Luis</td><td>0,120%</td><td>Calderón Ojeda, Pedro Alejandro</td><td>1,250%</td><td>Bravo Pérez, Manuel Federico</td><td>0,200%</td></tr>
+              <tr><td>PETMEDICA/LIMA 1/ATREVIA</td><td>Gutiérrez Pacheco, Diego Alexander</td><td>0,350%</td><td>Arias Otoya, Erick Ronaldo</td><td>0,120%</td><td>Durán Nizama, Angelinne Kimberly</td><td>0,150%</td><td>Ríos Germán, Stefanny Marianella</td><td>0,200%</td></tr>
+              <tr><td>PETMEDICA/LIMA 1 (general, no Atrevia)</td><td>Gutiérrez Pacheco, Diego Alexander</td><td>0,650%</td><td>Arias Otoya, Erick Ronaldo</td><td>0,120%</td><td>Durán Nizama, Angelinne Kimberly</td><td>0,150%</td><td>Ríos Germán, Stefanny Marianella</td><td>0,200%</td></tr>
+              <tr><td>AVIVET/LIMA Y AREQUIPA</td><td>López Cadillo, John Edward</td><td>0,000%</td><td>—</td><td>—</td><td>López Cadillo, John Edward</td><td>0,000%</td><td>López Cadillo, John Edward</td><td>2,000%</td></tr>
+              <tr><td>EQUESTRIA/LIMA</td><td>Chamán Comotto, Eduardo Edgardo</td><td>— (sin %)</td><td>—</td><td>—</td><td>—</td><td>—</td><td>Chamán Comotto, Eduardo Edgardo</td><td>2,000%</td></tr>
+              <tr><td>OFICINA (equipo administrativo)</td><td>—</td><td>0,000%</td><td>—</td><td>0,000%</td><td>—</td><td>0,000%</td><td>—</td><td>0,000%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:0.85rem;color:var(--text-muted);">Tabla completa: 27 filas en <code>Tabla de Comisiones.xlsx</code>, cubriendo AGROVET (6 zonas), PETMEDICA-ATREVIA (4 zonas), PETMEDICA-GENERAL (4 zonas), AVIVET y AVIVET-AGROVET (2 zonas cada una), PET NUTRISCIENCE (2 zonas), INTERPET (4 zonas) y EQUESTRIA (1 zona).</p>
+
+        <p>El campo "Zona" se confirmó en Odoo como el catálogo real <code>agr.sales.comercial.division.zone</code> (27 registros, ej. <code>AGROVET/LIMA METROPOLITANA - SUR</code>, <code>PETMEDICA/LIMA 1</code>), accesible desde la factura vía <code>sale.order.line.line_commercial_zone_id</code> — el mismo campo que ya se había identificado para Internacional.</p>
+
+        <h4>Fórmula verificada con un ejemplo real (factura F F01-00007214, PETMEDICA/LIMA 2 Y CENTRO)</h4>
+        <pre><code>Base_linea = (Monto_Pagado / 1.18) × (Subtotal_x_Linea / Sub_Total_FT)
+Comision_rol = Base_linea × %_rol(linea_comercial, zona)
+
+# Datos reales: Monto Pagado=12,453.72 | Subtotal x Linea=730.95 | Sub Total FT=10,553.99
+# Base_linea = (12453.72/1.18) × (730.95/10553.99) = 10554.0 × 0.069265 = 731.0
+
+# Representante (Rojas Bernal, Zaida Carolina), % PETMEDICA/LIMA 2 Y CENTRO = 0.65%
+#   731.0 × 0.0065 = 4.751175   ✔ coincide EXACTO con la celda real
+# Jefe Técnico (Arias Otoya, Erick Ronaldo), % = 0.12%
+#   731.0 × 0.0012 = 0.87714    ✔ coincide EXACTO
+# Jefe Comercial (Durán Nizama, Angelinne Kimberly), % = 0.15%
+#   731.0 × 0.0015 = 1.096425   ✔ coincide EXACTO
+# Gerente (Ríos Germán, Stefanny Marianella), % = 0.20%
+#   731.0 × 0.002 = 1.4619      ✔ coincide EXACTO</code></pre>
+        <p>Para letras, la misma fórmula aplica usando <code>ValorLT</code> (el monto de esa letra específica ya reconocida en el periodo, consistente con la regla "letras pagadas en el periodo" confirmada antes) en vez de <code>Monto_Pagado</code>. Se verificó con un segundo ejemplo real (letra 202602736, AGROVET/LIMA METROPOLITANA - SUR) que las 4 comisiones (0,882 / 0,212 / 2,205 / 0,353) también coinciden exactamente con <code>ValorLT_sin_IGV × Subtotal/SubTotalFT × %_rol</code>.</p>
+        <p>Ese ejemplo de agosto está pagado al 100% (12.453,72 / 1,18 ≈ 10.554, igual al subtotal de la factura), así que el prorrateo y multiplicar el porcentaje por el subtotal de la línea dan el mismo número. El libro que produce el monto a pagar de setiembre no usa la columna <code>Base para el cálculo</code>: multiplica el porcentaje por el subtotal crudo de la línea y, en letras, divide entre la cantidad de letras. El recorrido completo está en <a href="#as-is-flujo-nacional">el flujo AS-IS de Nacional</a>. La regla que adopta el TO-BE sigue siendo este prorrateo, porque es el que ya calculan los reportes de SEP y el que cubre un pago parcial.</p>
+
+        <div class="status-banner status-info">
+          <div>
+            <strong>Confirma de forma independiente otro hallazgo ya documentado:</strong> el Excel real de Nacional trae su propia columna <code>Dias Atrasadas</code>, con valores negativos reales en la muestra (<code>-1</code>, <code>-3</code>, <code>-4</code>) para condición "100% PAGO ADELANTADO" — el mismo fenómeno de pago registrado antes de la fecha de factura, ahora confirmado también desde el lado de Nacional con datos de agosto 2026, no solo septiembre.
+          </div>
+        </div>
+
+        <p>El Excel también distingue 3 fuentes que se suman al total de cada persona: <strong>CONTADO</strong>, <strong>CRÉDITO</strong> y <strong>LETRAS</strong> (ver hoja <code>RESUMEN COMISIONES</code>), agrupadas por Gerente y por línea comercial — esta es la estructura más cercana a lo que probablemente espere recibir RRHH, aunque el formato exacto del archivo de salida sigue pendiente de confirmación.</p>
+
+        <h3>Plantillas reales de exportación manual desde Odoo</h3>
+        <p>Estas son las 3 plantillas de exportación configuradas hoy en Odoo (vista "Campos a exportar"), con sus campos técnicos exactos — insumo directo para diseñar las consultas del ETL:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Plantilla Odoo</th><th>Uso</th><th>Campos técnicos</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><code>Creditos_Comi_Nacional_Pagos</code></td>
+                <td>Pago de facturas Nacional</td>
+                <td><code>name</code>, <code>ref</code>, <code>date</code>, <code>partner_id</code>, <code>credit</code>, <code>amount_currency</code>, <code>move_name</code></td>
+              </tr>
+              <tr>
+                <td><code>Creditos_Reporte_Internacional_Comi_V1</code></td>
+                <td>Líneas de factura Internacional</td>
+                <td><code>invoice_line_ids/move_id/invoice_date</code>, <code>invoice_date_due</code>, <code>partner_id/vat</code>, <code>partner_id</code>, <code>invoice_origin</code>, <code>l10n_latam_document_type_id</code>, <code>move_name</code>, <code>price_unit</code>, <code>quantity</code>, <code>price_subtotal</code>, <code>price_total</code>, <code>amount_subtotal</code>, <code>amount_total</code>, <code>invoice_payment_term_id</code>, <code>product_id/display_name</code>, <code>commercial_line_international_id</code>, <code>invoice_user_id</code>, <code>team_id/user_id</code>, <code>line_commercial_zone_id/zone_id</code></td>
+              </tr>
+              <tr>
+                <td><code>Creditos_Pago_LE_CO_DES_CAR</code></td>
+                <td>Pago de letras (Cobranza, Descuento, Cartera)</td>
+                <td><code>full_reconcile_id/reconcile_date</code>, <code>bill_form_id/invoice_ids</code>, <code>move_id/l10n_latam_boe_number</code>, <code>full_reconcile_id/reconciled_line_ids</code>, <code>bill_form_id/partner_id</code>, <code>bill_form_id/state</code>, <code>line_ids/balance</code>, <code>bill_form_id/total_invoices</code>, <code>bill_form_id/bills_qty</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- GLOSARIO -->
+      <section id="glosario" class="audience-business">
+        <span class="audience-tag tag-biz">Audiencia: Negocio</span>
+        <h2>Glosario</h2>
+        <dl>
+          <dt>Letra de cambio (BOE)</dt>
+          <dd>Documento de crédito que respalda una factura con pago diferido. En Odoo es <code>account.move</code> con <code>move_type='out_bill'</code>, con ciclo de estados: por aceptar → cobranza/cartera/descuento → protestada.</dd>
+
+          <dt>Planilla de letras (<code>account.bill.form</code>)</dt>
+          <dd>Agrupador de letras asociadas a una o varias facturas de un mismo cliente; es el único puente para saber de qué factura (y por tanto de qué canal) proviene una letra.</dd>
+
+          <dt>Condición "100% PAGO ADELANTADO"</dt>
+          <dd>Término de pago de contado donde el cliente paga antes o alrededor de la emisión de la factura; su fecha de pago puede no coincidir con el mes de la factura.</dd>
+
+          <dt>Fecha efectiva de cobro</dt>
+          <dd>Fecha de conciliación contable (<code>account.partial.reconcile.max_date</code>) que se recomienda usar como fecha real de pago para efectos de comisión, en vez de la fecha de la factura o la fecha cruda del pago.</dd>
+
+          <dt>ETL (Extract, Transform, Load)</dt>
+          <dd>Proceso automático que extrae de Odoo, transforma (limpieza, cálculo de fecha efectiva, trazabilidad letra→factura) y carga en la base de datos del nuevo sistema.</dd>
+
+          <dt>Motor de reglas (Rules Engine)</dt>
+          <dd>Módulo configurable donde Dirección Comercial/Administración definen porcentajes y condiciones de comisión (ej. 5% cliente nuevo, 2% recurrente, aceleradores por meta) sin tocar código.</dd>
+
+          <dt>RBAC (Role-Based Access Control)</dt>
+          <dd>Modelo de permisos por rol: un vendedor ve solo sus números, un gerente ve los de su equipo, RRHH/Finanzas ve el consolidado.</dd>
+
+          <dt>Periodo de comisión</dt>
+          <dd>Ventana de tiempo (distinta por canal: mes calendario en Nacional, ciclo 21-22 en Internacional) sobre la que se calcula, aprueba y cierra un lote de comisiones.</dd>
+        </dl>
+      </section>
+
+      <!-- TO-BE -->
+      <section id="to-be" class="audience-business">
+        <span class="audience-tag tag-biz">Audiencia: Negocio y Producto</span>
+        <h2>Visión TO-BE</h2>
+        <p>El sistema reemplaza los 5 reportes manuales y el correo con un flujo continuo: Odoo sigue siendo la única fuente de verdad; el sistema nuevo extrae, transforma, calcula y expone resultados, sin que ninguna persona tenga que copiar o pegar datos entre Excel.</p>
+
+        <div class="mermaid-wrap">
+          <pre class="mermaid">
+flowchart LR
+  Odoo[("Odoo ERP\nfacturas, pagos, letras")] -->|"ETL incremental\n(write_date)"| Raw["Capa raw\nSupabase/Postgres"]
+  Raw --> Rules["Motor de reglas\nparametrizable"]
+  Rules --> Calc["Calculo automatico\nde comisiones por periodo"]
+  Calc --> Review["Workflow de aprobacion\nGerente / Direccion Comercial"]
+  Review -->|"Aprobado"| Export["Layout final\npara RRHH / Nomina"]
+  Review -->|"Rechazado con comentario"| Calc
+  Calc --> Dash["Dashboards en tiempo real\nVendedor / Gerencia"]
+  Calc --> Disputas["Modulo de disputas\n(tickets por factura)"]
+  Disputas -->|"Resuelta"| Calc
+  Review --> Audit[("Audit log\nquien, cuando, que cambio")]
+  Calc --> Audit
+          </pre>
+        </div>
+
+        <p>Nota: la pregunta original planteaba que "la T y la L podrían manejarse ya en una página externa" — en este diseño, Odoo cubre la <strong>E</strong>xtracción (fuente de verdad única) y el sistema nuevo cubre <strong>T</strong>ransformación y <strong>L</strong>oad, consolidando el ETL completo bajo un solo pipeline auditable en vez de dividirlo entre dos sistemas.</p>
+      </section>
+
+      <!-- CICLO DE VIDA -->
+      <section id="ciclo-vida" class="audience-business">
+        <span class="audience-tag tag-biz">Audiencia: Negocio y Producto</span>
+        <h2>Ciclo de vida de un periodo de comisión</h2>
+        <p>Cada corrida (Nacional de un mes, o Internacional de un ciclo 21-22) pasa por los mismos estados, con el workflow de aprobación y el módulo de disputas integrados directamente en el ciclo, no como procesos externos por correo.</p>
+
+        <div class="mermaid-wrap">
+          <pre class="mermaid">
+stateDiagram-v2
+  [*] --> Abierto
+  Abierto --> Calculado : ETL + motor de reglas ejecuta
+  Calculado --> EnRevision : enviado a Gerente/Direccion Comercial
+  EnRevision --> Rechazado : rechazo con comentario
+  Rechazado --> Calculado : ajuste y recalculo
+  EnRevision --> Aprobado : aprobacion un clic
+  Aprobado --> ExportadoRRHH : genera layout nomina
+  ExportadoRRHH --> Cerrado : snapshot congelado
+  Cerrado --> [*]
+  EnRevision --> EnDisputa : vendedor abre ticket
+  EnDisputa --> Calculado : disputa resuelta, recalculo
+          </pre>
+        </div>
+
+        <table>
+          <thead><tr><th>Estado</th><th>Significado</th><th>Quién actúa</th></tr></thead>
+          <tbody>
+            <tr><td><code>Abierto</code></td><td>Periodo creado, aún sin datos calculados</td><td>Sistema (automático, según calendario del canal)</td></tr>
+            <tr><td><code>Calculado</code></td><td>ETL + motor de reglas generaron las líneas de comisión</td><td>Supervisor de Proyectos de Finanzas</td></tr>
+            <tr><td><code>EnRevision</code></td><td>Enviado para aprobación</td><td>Nacional: Jefa de Aplicaciones → Dirección Comercial. Internacional: directo a Gerencia de Ventas Internacional</td></tr>
+            <tr><td><code>EnDisputa</code></td><td>Un vendedor abrió un ticket sobre una línea específica</td><td>Vendedor abre; Supervisor de Proyectos de Finanzas resuelve</td></tr>
+            <tr><td><code>Rechazado</code></td><td>El revisor pidió ajustes con comentario</td><td>Dirección Comercial (Nacional) / Gerencia de Ventas Internacional (Internacional)</td></tr>
+            <tr><td><code>Aprobado</code></td><td>Confirmado para pago</td><td>Dirección Comercial (Nacional) / Gerencia de Ventas Internacional (Internacional)</td></tr>
+            <tr><td><code>ExportadoRRHH</code></td><td>Layout de nómina generado</td><td>Sistema (automático tras aprobación)</td></tr>
+            <tr><td><code>Cerrado</code></td><td>Snapshot congelado; ya no se recalcula</td><td>Sistema</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- REQUISITOS FUNCIONALES -->
+      <section id="requisitos-funcionales" class="audience-business">
+        <span class="audience-tag tag-biz">Audiencia: Producto</span>
+        <h2>Requisitos funcionales (priorización MoSCoW)</h2>
+        <p>Cada mejora solicitada se traduce en requisitos con prioridad y fase sugerida de implementación (ver <a href="#roadmap">Roadmap</a>).</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>ID</th><th>Requisito</th><th>Prioridad</th><th>Fase</th></tr></thead>
+            <tbody>
+              <tr><td>RF-01</td><td>ETL automatizado diario/por evento desde Odoo (facturas, pagos, letras) hacia la capa de datos propia</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
+              <tr><td>RF-02</td><td>Cálculo de fecha efectiva de cobro vía <code>account.partial.reconcile.max_date</code>, resolviendo la casuística contado/pago adelantado</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
+              <tr><td>RF-03</td><td>Trazabilidad letra → factura vía <code>account.bill.form</code>, con canal heredado de la factura origen</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
+              <tr><td>RF-04</td><td>Motor de reglas parametrizable (porcentajes por rol/línea/zona, condiciones, aceleradores) sin tocar código, soportando la jerarquía de 4 roles de Nacional y 1 rol de Internacional confirmada con evidencia real</td><td><span class="pill pill-must">Must</span></td><td>2</td></tr>
+              <tr><td>RF-05</td><td>Cálculo automático de comisiones por periodo y por canal (Nacional PEN / Internacional USD)</td><td><span class="pill pill-must">Must</span></td><td>2</td></tr>
+              <tr><td>RF-06</td><td>Workflow de aprobación: envío automático a Gerente/Dirección Comercial, aprobar/rechazar con comentario en un clic</td><td><span class="pill pill-must">Must</span></td><td>2</td></tr>
+              <tr><td>RF-07</td><td>Generación automática del layout final para RRHH tras la aprobación</td><td><span class="pill pill-must">Must</span></td><td>2</td></tr>
+              <tr><td>RF-08</td><td>Dashboard del vendedor: proyección y comisión ganada en tiempo real</td><td><span class="pill pill-should">Should</span></td><td>3</td></tr>
+              <tr><td>RF-09</td><td>Dashboard de gerencia: gasto total de comisiones por línea de negocio, Nacional vs. Internacional</td><td><span class="pill pill-should">Should</span></td><td>3</td></tr>
+              <tr><td>RF-10</td><td>RBAC real y bloqueante desde el día 1 (vendedor/gerente/analista/RRHH/Finanzas/auditor)</td><td><span class="pill pill-must">Must</span></td><td>2</td></tr>
+              <tr><td>RF-11</td><td>Autenticación SSO con correo corporativo (Google) y verificación en dos pasos</td><td><span class="pill pill-must">Must</span></td><td>2</td></tr>
+              <tr><td>RF-12</td><td>Módulo de disputas: ticket por factura/línea, con resolución por el analista antes del cierre de periodo</td><td><span class="pill pill-should">Should</span></td><td>3</td></tr>
+              <tr><td>RF-13</td><td>Audit log de aprobaciones, cambios de reglas y ajustes manuales (quién, cuándo, qué)</td><td><span class="pill pill-must">Must</span></td><td>2</td></tr>
+              <tr><td>RF-14</td><td>Exclusión directa (sin reatribución) de facturas bajo equipos administrativos MARKETING (incl. "MARKETING INT") u OFICINA, en Nacional e Internacional por igual</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
+              <tr><td>RF-15</td><td>Soporte al canal Digital (ecommerce/marketplaces)</td><td><span class="pill pill-wont">Won't (v1)</span></td><td>4</td></tr>
+              <tr><td>RF-16</td><td>Exclusión por diario contable (<code>Facturas Sunat</code> código <code>001</code>, <code>F060 Venta exterior</code> código <code>060</code>, configurable)</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
+              <tr><td>RF-17</td><td>Distinguir, por <code>move_type</code> del asiento (nunca por nombre de diario): Nota de Crédito (excluye), traspaso a letra vía diario "Transitory receivable and payable" (excluye), transferencia bancaria o aplicación de saldo a favor (comisiona)</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
+              <tr><td>RF-20</td><td>Exclusión de Boletas y Nota de Crédito-Boleta (<code>l10n_latam_document_type_id</code>) en ambos canales</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
+              <tr><td>RF-21</td><td>Exclusión por TTG verificando ambos campos (<code>sale_type_id</code> OR <code>invoice_payment_term_id</code>), no solo uno</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
+              <tr><td>RF-22</td><td>Trazabilidad completa Letra → Planilla → Factura → <code>invoice_origin</code> (número de pedido), para heredar canal/línea/pedido hasta el nivel de letra</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
+              <tr><td>RF-18</td><td>Cálculo de base sin IGV con prorrateo por línea de producto (<code>Monto Pagado ÷ 1,18 × Subtotal línea/Subtotal factura</code>), igual para Nacional e Internacional</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
+              <tr><td>RF-19</td><td>Reconocimiento de comisión de letras por periodo (letras pagadas en el periodo / letras totales), no acumulado hasta el 100%; protestada excluye, descontada incluye</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- REGLAS DE NEGOCIO -->
+      <section id="reglas-negocio" class="audience-business">
+        <span class="audience-tag tag-biz">Audiencia: Negocio y Producto</span>
+        <h2>Reglas de negocio confirmadas (con evidencia real de Odoo y de los Excel del proceso manual)</h2>
+        <p>A diferencia de la primera versión de este PRD, estas reglas ya no son "propuestas a validar": están confirmadas por el solicitante y, en la mayoría de los casos, verificadas con fórmulas de celda reales de los Excel de <code>Proceso_Manual/</code> (ver <a href="#evidencia-odoo">Evidencia verificada en Odoo</a>). Solo quedan pendientes los puntos listados al final y en <a href="#preguntas-abiertas">Preguntas abiertas</a>.</p>
+
+        <h3>Base de cálculo: sin IGV, prorrateada por línea de producto</h3>
+        <p>Confirmado para ambos canales (en Internacional las facturas de exportación ya se emiten sin IGV por ley, pero se usa el mismo campo para no duplicar lógica):</p>
+        <pre><code>Monto_Pagado_Sin_IGV = Monto_Pagado / 1.18
+Base_linea = Monto_Pagado_Sin_IGV × (Subtotal_linea / Subtotal_General_factura)</code></pre>
+
+        <h3>Fecha efectiva de cobro y tipo de cambio</h3>
+        <ul>
+          <li>Usar <code>account.partial.reconcile.max_date</code> de cada conciliación como fecha de cobro, no la fecha de la factura ni la fecha cruda del widget de pago.</li>
+          <li>Una factura puede tener varios pagos parciales; cada uno aporta a la comisión en el periodo correspondiente a su propia <code>max_date</code>.</li>
+          <li><strong>Tipo de cambio (Internacional, USD):</strong> se extrae de un campo de Odoo y se usa el <strong>mismo tipo de cambio del día en que se pagó</strong> la factura (campo real en el proceso manual: <code>TC FECHA DE PAGO</code>), nunca el tipo de cambio del día de emisión ni un promedio del periodo.</li>
+        </ul>
+
+        <h3>Letras: comisión por periodo, no acumulada hasta el 100%</h3>
+        <pre><code>Monto_pagado_del_periodo = Total_General_factura × (Letras_pagadas_EN_ESTE_PERIODO / Letras_totales_de_la_factura)</code></pre>
+        <ul>
+          <li>Si una factura tiene 5 letras y en el periodo se pagan 2, se comisiona sobre esas 2 <strong>en ese periodo</strong>; no se espera a que se paguen las 5 para comisionar.</li>
+          <li>Letra en estado <code>protested</code> (protestada): <strong>no comisiona</strong>.</li>
+          <li>Letra en estado <code>discount</code> (descontada en banco): <strong>sí comisiona</strong>, y se cuenta igual que las letras en cartera (<code>portfolio</code>) y cobranza (<code>collection</code>).</li>
+          <li>El canal de una letra se hereda siempre de su factura origen (vía <code>account.bill.form</code>), nunca de un campo propio de la letra (que no existe).</li>
+        </ul>
+
+        <h3>Dos etapas: extracción vs. transformación</h3>
+        <p>La extracción trae de Odoo todo lo "posted" del periodo (facturas, notas de crédito y letras, ambos canales), sin aplicar todavía ningún criterio de negocio. Las reglas de exclusión de esta sección se aplican <strong>en la transformación</strong>, después de extraer — exactamente el mismo rol que hoy cumple la columna <code>FILTRO</code> (<code>COMISIONA</code> / excluida) de los Excel reales de <code>Proceso_Manual/</code>.</p>
+
+        <div class="mermaid-wrap">
+          <pre class="mermaid">
+flowchart TB
+  Extract["EXTRACCION:\nfacturas/letras posted\nde Odoo (ambos canales)"] --> T1{"Tipo documento es\nBoleta o NC-Boleta?"}
+  T1 -->|"Si"| F1["EXCLUIDA\n(no comisiona en\nningun canal)"]
+  T1 -->|"No"| T2{"sale_type = TTG\nO condicion de pago\ncontiene TTG?"}
+  T2 -->|"Si"| F2["EXCLUIDA"]
+  T2 -->|"No"| T3{"Diario es\nFacturas Sunat o\nF060 Venta exterior?"}
+  T3 -->|"Si"| F3["EXCLUIDA"]
+  T3 -->|"No"| T4{"Equipo es\nMARKETING (o MARKETING INT)\nu OFICINA?\n(Nacional O Internacional)"}
+  T4 -->|"Si"| F4["EXCLUIDA"]
+  T4 -->|"No"| T5{"payment_state\nes reversed?"}
+  T5 -->|"Si"| F5["EXCLUIDA"]
+  T5 -->|"No"| T6{"Conciliacion via\nNota de Credito\n(move_type out_refund)?"}
+  T6 -->|"Si, 100% NC"| F6["EXCLUIDA\n(ej. real: F F01-00007416,\n7 de 7 pagos son NC)"]
+  T6 -->|"Parcial NC"| P1["Solo comisiona la porcion\npagada por transferencia\no aplicacion de saldo"]
+  T6 -->|"No"| T7{"Conciliacion via diario\n'Transitory receivable\nand payable' (TRP)?"}
+  T7 -->|"Si"| F7["EXCLUIDA\n(traspaso contable\nFactura-a-Letra,\nno es cobro real)"]
+  T7 -->|"No"| Calc["Calcular base:\nMonto Pagado / 1.18\nx Subtotal linea/Subtotal factura"]
+  P1 --> Calc
+  Calc --> Letras{"Respaldada\npor letras?"}
+  Letras -->|"Si"| LetraCalc["Base x (Letras pagadas\nEN EL PERIODO / Letras totales)\nProtestada=excluida\nDescontada=incluida"]
+  Letras -->|"No"| Comision["Aplicar %\ndel motor de reglas"]
+  LetraCalc --> Comision
+          </pre>
+        </div>
+
+        <h3>Exclusiones confirmadas (etapa de transformación)</h3>
+        <ul>
+          <li><strong>Boletas</strong> (<code>l10n_latam_document_type_id</code> = "(03) Boleta" o "(07) Nota de Crédito Boleta"): <strong>no son comisionables en ningún canal</strong>. Hallazgo nuevo y de alto impacto: representan el <strong>45,8% de los documentos Nacional</strong> de la muestra analizada (422 de 922) — casi la mitad del volumen que antes se contaba como "factura comisionable" en este PRD. En Internacional no se detectó volumen de boletas en la muestra, pero la regla debe codificarse igual para ambos canales.</li>
+          <li><strong>Tipo de venta TTG o condición de pago TTG</strong> (Transferencia a Título Gratuito): confirmado excluido por <strong>ambos campos</strong>, no solo por <code>sale_type_id</code>. Verificado: 378 facturas tienen ambos campos en TTG a la vez, y 5 adicionales solo tienen <code>sale_type_id=TTG</code> sin el término de pago — el filtro debe ser un <code>OR</code> entre los dos campos para no perder esos 5 casos.</li>
+          <li><strong>Vendedor/equipo MARKETING (incluye "MARKETING INT") u OFICINA:</strong> confirmado excluido directamente, <strong>en Nacional y en Internacional por igual</strong> (no es una regla exclusiva de Nacional).</li>
+          <li><strong>Diario contable</strong> <code>Facturas Sunat</code> (código <code>001</code>) o <code>F060 Venta exterior</code> (código <code>060</code>): confirmado excluido.</li>
+          <li><strong>Facturas con <code>payment_state = 'reversed'</code>:</strong> excluidas del cálculo.</li>
+          <li><strong>Pagado íntegramente con Nota de Crédito</strong> (conciliación vía <code>move_type = 'out_refund'</code>): no comisiona. <strong>Ejemplo real corregido:</strong> la factura <code>F F01-00007416</code>, usada en una versión anterior de este PRD como ejemplo de "pago adelantado" válido, en realidad tiene sus <strong>7 de 7 conciliaciones vía Nota de Crédito</strong> (<code>F C01-00000415</code> a <code>F C01-00000421</code>, todas <code>move_type='out_refund'</code>) — es una factura 100% no comisionable, no un ejemplo de comisión válida. Si la factura se pagó en parte con NC y en parte por transferencia o aplicación de saldo a favor, solo comisiona la porción de transferencia/aplicación.</li>
+          <li><strong>Conciliación vía el diario "Transitory receivable and payable"</strong> (código <code>TRP</code>): <strong>no comisiona</strong>. Se verificó con un asiento real (<code>PTRP/2025/14187</code>, ref. "Redeem Bill of Exchange FLC-02713") que este diario mueve el saldo de la cuenta <code>1212001 Facturas por cobrar nacionales</code> a <code>1051099 Cuenta transitoria de pagos de letras</code> — es el traspaso contable que ocurre cuando una factura se convierte en letra, <strong>no es un cobro real</strong>. Representó el 23,4% de las conciliaciones de la muestra original de NC/transferencia, quedando ahora resuelto: el cobro real de esa porción se reconoce después, cuando la letra correspondiente se pague (ya cubierto por la regla de letras por periodo).</li>
+        </ul>
+
+        <h3>Jerarquía de roles con % fijo (confirmada en ambos canales)</h3>
+        <p>Nacional e Internacional comparten el mismo patrón de negocio: un porcentaje fijo que se multiplica sobre la base ya calculada, definido en una tabla de referencia versionable. La diferencia es la granularidad de la clave y el número de roles:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Canal</th><th>Clave de búsqueda</th><th>Roles con % propio</th><th>Combinaciones reales</th></tr></thead>
+            <tbody>
+              <tr><td>Nacional</td><td>Línea Comercial + Zona (ej. <code>PETMEDICA/LIMA 1/ATREVIA</code>)</td><td>Representante de Venta, Jefe Técnico, Jefe Comercial, Gerente (4 roles, algunos opcionales por línea)</td><td>27 combinaciones reales, confirmadas en <code>Tabla de Comisiones.xlsx</code></td></tr>
+              <tr><td>Internacional</td><td>Línea Comercial sola (AGROVET / PETMEDICA / AVIVET)</td><td>1 porcentaje por colaborador y línea (6 colaboradores)</td><td>18 combinaciones (6 colaboradores × 3 líneas), confirmadas en <code>COMISIONES</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Ver las matrices reales completas y los ejemplos de cálculo verificados celda a celda en <a href="#evidencia-odoo">Evidencia verificada en Odoo</a>.</p>
+
+        <h3>Cierre de periodo</h3>
+        <ul>
+          <li>Al pasar a <code>Cerrado</code>, el periodo se congela como snapshot inmutable; cualquier corrección posterior se maneja como un ajuste del periodo siguiente, nunca reabriendo el histórico.</li>
+          <li>Los ajustes manuales solo se permiten con motivo obligatorio y quedan en <code>audit_log</code>.</li>
+        </ul>
+
+        <h3>Explícitamente pendientes de la Fase 0 (no resueltas aún)</h3>
+        <ul>
+          <li>Formato exacto del layout para RRHH. La hoja <code>RESUMEN COMISIONES</code> del Excel real sugiere un agrupado por Gerente/línea con columnas Contado/Crédito/Letras/Total, pero el archivo de salida formal que RRHH necesita sigue sin confirmarse.</li>
+          <li>Base exacta de atribución "SI / TODOS" en Internacional: ¿el % se aplica sobre el total completo de la línea comercial o solo sobre la cartera de clientes asignados a ese colaborador? (ver ambigüedad detallada en Evidencia).</li>
+        </ul>
+      </section>
+
+      <!-- ROLES Y RBAC -->
+      <section id="roles-rbac" class="audience-business">
+        <span class="audience-tag tag-biz">Audiencia: Negocio y Producto</span>
+        <h2>Roles y control de acceso (RBAC)</h2>
+        <p>La estructura de equipos y líderes ya existe en Odoo (<code>crm.team</code>, 14 equipos con <code>user_id</code> como líder) y puede usarse como base real para construir la jerarquía de permisos, en vez de crear una nueva desde cero.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Rol</th><th>Ve</th><th>Puede hacer</th><th>Base en Odoo</th></tr></thead>
+            <tbody>
+              <tr><td>Vendedor / beneficiario de comisión</td><td>Solo sus propias facturas/comisiones</td><td>Ver dashboard, abrir disputas</td><td><code>account.move.invoice_user_id</code>; en Nacional incluye los 4 roles comisionables confirmados (Representante de Venta, Jefe Técnico, Jefe Comercial, Gerente de línea)</td></tr>
+              <tr><td>Supervisor de Proyectos de Finanzas</td><td>Ambos canales, todo el ciclo de cálculo</td><td>Ejecutar el 1er cálculo, configurar reglas, resolver disputas, ejecutar ajustes manuales</td><td>Rol nuevo (hoy: solicitante de este PRD, en ambos canales)</td></tr>
+              <tr><td>Jefa de Aplicaciones</td><td>Periodos Nacional en estado <code>Calculado</code></td><td>Procesar/validar el cálculo antes de enviarlo a Dirección Comercial</td><td>Rol nuevo (hoy: 2do punto único de falla en Nacional)</td></tr>
+              <tr><td>Dirección Comercial</td><td>Periodos <strong>Nacional</strong> en revisión</td><td>Aprobación final de Nacional, ver dashboard de gerencia</td><td>Rol nuevo (hoy: valida Nacional, NO interviene en Internacional)</td></tr>
+              <tr><td>Gerencia de Ventas Internacional</td><td>Periodos <strong>Internacional</strong> en revisión</td><td>Aprobación final de Internacional (reemplaza a Dirección Comercial en este canal)</td><td>Rol nuevo (hoy: aprueba directo, sin pasar por Dirección Comercial)</td></tr>
+              <tr><td>RRHH</td><td>Solo periodos aprobados y exportados</td><td>Descargar layout de nómina</td><td>Rol nuevo</td></tr>
+              <tr><td>Finanzas / Admin</td><td>Consolidado total, configuración de reglas</td><td>Editar motor de reglas, gestionar accesos</td><td>Rol nuevo</td></tr>
+              <tr><td>Auditor</td><td>Audit log completo, solo lectura</td><td>Consultar histórico de cambios y aprobaciones</td><td>Rol nuevo</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="status-banner status-warn">
+          <div>
+            <strong>Lección aplicada de la auditoría previa de Finanzas AGV:</strong> el informe <code>auditoria/Informe_Entrega_V2/INFORME_CODE_REVIEW_SENIOR_2026-07-02.md</code> documenta que un flag <code>RBAC_LOG_ONLY=True</code> dejó el RBAC construido pero sin bloquear nada en producción. En este proyecto nuevo, el RBAC debe ser <strong>bloqueante desde el primer despliegue</strong>, sin modo "solo log".
+          </div>
+        </div>
+      </section>
+
+      <!-- ARQUITECTURA -->
+      <section id="arquitectura" class="audience-technical">
+        <span class="audience-tag tag-tech">Audiencia: Técnicos</span>
+        <h2>Arquitectura técnica propuesta</h2>
+
+        <div class="status-banner status-warn">
+          <div>
+            <strong>Finanzas AGV es solo una referencia, no una plantilla a copiar.</strong> Se toman de Finanzas AGV únicamente las <em>lecciones aprendidas</em> (qué evitar: RBAC sin bloqueo real, endpoints sin <code>@require_login</code>, modelos de datos con tablas muertas que nunca se pueblan, falta de tests) y el hecho de que el equipo ya conoce Odoo vía XML-RPC. El resto de la arquitectura de este proyecto se diseña desde cero, pensada para que el cálculo de comisiones sea <strong>auditable, testeable y versionado</strong> — algo que hoy vive solo en fórmulas de Excel sin historial de cambios.
+          </div>
+        </div>
+
+        <h3 id="arquitectura-confirmacion">Qué confirma el flujo real de setiembre 2026</h3>
+        <p>El recorrido de <a href="#as-is-flujo-nacional">SEP → tabla de porcentajes → cuatro comisiones → consolidado → tabla dinámica</a> no cambia el stack. Siguen haciendo falta los mismos cuatro bloques: extracción de Odoo, transformación versionada, API delgada y la salida que hoy es <code>RESUMEN COMISIONES</code>. No aparece un componente nuevo que Dagster, dbt o Flask no cubran.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Lo que muestra el Excel de setiembre</th><th>Decisión de arquitectura</th></tr></thead>
+            <tbody>
+              <tr><td>Un mes nacional son ~2.400 líneas de factura y ~6.300 filas de letra; al abrir los 4 roles quedan ~35.000 filas.</td><td><strong>Sin cambio.</strong> Sigue siendo un volumen chico. Flask no calcula; dbt sí. No justifica FastAPI, Django ni un orquestador más pesado que Dagster.</td></tr>
+              <tr><td>El libro de pago hace <code>% × subtotal crudo</code> en facturas y <code>% × subtotal / cantidad de letras</code> en letras. Los reportes SEP ya traen la base prorrateada y el libro no la usa. Con la factura pagada al 100%, o con letras de igual monto, los dos caminos coinciden.</td><td><strong>Sin cambio de fórmula.</strong> Los modelos <code>mart_base_comision</code> y <code>mart_letras_periodo</code> implementan el prorrateo de <a href="#reglas-negocio">Reglas de negocio</a>. Copiar el atajo del libro reproduciría las 8 líneas de pago parcial que hoy comisionan el subtotal entero, y repartiría las letras por cantidad en vez de por monto.</td></tr>
+              <tr><td>La salida que ve el negocio es la tabla dinámica: Puesto → Línea → Nombre, columnas Contado / Crédito / Letras / Total, filtro <code>COMISIONA</code>. Total de setiembre: S/ 74.710,24.</td><td><strong>Sin cambio de capa.</strong> Ese grano ya es <code>comision_linea</code> (persona, rol, línea, tipo de cobro, periodo). El resumen de RRHH es una consulta de ese mart. El formato de archivo que RRHH importa sigue pendiente; la estructura del resumen ya no.</td></tr>
+              <tr><td><code>CONSOLIDADO</code> es una foto pegada. La tabla de porcentajes del libro también. Un cambio de % no llega a la dinámica hasta que alguien rearma la foto.</td><td><strong>Sin cambio.</strong> Es la razón de dbt: la lógica vive en Git y el resumen se recalcula, no se pega.</td></tr>
+              <tr><td>S/ 3.076,36 de gerente de PET NUTRISCIENCE quedaron a nombre <code>0</code> porque el porcentaje existe y la persona no. La dinámica oculta ese nombre, y también oculta a Chamán (S/ 98,75).</td><td><strong>Se explicita un test que el diseño ya debía tener.</strong> <code>dbt test</code> bloquea el paso a <code>Calculado</code> si una comisión distinta de cero no tiene beneficiario. Nombre y porcentaje se resuelven por la zona, no por el primer <code>BUSCARV</code> del representante.</td></tr>
+              <tr><td><code>FILTRO</code> es manual: TTG, protesto, atraso mayor a 30 días, líneas AVIVET/GENVET/OTROS, y facturas marcadas una por una.</td><td><strong>Sin copiar el filtro tal cual.</strong> TTG, protesto, OFICINA, boleta, NC y el diario TRP ya están en la etapa de transformación. El corte de 30 días y las exclusiones factura por factura no entran al motor: el periodo lo define la fecha efectiva de cobro.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>¿Flask sigue siendo una buena elección para el backend?</h3>
+        <p><strong>Sí, para la capa de API.</strong> Flask es apropiado aquí porque el volumen real es modesto (897 facturas/mes en Nacional, 53 en Internacional — cientos a miles de filas, no millones) y el equipo ya lo conoce. No hay ninguna razón de rendimiento para migrar a FastAPI o Django: el cuello de botella de este proyecto nunca va a ser el framework web, va a ser <strong>la calidad y trazabilidad de las transformaciones de datos</strong> (hoy fórmulas de Excel sin versión ni test). Por eso la recomendación no es "cambiar Flask", sino "no dejar que toda la lógica de negocio viva dentro de rutas Flask como en Finanzas AGV" — la base de cálculo, el prorrateo y las reglas de letras deben vivir en una capa de transformación independiente, testeada y versionada en Git.</p>
+
+        <h3>¿Conviene usar prácticas de ingeniería de datos open source? Sí, y aquí es donde más impacto tiene</h3>
+        <p>Los reportes de <code>Proceso_Manual/</code> ya calculan la base que el sistema debe conservar: prorrateo sin IGV, letras del periodo y, en Internacional, el tipo de cambio del día de pago. El libro que arma el monto a pagar de setiembre usa un atajo encima de esa base (<a href="#as-is-flujo-nacional">flujo AS-IS</a>). Las dos cosas viven <strong>sin control de versiones, sin tests y sin historial de quién las cambió</strong>. Ese es el problema que resuelven las herramientas de abajo, y son gratuitas:</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Herramienta (open source)</th><th>Qué resuelve en este proyecto</th><th>Alternativa descartada</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>dbt-core</strong></td>
+                <td>Las fórmulas de base/prorrateo/letras se escriben como modelos SQL versionados en Git, con <code>dbt test</code> en cada cambio (ej. "la suma de comisiones por periodo nunca debe superar la base pagada" y "toda comisión distinta de cero tiene beneficiario"). Reemplaza el Excel como fuente de la lógica y evita el caso de setiembre en que S/ 3.076,36 quedaron a nombre <code>0</code>.</td>
+                <td>Mantener la lógica en funciones Python sueltas dentro de Flask, como hace Finanzas AGV — funciona, pero no deja rastro de qué cambió entre periodos.</td>
+              </tr>
+              <tr>
+                <td><strong>Dagster</strong> (orquestador)</td>
+                <td>Programa la extracción incremental de Odoo, muestra linaje visual de datos (qué tabla alimenta a cuál) y reintenta automáticamente si Odoo falla. Dado el volumen bajo, es más liviano de operar que Celery + Redis + Beat (3 procesos separados en Finanzas AGV).</td>
+                <td>Celery + Redis + Beat (el patrón de Finanzas AGV) — correcto para un sistema con colas de trabajo pesadas, sobredimensionado para un ETL que corre pocas veces al día.</td>
+              </tr>
+              <tr>
+                <td><strong>dbt tests / Great Expectations</strong></td>
+                <td>Bloquea automáticamente el paso de un periodo a <code>Calculado</code> si, por ejemplo, el total de "letras pagadas" supera el total de "letras totales" de una factura — exactamente el tipo de bug silencioso que la auditoría de Finanzas AGV encontró en <code>fact_bill_forms</code> (tabla que nunca se poblaba, sin que nadie lo notara).</td>
+                <td>Confiar solo en revisión manual de Dirección Comercial, como hoy — es precisamente el paso que se quiere automatizar.</td>
+              </tr>
+              <tr>
+                <td><strong>pytest + GitHub Actions (CI)</strong></td>
+                <td>Corre los tests de las fórmulas (prorrateo, IGV, letras) en cada cambio de código, antes de llegar a producción. Finanzas AGV no tiene esto — fue uno de los hallazgos de su auditoría.</td>
+                <td>Pruebas manuales antes de cada despliegue.</td>
+              </tr>
+              <tr>
+                <td><strong>structlog + Sentry (free tier)</strong></td>
+                <td>Logs estructurados (JSON) y captura de errores en producción, más liviano que configurar un stack de observabilidad completo para un sistema de este tamaño.</td>
+                <td>Solo <code>print()</code>/logs en texto plano, como se detectó en código de Finanzas AGV (<code>print(f"[DEBUG RESUMEN]...")</code> en producción).</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="mermaid-wrap">
+          <pre class="mermaid">
+flowchart TB
+  subgraph Fuentes ["Fuente de verdad"]
+    Odoo[("Odoo ERP\nXML-RPC")]
+  end
+
+  subgraph Orquestacion ["Orquestacion (Dagster, open source)"]
+    Extract["Asset: extract_odoo\n(incremental por write_date)"]
+    Schedule["Schedule / Sensor\ncada N minutos"]
+    Schedule --> Extract
+  end
+
+  subgraph Raw ["Capa raw - Postgres/Supabase"]
+    RawTables["raw_facturas\nraw_pagos\nraw_letras\nraw_journals"]
+  end
+
+  subgraph DBT ["Transformaciones versionadas (dbt-core, open source)"]
+    StgModels["Modelos staging\n(limpieza, tipos)"]
+    MartModels["Modelos mart\nbase sin IGV, prorrateo,\nletras por periodo"]
+    DbtTests["dbt tests\n(not_null, relationships,\nsuma_cuadra)"]
+    StgModels --> MartModels --> DbtTests
+  end
+
+  subgraph AppLayer ["Backend API (Flask, ligero)"]
+    API["API REST\nRBAC + JWT"]
+    Engine["Motor de reglas\n(lee marts de dbt)"]
+    Workflow["Workflow de aprobacion"]
+  end
+
+  subgraph Calidad ["Calidad y observabilidad"]
+    GE["Great Expectations\no dbt tests\n(bloquea si falla)"]
+    CI["pytest + GitHub Actions\nCI en cada cambio"]
+    Logs["structlog + Sentry\n(gratuito)"]
+  end
+
+  subgraph UI ["Frontend (Next.js)"]
+    DashVendedor["Dashboard Vendedor"]
+    DashGerencia["Dashboard Gerencia"]
+  end
+
+  Odoo --> Extract --> RawTables
+  RawTables --> StgModels
+  DbtTests -->|"bloquea si falla"| GE
+  GE --> Engine
+  Engine --> Workflow
+  API --> DashVendedor & DashGerencia
+  API --> Engine & Workflow
+  CI -.-> DBT
+  CI -.-> AppLayer
+  Logs -.-> AppLayer
+  Logs -.-> Orquestacion
+          </pre>
+        </div>
+
+        <h3>Stack recomendado</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Capa</th><th>Tecnología recomendada</th><th>Justificación</th></tr></thead>
+            <tbody>
+              <tr><td>ERP fuente</td><td>Odoo 16.0+e (XML-RPC)</td><td>Verificado en vivo; único acceso disponible (sin acceso directo a Postgres de Odoo)</td></tr>
+              <tr><td>Orquestación</td><td><strong>Dagster</strong> (open source)</td><td>Más liviano que Celery+Redis+Beat para un volumen bajo; da linaje visual y reintentos sin infraestructura adicional</td></tr>
+              <tr><td>Transformaciones</td><td><strong>dbt-core</strong> (open source)</td><td>Convierte las fórmulas de Excel en modelos SQL versionados, testeados y documentados — resuelve directamente el problema de "el conocimiento vive en la cabeza de 2 personas"</td></tr>
+              <tr><td>Calidad de datos</td><td>dbt tests (o Great Expectations si se necesita algo más granular)</td><td>Bloquea automáticamente inconsistencias antes de llegar a aprobación, evitando el tipo de bug silencioso ya detectado en Finanzas AGV</td></tr>
+              <tr><td>Backend API</td><td>Flask 3.0 (factory + blueprints), delgado</td><td>Correcto para el volumen del proyecto; solo expone datos ya calculados por dbt, no contiene la lógica de negocio</td></tr>
+              <tr><td>Frontend</td><td>Next.js (App Router) + React</td><td>Dashboards con filtros por rol y gráficos en tiempo real</td></tr>
+              <tr><td>Base de datos</td><td>PostgreSQL (Supabase o equivalente gestionado) con RLS</td><td>RLS deny-by-default por rol desde el día 1 (no como mejora posterior)</td></tr>
+              <tr><td>Autenticación</td><td>Google OAuth2 (dominio corporativo) + 2FA</td><td>Mismo patrón de SSO corporativo; lista blanca de correos</td></tr>
+              <tr><td>Testing/CI</td><td>pytest + GitHub Actions</td><td>Ausente en Finanzas AGV (hallazgo de su auditoría); aquí se incluye desde el inicio</td></tr>
+              <tr><td>Observabilidad</td><td>structlog + Sentry (free tier)</td><td>Más simple que montar un stack completo, suficiente para este volumen</td></tr>
+              <tr><td>Despliegue</td><td>Render o equivalente (Blueprint)</td><td>Infraestructura ya conocida por el equipo, sin atarse a los mismos 4 servicios de Finanzas AGV si no se necesitan</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- MODELO DE DATOS -->
+      <section id="modelo-datos" class="audience-technical">
+        <span class="audience-tag tag-tech">Audiencia: Técnicos</span>
+        <h2>Modelo de datos propuesto</h2>
+
+        <div class="mermaid-wrap">
+          <pre class="mermaid">
+erDiagram
+  DIM_VENDEDOR ||--o{ COMISION_LINEA : genera
+  DIM_CLIENTE ||--o{ RAW_FACTURA : factura_a
+  DIM_CANAL ||--o{ RAW_FACTURA : clasifica
+  RAW_FACTURA ||--o{ RAW_PAGO : se_cobra_con
+  RAW_FACTURA ||--o{ RAW_LETRA : respaldada_por
+  RAW_FACTURA ||--o{ COMISION_LINEA : origina
+  REGLA_COMISION ||--o{ COMISION_LINEA : aplica_a
+  PERIODO_COMISION ||--o{ COMISION_LINEA : agrupa
+  PERIODO_COMISION ||--o{ APROBACION : requiere
+  COMISION_LINEA ||--o{ AJUSTE_MANUAL : puede_tener
+  COMISION_LINEA ||--o{ DISPUTA : puede_generar
+  APROBACION ||--o{ AUDIT_LOG : registra
+  AJUSTE_MANUAL ||--o{ AUDIT_LOG : registra
+
+  DIM_VENDEDOR {
+    int id
+    string nombre
+    string canal
+    string rol
+  }
+  RAW_FACTURA {
+    int id
+    string numero
+    date fecha_emision
+    string moneda
+    numeric monto_total
+    string canal
+  }
+  RAW_PAGO {
+    int id
+    int factura_id
+    date fecha_conciliacion
+    numeric monto_pagado
+  }
+  RAW_LETRA {
+    int id
+    int factura_id
+    string estado
+    numeric monto_letra
+  }
+  REGLA_COMISION {
+    int id
+    string nombre
+    numeric porcentaje
+    string condicion
+    int version
+  }
+  PERIODO_COMISION {
+    int id
+    string canal
+    date fecha_corte
+    string estado
+  }
+  COMISION_LINEA {
+    int id
+    int periodo_id
+    int vendedor_id
+    int factura_id
+    numeric monto_comision
+  }
+  AJUSTE_MANUAL {
+    int id
+    int comision_linea_id
+    string motivo
+    string autor
+  }
+  APROBACION {
+    int id
+    int periodo_id
+    string aprobador
+    string decision
+  }
+  DISPUTA {
+    int id
+    int comision_linea_id
+    string estado
+    string comentario
+  }
+  AUDIT_LOG {
+    int id
+    string entidad
+    string accion
+    string usuario
+    datetime fecha
+  }
+          </pre>
+        </div>
+
+        <h3>Notas de diseño por tabla</h3>
+        <ul>
+          <li><code>raw_factura.canal</code> se puebla directamente de <code>account.move.sales_channel_id</code>; para letras, <code>raw_letra</code> no tiene canal propio y debe heredarlo de <code>raw_factura</code> vía la relación letra→factura (equivalente a <code>account.bill.form</code>).</li>
+          <li><code>raw_pago.fecha_conciliacion</code> corresponde a <code>account.partial.reconcile.max_date</code> (ver hallazgo de la sección <a href="#evidencia-odoo">Evidencia verificada en Odoo</a>), no a la fecha cruda del pago.</li>
+          <li><code>regla_comision</code> se versiona (<code>version</code>) para que un cambio de porcentaje no afecte retroactivamente periodos ya cerrados — cada <code>comision_linea</code> queda ligada a la versión de regla vigente en el momento del cálculo.</li>
+          <li><code>regla_comision</code> necesita además <code>rol</code> (Representante/Jefe Técnico/Jefe Comercial/Gerente/Colaborador) y <code>zona</code> (nullable, solo aplica a Nacional) para soportar la jerarquía real confirmada de 4 roles × 27 combinaciones Línea/Zona en Nacional, frente a 1 rol × línea en Internacional.</li>
+          <li><code>periodo_comision.fecha_corte</code> es configurable por canal: mes calendario para Nacional, ciclo 21→22 para Internacional.</li>
+        </ul>
+      </section>
+
+      <!-- ETL -->
+      <section id="etl" class="audience-technical">
+        <span class="audience-tag tag-tech">Audiencia: Técnicos</span>
+        <h2>Estrategia de ETL y transformación</h2>
+        <p>Se separan explícitamente dos responsabilidades que en Finanzas AGV están mezcladas dentro de un único script Python: <strong>extracción</strong> (orquestada por Dagster) y <strong>transformación/reglas de negocio</strong> (modelos dbt versionados). Esto permite que las fórmulas confirmadas en la sección <a href="#reglas-negocio">Reglas de negocio</a> vivan como SQL testeado, no como funciones Python sueltas.</p>
+        <ul>
+          <li><strong>Extracción incremental por <code>write_date</code>:</strong> mismo patrón de watermark que usa Finanzas AGV — primera corrida trae histórico completo paginado, corridas siguientes solo traen registros modificados desde el último watermark exitoso. El watermark se guarda al <strong>inicio</strong> de la corrida, no al final, para no perder registros modificados durante la sincronización.</li>
+          <li><strong>Extracción idempotente:</strong> upsert por clave natural de Odoo (no por autoincremental propio), para poder repetir una corrida sin duplicar filas.</li>
+          <li><strong>Transformación en dbt, no en Python ad-hoc:</strong> los modelos <code>stg_facturas</code>, <code>stg_pagos</code>, <code>mart_base_comision</code>, <code>mart_letras_periodo</code> encapsulan exactamente las fórmulas confirmadas (sin IGV, prorrateo, letras por periodo, exclusiones por diario/TTG/NC) con <code>dbt test</code> validando invariantes antes de exponerlas a la API.</li>
+          <li><strong>Trazabilidad letra→factura resuelta en la capa de transformación</strong>, no en una vista SQL separada que dependa de un modelo de "planillas" que nunca se puebla (evitar el bug ya documentado en <code>ANALISIS_ESTRATEGIA_DATOS.md</code> de Finanzas AGV).</li>
+          <li><strong>Validación de frescura:</strong> si la extracción no corre exitosamente dentro de la ventana esperada, el sistema debe alertar (sensor de Dagster) antes de que un periodo pase a <code>Calculado</code> con datos desactualizados.</li>
+        </ul>
+      </section>
+
+      <!-- HALLAZGOS DE SEGURIDAD -->
+      <section id="hallazgos-seguridad" class="audience-technical">
+        <span class="audience-tag tag-tech">Audiencia: Técnicos</span>
+        <h2>Hallazgos de seguridad detectados durante esta investigación</h2>
+
+        <div class="status-banner status-no-go">
+          <div>
+            <strong>Credenciales de Odoo en texto plano y usuario personal.</strong> El archivo <code>.env</code> del repositorio contiene <code>ODOO_USER="jose.montero@agrovetmarket.com"</code> y su contraseña en texto plano. Es la cuenta personal de un usuario, no una cuenta de servicio dedicada. Antes de llevar este proyecto a producción se recomienda: (1) crear un usuario de integración de solo lectura en Odoo, limitado a los modelos necesarios; (2) rotar la contraseña personal actual, ya que quedó expuesta en este repositorio de trabajo; (3) migrar a autenticación por API key si Odoo 16 Enterprise la soporta en este tenant.
+          </div>
+        </div>
+
+        <div class="status-banner status-ok">
+          <div>
+            <strong><code>.gitignore</code> ya existe y excluye <code>.env</code>.</strong> El archivo está versionado y lista <code>.env</code>, <code>auditoria/</code>, <code>docs/</code> e <code>investigation/</code>. <code>.env</code> no está en el índice de Git y no aparece en ningún commit del historial. El hallazgo anterior (“sin archivo <code>.gitignore</code>”) queda cerrado.
+          </div>
+        </div>
+
+        <div class="status-banner status-info">
+          <div>
+            <strong>No hay usuario master.</strong> Confirmado por el responsable de las credenciales: la cuenta de <code>.env</code> no es el usuario master de Odoo y no pertenece al grupo "Administration/Access Rights", por eso no puede leer <code>ir.model</code>. Es mínimo privilegio, no un defecto a corregir pidiendo acceso de administrador. Cualquier exploración futura de modelos nuevos debe hacerse con <code>fields_get</code> directo sobre el modelo de negocio, como se hizo en este PRD.
+          </div>
+        </div>
+
+        <p>De estos puntos, <code>.gitignore</code> ya está resuelto y la falta de usuario master es una restricción confirmada del tenant, no un pendiente de esta fase. Sigue abierto el de credenciales: antes de que el ETL se conecte a Odoo en producción hace falta un usuario de integración de solo lectura y rotar la contraseña personal, con el mismo criterio de la auditoría de Finanzas AGV (<code>auditoria/Informe_Entrega_V2/</code>).</p>
+      </section>
+
+      <!-- NO FUNCIONALES -->
+      <section id="no-funcionales" class="audience-cross">
+        <span class="audience-tag tag-cross">Transversal — Requisitos no funcionales</span>
+        <h2>Requisitos no funcionales</h2>
+
+        <h3>Seguridad</h3>
+        <ul>
+          <li><code>@require_login</code> en el 100% de los endpoints desde el primer commit — en la auditoría de Finanzas AGV se detectó que módulos nuevos (Tesorería, Correos) se desplegaron sin este decorador en ningún endpoint.</li>
+          <li>RBAC bloqueante desde el día 1, sin flag de tipo <code>RBAC_LOG_ONLY</code> en producción.</li>
+          <li>RLS deny-by-default en todas las tablas de Supabase, con <code>SELECT</code> explícito solo donde el frontend lo necesite.</li>
+          <li>Caché de reportes con clave por usuario (evitar la fuga cross-sesión ya detectada y corregida en Finanzas AGV V1).</li>
+          <li>Usuario de integración Odoo dedicado y de solo lectura (ver <a href="#hallazgos-seguridad">Hallazgos de seguridad</a>).</li>
+        </ul>
+
+        <h3>Disponibilidad</h3>
+        <ul>
+          <li>ETL como job programado (cron) independiente del tráfico de usuarios; su falla no debe tumbar los dashboards (deben seguir mostrando el último dato sincronizado, con marca de "actualizado hace X minutos").</li>
+          <li>Fallback operativo documentado si Odoo no responde durante una corrida de cálculo.</li>
+        </ul>
+
+        <h3>Auditoría y trazabilidad</h3>
+        <ul>
+          <li><code>audit_log</code> inmutable (solo <code>INSERT</code>, nunca <code>UPDATE</code>/<code>DELETE</code>) para aprobaciones, cambios de reglas y ajustes manuales.</li>
+          <li>Cada línea de comisión debe poder trazarse hasta la factura/letra de Odoo que la originó (número de documento, no solo el ID interno).</li>
+        </ul>
+
+        <h3>Rendimiento</h3>
+        <ul>
+          <li>Dashboards de vendedor y gerencia deben leer de la capa analítica propia (Postgres/Supabase), nunca de Odoo en vivo, para no acoplar la disponibilidad del sistema de comisiones a la carga de Odoo.</li>
+        </ul>
+
+        <h3>Calidad de código y de datos</h3>
+        <ul>
+          <li>Cobertura de tests con <code>pytest</code> para el motor de reglas y <code>dbt test</code> para los modelos de transformación, corriendo en CI (GitHub Actions) antes de cada despliegue — ausente en Finanzas AGV según su propia auditoría.</li>
+          <li>Ningún <code>print()</code> de depuración en código de producción; usar <code>structlog</code> desde el primer commit.</li>
+          <li>Invariantes de negocio codificadas como tests automáticos (ej. "letras pagadas del periodo nunca puede superar letras totales de la factura"), no solo como revisión visual de Dirección Comercial.</li>
+        </ul>
+      </section>
+
+      <!-- ROADMAP -->
+      <section id="roadmap" class="audience-cross">
+        <span class="audience-tag tag-cross">Transversal — Roadmap</span>
+        <h2>Roadmap por fases</h2>
+        <p>Criterio de salida transversal para pasar de una fase a la siguiente: <strong>paridad 100% contra el Excel histórico de al menos 2-3 cierres reales</strong> (Nacional e Internacional), validada por la Jefa de Aplicaciones y Dirección Comercial.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Fase</th><th>Objetivo</th><th>Entregables clave</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>Fase 0 — Levantamiento</strong></td>
+                <td>Documentar formalmente las reglas de cálculo reales de Nacional e Internacional</td>
+                <td><strong>Avance real — prácticamente completa:</strong> fórmulas de base/prorrateo/letras y las matrices de % de ambos canales (Nacional: 4 roles × 27 combinaciones Línea/Zona; Internacional: 6 colaboradores × 3 líneas) ya confirmadas con los 11 Excel reales de <code>Proceso_Manual/</code> (ver <a href="#evidencia-odoo">Evidencia</a>). <strong>Pendiente:</strong> formato de layout RRHH, confirmación de la base SI/TODOS en Internacional, usuario de integración Odoo dedicado.</td>
+              </tr>
+              <tr>
+                <td><strong>Fase 1 — ETL y conciliación</strong></td>
+                <td>Reemplazar los 5 reportes manuales por extracción y transformación automática</td>
+                <td>ETL incremental operando; fecha efectiva de cobro resuelta; trazabilidad letra→factura funcionando; regla de atribución para equipos administrativos</td>
+              </tr>
+              <tr>
+                <td><strong>Fase 2 — MVP de cálculo y aprobación</strong></td>
+                <td>Motor de reglas, cálculo automático, workflow de aprobación y exportación a RRHH</td>
+                <td>RF-04 a RF-07, RF-10, RF-11, RF-13 operando en producción para al menos un ciclo real completo de cada canal</td>
+              </tr>
+              <tr>
+                <td><strong>Fase 3 — Visibilidad y autoservicio</strong></td>
+                <td>Dashboards y disputas</td>
+                <td>RF-08, RF-09, RF-12 operando; Dirección Comercial deja de pedir reportes por correo</td>
+              </tr>
+              <tr>
+                <td><strong>Fase 4 — Expansión</strong></td>
+                <td>Evaluar canal Digital y mejoras avanzadas</td>
+                <td>RF-15 (Digital) a decidir; MFA avanzado más allá de SSO; mejoras de escalabilidad</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- RIESGOS -->
+      <section id="riesgos" class="audience-cross">
+        <span class="audience-tag tag-cross">Transversal — Riesgos y supuestos</span>
+        <h2>Riesgos y supuestos</h2>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Riesgo / supuesto</th><th>Impacto si no se gestiona</th><th>Mitigación propuesta</th></tr></thead>
+            <tbody>
+              <tr><td>El formato del layout de RRHH no se confirma antes de programar la exportación</td><td>El sistema genera un archivo que RRHH no puede procesar directamente en su sistema de nómina</td><td>Confirmar con RRHH y con los Excel de referencia que el solicitante enviará, antes de implementar RF-07</td></tr>
+              <tr><td>Ambigüedad en la base SI/TODOS de Internacional: no está confirmado si el % se aplica sobre el total de la línea comercial o solo sobre la cartera asignada a cada colaborador</td><td>Riesgo de pagar de más o de menos a Vanessa, Ariana, Ivonne y Luis Chávez (los 4 colaboradores con clientes "SI" asignados)</td><td>Confirmar con el Supervisor la base exacta antes de automatizar el cálculo Internacional (Fase 2)</td></tr>
+              <tr><td>El usuario de integración de Odoo sigue siendo una cuenta personal</td><td>Si la persona cambia de rol o se desactiva su cuenta, el ETL completo deja de funcionar</td><td>Crear cuenta de servicio dedicada antes de Fase 1 (ver Hallazgos de seguridad)</td></tr>
+              <tr><td>Canal Digital crece y queda fuera del sistema más tiempo del previsto</td><td>Un tercer proceso manual sigue existiendo en paralelo, sin visibilidad</td><td>Revisar volumetría de Digital cada trimestre como criterio de entrada a Fase 4</td></tr>
+              <tr><td>El tipo de cambio de Internacional no se define formalmente</td><td>Comisiones en USD convertidas de forma inconsistente entre periodos</td><td>Resolver como pregunta abierta en Fase 0 (ver siguiente sección)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- PREGUNTAS ABIERTAS -->
+      <section id="preguntas-abiertas" class="audience-cross">
+        <span class="audience-tag tag-cross">Transversal — Preguntas abiertas</span>
+        <h2>Preguntas abiertas</h2>
+
+        <h3>Respondidas y confirmadas en esta iteración</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Pregunta original</th><th>Respuesta confirmada</th></tr></thead>
+            <tbody>
+              <tr><td>% y condiciones de comisión Internacional</td><td>Matriz real por colaborador × línea comercial, ver <a href="#evidencia-odoo">Evidencia</a> (con la ambigüedad SI/TODOS aún pendiente, ver abajo)</td></tr>
+              <tr><td>Lógica de cálculo y % de comisión de Nacional</td><td><strong>Resuelta con evidencia real</strong> (<code>Tabla de Comisiones.xlsx</code> + <code>COMISIONES 2026 AGOSTO.xlsx</code>): jerarquía de 4 roles (Representante, Jefe Técnico, Jefe Comercial, Gerente) con % fijo por 27 combinaciones de Línea Comercial + Zona, ver <a href="#evidencia-odoo">Evidencia</a></td></tr>
+              <tr><td>Base con o sin IGV, y tipo de cambio</td><td>Sin IGV (÷1,18) en ambos canales con el mismo campo; tipo de cambio del día exacto de pago, confirmado con el campo real <code>TC FECHA DE PAGO</code></td></tr>
+              <tr><td>Letras en estado <code>discount</code>/<code>protested</code></td><td>Protestada = no comisiona. Descontada = sí comisiona, igual que cartera y cobranza</td></tr>
+              <tr><td>Notas de crédito posteriores al cobro</td><td>No comisiona si la conciliación es 100% vía NC; sí comisiona la porción pagada por transferencia o aplicación de saldo a favor</td></tr>
+              <tr><td>Atribución MARKETING/OFICINA</td><td>Se descartan directamente del cálculo, sin reatribución a otro vendedor</td></tr>
+              <tr><td>Exclusión de TTG</td><td>Confirmado excluido</td></tr>
+              <tr><td>Canal Digital</td><td>No se automatiza hasta que Dirección Comercial lo solicite explícitamente; queda fuera de toda fase de este PRD</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Siguen abiertas (a resolver en Fase 0)</h3>
+        <ol>
+          <li>¿Cuál es el formato exacto del layout que RRHH necesita recibir? (el solicitante enviará los Excel de referencia que usa RRHH; la hoja <code>RESUMEN COMISIONES</code> ya da una pista fuerte del agrupado esperado).</li>
+          <li>En Internacional, ¿el % de cada colaborador se aplica sobre el total completo de la línea comercial o solo sobre la cartera de clientes marcados "SI" para ese colaborador? Ver la ambigüedad detectada con cifras reales en <a href="#evidencia-odoo">Evidencia verificada en Odoo</a>.</li>
+          <li>¿Existen otros diarios a excluir además de <code>Facturas Sunat</code> y <code>F060</code>? (ej. se detectó también un diario <code>REGV — Regularización de ventas</code> en Odoo, sin confirmar si debe excluirse).</li>
+          <li>¿Cuál es el criterio exacto para marcar un pago como <code>"NO VA"</code> (hoy una anotación manual en el Excel de Internacional para montos menores, sin regla escrita)?</li>
+        </ol>
+      </section>
+
+      <!-- CRITERIOS DE EXITO -->
+      <section id="criterios-exito" class="audience-cross">
+        <span class="audience-tag tag-cross">Transversal — Criterios de éxito</span>
+        <h2>Criterios de éxito</h2>
+        <ul class="checklist">
+          <li>El equipo de Dirección Comercial puede responder "¿cuánto gastamos en comisiones este mes, por canal?" sin pedir un reporte a nadie.</li>
+          <li>Ningún cálculo depende de una sola persona: cualquier analista autorizado puede ejecutar y revisar un periodo.</li>
+          <li>El ciclo completo (extracción → cálculo → aprobación → exportación a RRHH) se completa en menos de 3 días hábiles, frente a los ~13-20 días actuales.</li>
+          <li>Paridad 100% contra el Excel histórico en al menos 2-3 cierres reales de cada canal antes de cualquier go-live con datos de pago reales.</li>
+          <li>Cero pagos indebidos atribuibles a la casuística de contado/pago adelantado, verificado con la nueva regla de fecha efectiva de cobro.</li>
+          <li>RBAC bloqueante en producción desde el primer despliegue (sin modo "solo log").</li>
+          <li>El usuario de integración de Odoo es una cuenta de servicio dedicada, no una cuenta personal.</li>
+        </ul>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="doc-footer">
+    Comisiones Nacional e Internacional — PRD · Agrovet Market · Octubre 2026<br>
+    Evidencia verificada en vivo contra Odoo (solo lectura) con <code>investigation/investigacion_comisiones_odoo.py</code>. Documento generado para uso interno. Abrir directamente en navegador sin build step.<br>
+    Historial de cambios de este documento: <a href="CHANGELOG.md">docs/CHANGELOG.md</a>.
+  </footer>
+
+  <script>
+    // Mermaid init
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'default',
+      securityLevel: 'loose',
+      flowchart: { useMaxWidth: true, htmlLabels: true, curve: 'basis' },
+      sequence: { useMaxWidth: true }
+    });
+
+    // Theme toggle
+    const toggle = document.getElementById('themeToggle');
+    const saved = localStorage.getItem('prd-theme');
+    if (saved === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      toggle.textContent = '☀️ Modo claro';
+    }
+    toggle.addEventListener('click', () => {
+      const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      if (isDark) {
+        document.documentElement.removeAttribute('data-theme');
+        toggle.textContent = '🌙 Modo oscuro';
+        localStorage.setItem('prd-theme', 'light');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+        toggle.textContent = '☀️ Modo claro';
+        localStorage.setItem('prd-theme', 'dark');
+      }
+      location.reload(); // re-render mermaid with new theme
+    });
+
+    // TOC active link on scroll
+    const sections = document.querySelectorAll('section[id]');
+    const tocLinks = document.querySelectorAll('.toc a');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          tocLinks.forEach(link => link.classList.remove('active'));
+          const active = document.querySelector('.toc a[href="#' + entry.target.id + '"]');
+          if (active) active.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -60% 0px' });
+    sections.forEach(s => observer.observe(s));
+  </script>
+</body>
+</html>
