@@ -21,11 +21,14 @@ def test_real_september_closure_is_reproducible(tmp_path: Path, channel: str) ->
     assert len(payload["rows"]) == len(first.rows)
 
 
-def test_rrhh_export_contains_contract_sheets(tmp_path: Path) -> None:
+@pytest.mark.parametrize("channel", ["nacional", "internacional"])
+def test_rrhh_export_contains_only_selected_channel(
+    tmp_path: Path, channel: str
+) -> None:
     database = tmp_path / "pilot.sqlite3"
     run_historical_parity("nacional", database)
     run_historical_parity("internacional", database)
-    output = export_rrhh_workbook(database, tmp_path / "rrhh.xlsx")
+    output = export_rrhh_workbook(database, tmp_path / f"{channel}.xlsx", channel)
     workbook = openpyxl.load_workbook(output, read_only=True, data_only=True)
     assert workbook.sheetnames == [
         "Resumen RRHH",
@@ -35,3 +38,12 @@ def test_rrhh_export_contains_contract_sheets(tmp_path: Path) -> None:
         "Manifest",
     ]
     assert workbook["Resumen RRHH"].max_row > 2
+    detail = workbook["Detalle"]
+    channel_column = list(next(detail.iter_rows(values_only=True))).index("channel")
+    assert {
+        row[channel_column] for row in detail.iter_rows(min_row=2, values_only=True)
+    } == {channel}
+    manifests = list(workbook["Manifest"].iter_rows(min_row=2, values_only=True))
+    assert len(manifests) == 1
+    assert manifests[0][0] == channel
+    workbook.close()

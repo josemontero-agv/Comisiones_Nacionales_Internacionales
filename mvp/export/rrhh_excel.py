@@ -1,4 +1,4 @@
-"""Libro único para RRHH y Dirección, construido exclusivamente desde Gold."""
+"""Libro de un solo canal para RRHH y su instancia aprobadora, desde Gold."""
 
 from __future__ import annotations
 
@@ -38,17 +38,25 @@ def _append_dicts(
     _style_sheet(worksheet)
 
 
-def export_rrhh_workbook(database: Path | str, output: Path | str) -> Path:
+def export_rrhh_workbook(
+    database: Path | str, output: Path | str, channel: str
+) -> Path:
+    if channel not in {"nacional", "internacional"}:
+        raise ValueError(f"canal no soportado: {channel}")
     repository = MedallionRepository(database)
-    manifests = repository.latest_manifests()
+    manifests = [
+        manifest
+        for manifest in repository.latest_manifests()
+        if manifest["channel"] == channel
+    ]
     if not manifests:
-        raise RuntimeError("no existen corridas Gold para exportar")
+        raise RuntimeError(f"no existe una corrida Gold para {channel}")
     payloads = [
         repository.load_result_payload(str(manifest["run_id"]))
         for manifest in manifests
     ]
 
-    summary: dict[tuple[str, str, str, str], dict[str, Decimal]] = defaultdict(
+    summary: dict[tuple[str, str, str], dict[str, Decimal]] = defaultdict(
         lambda: {category: Decimal(0) for category in CATEGORIES}
     )
     detail: list[dict[str, Any]] = []
@@ -59,7 +67,6 @@ def export_rrhh_workbook(database: Path | str, output: Path | str) -> Path:
         for row in payload["rows"]:
             category = str(row["category"])
             key = (
-                str(row["channel"]),
                 str(row["currency"]),
                 str(row["person"]),
                 str(row["role"]),
@@ -68,15 +75,13 @@ def export_rrhh_workbook(database: Path | str, output: Path | str) -> Path:
                 str(row["commission_presented"])
             )
             detail.append(row)
-        for row in payload["differences"]:
-            differences.append({"channel": manifest["channel"], **row})
-        for row in payload["exceptions"]:
-            exceptions.append({"channel": manifest["channel"], **row})
+        differences.extend(payload["differences"])
+        exceptions.extend(payload["exceptions"])
 
     workbook = Workbook()
     resumen = workbook.active
     resumen.title = "Resumen RRHH"
-    resumen.append(["Canal", "Moneda", "Persona", "Puesto", *CATEGORIES, "TOTAL"])
+    resumen.append(["Moneda", "Persona", "Puesto", *CATEGORIES, "TOTAL"])
     for key in sorted(summary):
         values = summary[key]
         total = sum(values.values(), Decimal(0))
@@ -84,7 +89,7 @@ def export_rrhh_workbook(database: Path | str, output: Path | str) -> Path:
             [*key, *(float(values[category]) for category in CATEGORIES), float(total)]
         )
     _style_sheet(resumen)
-    for row in resumen.iter_rows(min_row=2, min_col=5, max_col=8):
+    for row in resumen.iter_rows(min_row=2, min_col=4, max_col=7):
         for cell in row:
             cell.number_format = "#,##0.00"
 
@@ -108,12 +113,12 @@ def export_rrhh_workbook(database: Path | str, output: Path | str) -> Path:
     _append_dicts(
         workbook.create_sheet("Excepciones"),
         exceptions,
-        ["channel", "key", "code", "blocking", "detail", "amount"],
+        ["key", "code", "blocking", "detail", "amount"],
     )
     _append_dicts(
         workbook.create_sheet("Diferencias"),
         differences,
-        ["channel", "key", "classification", "expected", "actual", "delta", "detail"],
+        ["key", "classification", "expected", "actual", "delta", "detail"],
     )
     manifest_sheet = workbook.create_sheet("Manifest")
     manifest_sheet.append(["Canal", "Manifest JSON"])

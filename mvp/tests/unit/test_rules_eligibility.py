@@ -2,6 +2,7 @@ from datetime import date
 from decimal import Decimal
 from pathlib import Path
 
+from mvp.domain.countries import CountryReference, resolve_country_name
 from mvp.domain.eligibility import evaluate
 from mvp.domain.models import Document, DocumentLine, PaymentAllocation
 from mvp.domain.rules import (
@@ -54,3 +55,75 @@ def test_scope_precedence_and_conflict() -> None:
         ),
     )
     assert resolve_beneficiary("Ana", conflict, context, {}).conflict
+
+
+def test_account_catalog_excludes_no_va_causes_without_using_free_text() -> None:
+    ruleset = load_ruleset_file(RULESET)
+    payment = PaymentAllocation(
+        "F1",
+        "P1",
+        date(2026, 9, 1),
+        Decimal(118),
+        review_flag="NO VA",
+    )
+    document = Document("F1", "internacional", "USD", Decimal(118), Decimal(100))
+
+    for account in ("7011001", "7599001", "7599006", "7599007", "7599009"):
+        line = DocumentLine(
+            "F1",
+            "L1",
+            Decimal(100),
+            Decimal(118),
+            product_code="P1",
+            account_code=account,
+        )
+        decision = evaluate(document, line, payment, ruleset)
+        assert decision.code == "ACCOUNT_EXCLUDED"
+        assert not decision.blocking
+
+    sale_line = DocumentLine(
+        "F1",
+        "L2",
+        Decimal(100),
+        Decimal(118),
+        product_code="P1",
+        account_code="7022101",
+    )
+    assert evaluate(document, sale_line, payment, ruleset).code == "ELIGIBLE"
+
+
+def test_digital_remains_outside_automatic_pilot() -> None:
+    ruleset = load_ruleset_file(RULESET)
+    document = Document("F1", "digital", "PEN", Decimal(118), Decimal(100))
+    line = DocumentLine(
+        "F1",
+        "L1",
+        Decimal(100),
+        Decimal(118),
+        product_code="P1",
+        account_code="7022101",
+    )
+    payment = PaymentAllocation("F1", "P1", date(2026, 9, 1), Decimal(118))
+    assert evaluate(document, line, payment, ruleset).code == "DIGITAL_OUT_OF_PILOT"
+
+
+def test_country_name_is_resolved_once_to_persistable_identity() -> None:
+    countries = (
+        CountryReference(173, "Perú", "PE"),
+        CountryReference(49, "Costa Rica", "CR"),
+    )
+    by_name = resolve_country_name("Costa Rica", countries)
+    assert (by_name.country_id, by_name.country_code, by_name.matched_by) == (
+        49,
+        "CR",
+        "name",
+    )
+    assert not by_name.blocking
+
+    by_code = resolve_country_name("pe", countries)
+    assert (by_code.country_id, by_code.country_code, by_code.matched_by) == (
+        173,
+        "PE",
+        "code",
+    )
+    assert resolve_country_name("América", countries).reason == "COUNTRY_NOT_FOUND"

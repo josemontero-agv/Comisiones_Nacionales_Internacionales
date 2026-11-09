@@ -5,8 +5,8 @@ Estado: aprobado para implementación por autorización expresa del usuario.
 ## Objetivo
 
 Entregar una interfaz local para inspeccionar resultados Gold, ejecutar la paridad de los
-cierres registrados y descargar un único Excel para RRHH/Dirección. Streamlit no recalcula
-comisiones ni lee Bronze/Silver: consume servicios y vistas Gold del núcleo.
+cierres registrados y descargar el Excel separado del canal seleccionado. Streamlit no
+recalcula comisiones ni lee Bronze/Silver: consume servicios y vistas Gold del núcleo.
 
 ## Stack y comandos
 
@@ -14,8 +14,12 @@ comisiones ni lee Bronze/Silver: consume servicios y vistas Gold del núcleo.
 
 ```powershell
 python -m streamlit run interfaz_minima/app.py --server.headless true --server.port 8501
-python -m mvp.cli export-xlsx --database var/commission-pilot.sqlite3 `
-  --output entrega_rrhh/comisiones_septiembre_2026.xlsx
+python -m mvp.cli export-xlsx --channel nacional `
+  --database var/commission-pilot.sqlite3 `
+  --output entrega_rrhh/comisiones_nacional_septiembre_2026.xlsx
+python -m mvp.cli export-xlsx --channel internacional `
+  --database var/commission-pilot.sqlite3 `
+  --output entrega_rrhh/comisiones_internacional_septiembre_2026.xlsx
 ```
 
 ## Estructura
@@ -31,16 +35,17 @@ python -m mvp.cli export-xlsx --database var/commission-pilot.sqlite3 `
 - Totales esperado/calculado/diferencia por moneda y canal.
 - Resumen persona × puesto con Contado, Crédito, Letras y Total.
 - Detalle Gold, excepciones y diferencias clasificadas.
-- Botón de descarga del mismo archivo generado por CLI.
+- Botón de descarga del archivo correspondiente al canal seleccionado, sin totales del otro.
 
 La aplicación debe mostrar explícitamente que septiembre habilita el piloto, pero no la
 producción mientras `additional-closures` siga pendiente.
 
 ## Excel de entrega
 
-El libro contiene `Resumen RRHH`, `Detalle`, `Excepciones`, `Diferencias` y `Manifest`.
-Importes se escriben como números con formato de dos decimales; identificadores se preservan
-como texto. RRHH y Dirección consumen exactamente el mismo resumen.
+Cada canal genera su propio libro con `Resumen RRHH`, `Detalle`, `Excepciones`, `Diferencias`
+y `Manifest`. Importes se escriben como números con formato de dos decimales; identificadores
+se preservan como texto. Dirección Comercial supervisa/analiza/aprueba Nacional y Gerencia
+Internacional hace lo propio con Internacional; los archivos y aprobaciones nunca se mezclan.
 
 ## Pruebas
 
@@ -58,5 +63,6 @@ como texto. RRHH y Dirección consumen exactamente el mismo resumen.
 
 1. La UI arranca headless y responde por HTTP.
 2. Nacional e Internacional se pueden ejecutar/inspeccionar.
-3. El Excel real se genera en `entrega_rrhh/` y reconcilia con Gold.
+3. Los dos Excel reales se generan en `entrega_rrhh/`, cada uno reconcilia solo con el Gold
+   de su canal.
 4. Las limitaciones y diferencias permanecen visibles.

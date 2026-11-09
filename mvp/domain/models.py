@@ -36,6 +36,7 @@ class Document:
     invoice_date: date | None = None
     partner_ref: str | None = None
     partner_name: str | None = None
+    country_id: int | None = None
     country_code: str | None = None
     zone_name: str | None = None
     salesperson: str | None = None

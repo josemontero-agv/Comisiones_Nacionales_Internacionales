@@ -27,7 +27,10 @@ def _parser() -> argparse.ArgumentParser:
     parity.add_argument("--json-output", type=Path)
 
     export = commands.add_parser(
-        "export-xlsx", help="genera el libro de entrega desde Gold"
+        "export-xlsx", help="genera el libro separado de un canal desde Gold"
+    )
+    export.add_argument(
+        "--channel", choices=("nacional", "internacional"), required=True
     )
     export.add_argument("--database", type=Path, required=True)
     export.add_argument("--output", type=Path, required=True)
@@ -55,7 +58,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True))
         return 0
     if arguments.command == "export-xlsx":
-        output = export_rrhh_workbook(arguments.database, arguments.output)
+        output = export_rrhh_workbook(
+            arguments.database, arguments.output, arguments.channel
+        )
         print(output)
         return 0
     if arguments.command == "export-contract":

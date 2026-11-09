@@ -2,9 +2,14 @@
   "ruleset_version": "2026-09.v1",
   "catalogs": {
     "allowed_accounts": {
-      "approved": false,
-      "values": ["7011001", "7021001"],
-      "evidence": "Catálogo provisional: requiere aprobación de Contabilidad."
+      "approved": true,
+      "values": ["7022101"],
+      "evidence": "Decisión de negocio 2026-11-09: venta de productos; aplica a Nacional, Internacional y Digital, aunque Digital queda fuera del cálculo automático del piloto."
+    },
+    "excluded_accounts": {
+      "approved": true,
+      "values": ["7011001", "7599001", "7599006", "7599007", "7599009"],
+      "evidence": "Decisión de negocio 2026-11-09: gastos de exportación, recobros e intereses no comisionan."
     },
     "excluded_concepts": {
       "approved": true,
@@ -37,12 +42,12 @@
     "america": {
       "approved": false,
       "values": [],
-      "evidence": "Pendiente catálogo ISO de América."
+      "evidence": "Catálogo vacío y configurable: el usuario entregará nombres de país, que se resolverán una vez contra res.country y se persistirán como country_id/código ISO."
     },
     "latam": {
       "approved": false,
       "values": [],
-      "evidence": "Pendiente catálogo ISO de LATAM."
+      "evidence": "Catálogo vacío y configurable: el usuario entregará nombres de país, que se resolverán una vez contra res.country y se persistirán como country_id/código ISO."
     }
   },
   "nacional": {

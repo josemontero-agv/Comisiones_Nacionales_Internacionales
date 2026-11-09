@@ -23,6 +23,7 @@ isProject: false
 # MVP de paridad e interfaz mínima
 
 ## Decisiones cerradas
+
 - El piloto usa los únicos cierres completos disponibles:
   - Nacional: septiembre 2026, con entradas en [`Proceso_Manual/nacional/SEP`](Proceso_Manual/nacional/SEP) y tabla de reglas en [`Proceso_Manual/nacional/Porcentajes/Tabla de Comisiones.xlsx`](Proceso_Manual/nacional/Porcentajes/Tabla%20de%20Comisiones.xlsx).
   - Internacional: ciclo 20-ago–20-sep 2026, con entradas en [`Proceso_Manual/internacional/SEPTIEMBRE`](Proceso_Manual/internacional/SEPTIEMBRE).
@@ -34,6 +35,7 @@ isProject: false
 - La salida se generará en `entrega_rrhh/` como `.xlsx`, con el mismo resumen persona/puesto × Contado/Crédito/Letras/Total para RRHH y Dirección Comercial, más hojas de detalle, excepciones y diferencias.
 
 ## Arquitectura manejable
+
 - `mvp/`: núcleo Python independiente de Streamlit.
 - Medallón local en SQLite para evitar infraestructura prematura:
   - Bronze: extractos Odoo y Excel importados sin alterar, con origen, periodo y fecha de carga.
@@ -43,13 +45,15 @@ isProject: false
 - La extracción Odoo será solo lectura, paginada, con campos explícitos y sin consultas N+1.
 
 ## Flujo SDD y archivos
-1. Redactar y aprobar [`SPEC-commission-engine.md`](SPEC-commission-engine.md), incluyendo comandos, estructura, estilo, pruebas, límites y contratos Bronze/Silver/Gold. No implementar antes de esa aprobación.
+
+1. **Redactar** y aprobar [`SPEC-commission-engine.md`](SPEC-commission-engine.md), incluyendo comandos, estructura, estilo, pruebas, límites y contratos Bronze/Silver/Gold. No implementar antes de esa aprobación.
 2. Tras aprobar la SPEC, crear `tasks/plan.md` y `tasks/todo.md`, luego implementar el motor en `mvp/` con pruebas unitarias.
 3. Redactar/aprobar `SPEC-historical-parity.md`; implementar importadores y comparadores de septiembre en `mvp/`, convirtiendo cada diferencia corregida en regresión bajo `mvp/tests/`.
 4. Redactar/aprobar `SPEC-interfaz-minima.md`; implementar la aplicación en `interfaz_minima/` y la exportación en `entrega_rrhh/`.
 5. Registrar en [`docs/CHANGELOG.md`](docs/CHANGELOG.md) cada fase y mantener trazabilidad con el [`PRD`](docs/PRD_COMISIONES_NACIONAL_INTERNACIONAL.html).
 
 ## Verificación
+
 - Tests unitarios de reglas, exclusiones, redondeo y seguimiento anti-duplicado de letras.
 - Comparación por factura/línea/persona y resumen contra cada golden master.
 - Clasificación de diferencias: dato fuente, mapeo, elegibilidad, base, porcentaje, beneficiario, redondeo o excepción manual.

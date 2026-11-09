@@ -13,6 +13,8 @@ La paridad no transforma defectos del Excel en reglas. En particular, el atajo d
 `subtotal / cantidad de letras` se conserva solo como valor esperado histórico; el motor usa
 el monto real de la letra. Toda diferencia se clasifica como `dato_fuente`, `mapeo`,
 `elegibilidad`, `base`, `porcentaje`, `beneficiario`, `redondeo` o `excepcion_manual`.
+La marca histórica `NO VA` tampoco se usa como texto libre: sus líneas son no comisionables
+por cuenta (`7011001` para gastos de exportación o `7599009` para intereses).
 
 ## Entradas aprobadas
 
@@ -29,6 +31,10 @@ el monto real de la letra. Toda diferencia se clasifica como `dato_fuente`, `map
 ```powershell
 python -m mvp.cli run-parity --channel nacional --database var/commission-pilot.sqlite3
 python -m mvp.cli run-parity --channel internacional --database var/commission-pilot.sqlite3
+python -m mvp.cli export-xlsx --channel nacional --database var/commission-pilot.sqlite3 `
+  --output entrega_rrhh/comisiones_nacional_septiembre_2026.xlsx
+python -m mvp.cli export-xlsx --channel internacional --database var/commission-pilot.sqlite3 `
+  --output entrega_rrhh/comisiones_internacional_septiembre_2026.xlsx
 python -m pytest mvp/tests -q
 ```
 
@@ -52,6 +58,10 @@ monetarias, total esperado, total calculado, diferencia y estado:
 
 El resultado solo es pagable con estado `parity`, sin excepciones bloqueantes y con cierres
 adicionales completados.
+
+La entrega de RRHH se materializa en dos libros independientes. Nacional va a Dirección
+Comercial e Internacional a Gerencia Internacional; ni el detalle ni los totales se
+consolidan en un mismo archivo o aprobación.
 
 ## Estrategia de pruebas
 

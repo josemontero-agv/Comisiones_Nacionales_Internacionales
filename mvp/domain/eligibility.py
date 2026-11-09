@@ -27,6 +27,8 @@ def evaluate(
     allocation: PaymentAllocation,
     ruleset: Ruleset,
 ) -> Eligibility:
+    if normalize_key(document.channel) == "DIGITAL":
+        return Eligibility(False, "DIGITAL_OUT_OF_PILOT")
     doc_type = normalize_key(f"{document.doc_type_code} {document.doc_type_name}")
     if "BOLETA" in doc_type or document.doc_type_code in {"03", "07"}:
         return Eligibility(False, "DOCUMENT_TYPE_EXCLUDED")
@@ -46,8 +48,11 @@ def evaluate(
     if allocation.counterpart_kind == KIND_LETTER_TRANSFER:
         return Eligibility(False, "LETTER_TRANSFER_NOT_PAYMENT")
 
-    account_catalog = ruleset.catalogs.get("allowed_accounts")
-    if account_catalog and not account_catalog.contains(line.account_code):
+    excluded_accounts = ruleset.catalogs.get("excluded_accounts")
+    if excluded_accounts and excluded_accounts.contains(line.account_code):
+        return Eligibility(False, "ACCOUNT_EXCLUDED")
+    allowed_accounts = ruleset.catalogs.get("allowed_accounts")
+    if allowed_accounts and not allowed_accounts.contains(line.account_code):
         return Eligibility(False, "UNKNOWN_ACCOUNT", blocking=True)
     excluded_concepts = ruleset.catalogs.get("excluded_concepts")
     text = normalize_key(f"{line.product_name} {line.line_category}")

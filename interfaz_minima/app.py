@@ -13,7 +13,12 @@ from mvp.infrastructure.sqlite import MedallionRepository
 
 ROOT = Path(__file__).resolve().parents[1]
 DATABASE = ROOT / "var/commission-pilot.sqlite3"
-EXPORT = ROOT / "entrega_rrhh/comisiones_septiembre_2026.xlsx"
+EXPORTS = {
+    "nacional": ROOT / "entrega_rrhh/comisiones_nacional_septiembre_2026.xlsx",
+    "internacional": (
+        ROOT / "entrega_rrhh/comisiones_internacional_septiembre_2026.xlsx"
+    ),
+}
 
 st.set_page_config(page_title="Comisiones AGV — Piloto", layout="wide")
 st.title("Comisiones Nacional e Internacional")
@@ -56,11 +61,12 @@ else:
     with manifest_tab:
         st.code(json.dumps(selected, ensure_ascii=False, indent=2), language="json")
 
-if manifests:
-    export_rrhh_workbook(DATABASE, EXPORT)
+if selected is not None:
+    export_path = EXPORTS[channel]
+    export_rrhh_workbook(DATABASE, export_path, channel)
     st.download_button(
-        "Descargar Excel RRHH/Dirección",
-        data=EXPORT.read_bytes(),
-        file_name=EXPORT.name,
+        f"Descargar Excel {channel.title()}",
+        data=export_path.read_bytes(),
+        file_name=export_path.name,
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     )

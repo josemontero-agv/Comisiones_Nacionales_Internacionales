@@ -338,10 +338,16 @@ El motor no importará Streamlit ni administrará estado de sesión. La UI futur
 - El diario TRP representa traslado a letra y no un cobro.
 - Interés, flete, seguro, gasto de exportación, gasto administrativo/financiero y reajuste se
   excluyen por línea.
+- La única cuenta de venta de producto confirmada para este piloto es `7022101`, con
+  independencia del canal del asiento. `7011001`, `7599001`, `7599006`, `7599007` y
+  `7599009` quedan excluidas; cualquier otra cuenta bloquea por desconocida.
 - Una Nota de Débito se decide línea por línea: debe ser producto real y usar una cuenta
-  permitida.
+  permitida. La marca histórica `NO VA` no es una regla: esas filas no comisionan porque
+  corresponden a gastos de exportación en `7011001` o intereses en `7599009`.
 - Cuenta, concepto o diario desconocido generan excepción bloqueante hasta aprobación; no se
   agregan a una lista implícita.
+- `REGV` (regularización de ventas en Odoo) permanece incluido hasta que Contabilidad indique
+  lo contrario; no forma parte de los diarios excluidos.
 
 ### Letras
 
@@ -360,6 +366,10 @@ El motor no importará Streamlit ni administrará estado de sesión. La UI futur
 - Internacional aplica porcentajes por beneficiario y experiencia:
   Ariana, Vanessa, Sandra, Umberto e Ivonne sobre TODOS; Luis sobre América + PETMEDICA;
   Mayumi al `0.5%` sobre AVIVET + LATAM.
+- Los catálogos América y LATAM permanecen vacíos hasta que el usuario entregue nombres de
+  país. Cada nombre se resuelve una sola vez, por coincidencia exacta de `res.country.name` y
+  luego por `res.country.code`, y se persiste como `country_id`/ISO. Sin coincidencia exacta
+  se bloquea para revisión; no se compara texto por cada línea ni se usa coincidencia difusa.
 - Aminoplex Forte x 100 ml usa un override versionado a PETMEDICA mientras Odoo informe
   AGROVET.
 - La precedencia es factura > producto > línea > cliente > país > TODOS. A igual alcance,
@@ -442,7 +452,9 @@ Usan un SQLite temporal real:
 - toda comisión no cero tiene beneficiario, regla y trazabilidad;
 - `total_emitidas = pagadas_hasta_fin + faltantes`;
 - pagadas del periodo no intersectan pagadas históricas;
-- RRHH y Dirección Comercial pueden consumir el mismo resumen, sin dos lógicas de cálculo;
+- RRHH recibe dos entregas independientes: Nacional para Dirección Comercial e Internacional
+  para Gerencia Internacional; cada archivo conserva el mismo contrato de resumen sin mezclar
+  canales ni aprobaciones;
 - la interfaz de paridad publica crudo, presentado y política `0.01`, sin importar Excel.
 
 ### Golden masters
@@ -513,23 +525,20 @@ criterios y ramas anteriores deben tener al menos una prueba positiva y una nega
 11. El piloto de septiembre no se declara apto para producción: esa decisión exige además
     `historical-parity` y 1–2 cierres adicionales por canal.
 
-## Preguntas abiertas para aprobación humana
+## Decisiones operativas cerradas
 
-Estas preguntas provienen del PRD y no reabren decisiones cerradas del plan. Mientras sigan
-abiertas, el comportamiento seguro es generar una excepción bloqueante.
-
-1. ¿Qué catálogo exhaustivo de cuentas aprueba Contabilidad como ingreso de venta permitido
-   y qué cuentas clasifica como ingreso financiero o recupero excluido?
-2. ¿Qué códigos ISO exactos integran “América” para Luis y “LATAM” para Mayumi, incluido el
-   tratamiento de Caribe y territorios?
-3. ¿Quién aprueba las reglas permanentes y los overrides propuestos por Sandra para mantener
-   segregación de funciones?
-4. ¿Debe excluirse el diario `REGV — Regularización de ventas` u otro diario adicional,
-   además de `001` y `060`?
-5. ¿Cuál es la regla auditable de `NO VA` en Internacional? Hasta responder, esas líneas
-   quedan en revisión y no se excluyen automáticamente por monto.
+1. `7022101` es la cuenta elegible versionada; `7011001`, `7599001`, `7599006`, `7599007`
+   y `7599009` son exclusiones contables explícitas.
+2. `NO VA` deja de ser texto libre: identifica ND por gasto de exportación (`7011001`) o
+   facturas de intereses (`7599009`), ambas no comisionables.
+3. Sandra propone cambios Internacional y aprueba ese canal. Durante el piloto José Montero
+   los aplica; Sandra no edita periodos cerrados. Dirección Comercial aprueba Nacional.
+4. `REGV` queda incluido hasta una decisión contraria de Contabilidad.
+5. América/LATAM son catálogos vacíos y configurables por nombres de país; no se inventan
+   países para Luis o Mayumi.
 
 ## Puerta de aprobación
 
-La SPEC fue aprobada por el usuario antes de la implementación. Los catálogos de cuentas y
-países aún abiertos bloquean la pagabilidad, pero no la ejecución diagnóstica del piloto.
+La SPEC fue aprobada por el usuario antes de la implementación. Los catálogos América/LATAM
+vacíos bloquean únicamente reglas que los requieran, pero no la ejecución diagnóstica del
+piloto.

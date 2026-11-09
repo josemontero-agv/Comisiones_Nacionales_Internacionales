@@ -3,6 +3,31 @@
 > Documentación viva: cada cambio relevante de código o documentación en este proyecto debe
 > dejar una entrada aquí, describiendo el impacto para cualquier persona del equipo.
 
+## [2026-11-09] — Reglas cerradas y entregas separadas por canal
+
+### Cambiado
+- El ruleset versiona `7022101` como única cuenta elegible confirmada y excluye `7011001`,
+  `7599001`, `7599006`, `7599007` y `7599009`. Digital sigue fuera del cálculo automático.
+- `NO VA` deja de ser texto libre: las líneas históricas no comisionan por gasto de
+  exportación (`7011001`) o interés (`7599009`).
+- Los nombres de país se resuelven una vez contra `res.country` por nombre y luego código
+  exactos; se persisten `country_id`/ISO. América y LATAM quedan vacíos hasta recibir nombres.
+- Sandra propone y aprueba cambios Internacional; durante el piloto José Montero los aplica
+  sin permitir edición de periodos cerrados. Dirección Comercial aprueba Nacional.
+- `REGV` permanece incluido como regularización de ventas hasta decisión contraria de
+  Contabilidad.
+- Streamlit, CLI y exportador generan/descargan un solo canal por vez. RRHH recibe
+  `comisiones_nacional_septiembre_2026.xlsx` y
+  `comisiones_internacional_septiembre_2026.xlsx`, cada uno con resumen, detalle,
+  excepciones, diferencias y manifest propios.
+
+### Verificación
+- Se actualizó la suite para comprobar cuentas, exclusión de Digital, resolución de país y
+  ausencia de mezcla entre libros.
+- `python -m pytest mvp/tests -q`: 16 pruebas aprobadas. Ruff, compilación, JSON,
+  `git diff --check` y diagnósticos del editor sin errores.
+- `kluster_code_review_auto` no está disponible en las herramientas de esta sesión.
+
 ## [2026-11-07] — MVP local, paridad real y Streamlit
 
 ### Añadido
