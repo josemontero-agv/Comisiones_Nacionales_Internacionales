@@ -1,3 +1,21 @@
 .env
 auditoria/
 
+# Python local
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Base medallón y artefactos locales
+*.sqlite
+*.sqlite3
+*.sqlite3-shm
+*.sqlite3-wal
+var/
+
+# Entregables con datos reales (se conserva el directorio mediante README)
+entrega_rrhh/*.xlsx
+entrega_rrhh/*.xls
+

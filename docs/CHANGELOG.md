@@ -3,6 +3,53 @@
 > Documentación viva: cada cambio relevante de código o documentación en este proyecto debe
 > dejar una entrada aquí, describiendo el impacto para cualquier persona del equipo.
 
+## [2026-11-07] — MVP local, paridad real y Streamlit
+
+### Añadido
+- SPECs aprobadas de paridad e interfaz, plan/tareas recuperados y registro de cierres.
+- Núcleo Python con dinero `Decimal`, periodos, elegibilidad, reglas, comisiones, letras,
+  contratos canónicos, cliente Odoo estrictamente de lectura y extractor paginado.
+- Arquitectura medallón SQLite (`bronze_*`, `silver_*`, `gold_*`) con cargas idempotentes,
+  resultados trazables y hashes.
+- Importadores/comparador de los cierres reales de septiembre, clasificación de diferencias
+  y pruebas de regresión contra ambos golden masters.
+- Interfaz Streamlit que consume Gold y exportador único para RRHH/Dirección con hojas de
+  resumen, detalle, excepciones, diferencias y manifest.
+
+### Verificado
+- Nacional: golden `S/ 74.710,24`; motor correcto `S/ 74.510,25`; 828 diferencias de base,
+  principalmente por usar monto real de letra en lugar del atajo por cantidad del Excel.
+- Internacional: golden `USD 12.339,38`; motor `USD 12.605,76`; 704 diferencias de
+  elegibilidad por aplicar la regla actual de beneficiarios sobre TODOS en vez de las marcas
+  históricas parciales.
+- El resultado permanece bloqueado/no pagable por beneficiario faltante, falta de catálogos
+  ISO América/LATAM, dependencia histórica de `FILTRO` y una inconsistencia entre detalle y
+  resumen del golden Nacional.
+- Suite, lint/formato, compilación, paridad por CLI, XLSX y Streamlit headless HTTP 200.
+
+### Dependencias y límites
+- `requirements.txt` fija solo `openpyxl`, `pytest`, `python-dotenv`, `ruff` y `streamlit`;
+  `.venv` ya las contenía y no se ejecutó instalación.
+- Se buscó `kluster_dependency_validator` antes del cambio y
+  `kluster_code_review_auto` al cierre; ninguna herramienta estuvo disponible.
+- `additional-closures` queda preparado pero pendiente: solo existe septiembre.
+
+## [2026-11-06] — SPEC del motor determinista para aprobación
+
+### Añadido
+- `SPEC-commission-engine.md`: Phase 1 Specify del módulo `commission-engine`, con contratos
+  deterministas, arquitectura medallón local Bronze/Silver/Gold en SQLite, extracción Odoo
+  de solo lectura y separación estricta respecto de Streamlit.
+- Se definieron contratos canónicos para que `historical-parity` consuma claves, importes
+  crudos/presentados y tolerancia monetaria de `0,01`, sin implementar importación de Excel
+  ni comparación de *golden masters* dentro del motor.
+- Se documentaron stack del piloto, comandos futuros completos, estructura, estilo, pruebas,
+  límites, criterios verificables, supuestos y las preguntas abiertas heredadas del PRD.
+
+### Impacto
+- Solo documentación de Phase 1. No se crearon `mvp/`, planes, tareas, código, tests ni
+  dependencias. La SPEC queda detenida en la puerta de aprobación humana.
+
 ## [2026-11-06] — Mapa de capacidades previo a especificaciones
 
 ### Añadido

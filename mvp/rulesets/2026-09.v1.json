@@ -1,0 +1,55 @@
+{
+  "ruleset_version": "2026-09.v1",
+  "catalogs": {
+    "allowed_accounts": {
+      "approved": false,
+      "values": ["7011001", "7021001"],
+      "evidence": "Catálogo provisional: requiere aprobación de Contabilidad."
+    },
+    "excluded_concepts": {
+      "approved": true,
+      "values": ["INTERES", "FLETE", "SEGURO", "GASTO DE EXPORTACION", "REAJUSTE"],
+      "evidence": "PRD y SPEC commission-engine."
+    }
+  },
+  "payment_term_category": {
+    "nacional": {
+      "100% PAGO ADELANTADO": "CONTADO",
+      "CONTADO/CASH": "CONTADO",
+      "CRÉDITO DIRECTO / 30 DÍAS": "CREDITO"
+    }
+  },
+  "letters": {
+    "eligible_status": ["DESCUENTO", "CARTERA", "COBRANZA"],
+    "excluded_status": ["PROTESTADO"]
+  },
+  "product_overrides": [
+    {
+      "rule_id": "OVR-AMINOPLEX-2026-09",
+      "product_code": "31018PER00002",
+      "commercial_line": "PETMEDICA",
+      "approved": true,
+      "evidence": "Override temporal aprobado para el piloto de septiembre."
+    }
+  ],
+  "product_families": {},
+  "country_groups": {
+    "america": {
+      "approved": false,
+      "values": [],
+      "evidence": "Pendiente catálogo ISO de América."
+    },
+    "latam": {
+      "approved": false,
+      "values": [],
+      "evidence": "Pendiente catálogo ISO de LATAM."
+    }
+  },
+  "nacional": {
+    "matrix": [],
+    "zone_variants": []
+  },
+  "internacional": {
+    "rules": []
+  }
+}

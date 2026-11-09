@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "closures": [
+    {
+      "id": "nacional-2026-09",
+      "channel": "nacional",
+      "period_start": "2026-09-01",
+      "period_end": "2026-09-30",
+      "status": "available",
+      "golden_master": "Proceso_Manual/nacional/calculo_vendedores/COMISIONES 2026 SETIEMBRE (1).xlsx"
+    },
+    {
+      "id": "internacional-2026-08-20_2026-09-20",
+      "channel": "internacional",
+      "period_start": "2026-08-20",
+      "period_end": "2026-09-20",
+      "status": "available",
+      "golden_master": "Proceso_Manual/internacional/SEPTIEMBRE/COMISION EXTERIOR 20 AGOSTO 2026 AL 20 SEPTIEMBRE 2026.xlsx"
+    }
+  ],
+  "additional_closures": {
+    "required_per_channel": "1-2",
+    "status": "pending",
+    "reason": "No existen otros cierres completos en Proceso_Manual."
+  }
+}
