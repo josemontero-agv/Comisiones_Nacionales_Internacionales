@@ -90,6 +90,9 @@ class MedallionRepository:
                 "DELETE FROM gold_commission_line WHERE run_id = ?", (result.run_id,)
             )
             connection.execute(
+                "DELETE FROM gold_collected_line WHERE run_id = ?", (result.run_id,)
+            )
+            connection.execute(
                 "DELETE FROM gold_difference WHERE run_id = ?", (result.run_id,)
             )
             connection.execute(
@@ -120,6 +123,13 @@ class MedallionRepository:
                 ],
             )
             connection.executemany(
+                "INSERT INTO gold_collected_line(run_id, row_key, payload_json) VALUES (?, ?, ?)",
+                [
+                    (result.run_id, row.key, canonical_json(row.contract()))
+                    for row in result.collected_rows
+                ],
+            )
+            connection.executemany(
                 """
                 INSERT INTO gold_difference(run_id, difference_key, classification, payload_json)
                 VALUES (?, ?, ?, ?)
@@ -137,16 +147,55 @@ class MedallionRepository:
                 ],
             )
 
-    def latest_manifests(self) -> list[dict[str, Any]]:
+    def store_silver_records(
+        self,
+        snapshot_id: str,
+        records: list[tuple[str, str, dict[str, Any]]],
+    ) -> None:
+        """Reemplaza de forma atómica la proyección Silver de un snapshot."""
+        with self.connect() as connection:
+            connection.execute(
+                "DELETE FROM silver_record WHERE snapshot_id = ?", (snapshot_id,)
+            )
+            connection.executemany(
+                """
+                INSERT INTO silver_record
+                (snapshot_id, entity_type, entity_key, payload_json)
+                VALUES (?, ?, ?, ?)
+                """,
+                [
+                    (snapshot_id, entity_type, entity_key, canonical_json(payload))
+                    for entity_type, entity_key, payload in records
+                ],
+            )
+
+    def snapshot_counts(self, snapshot_id: str) -> dict[str, int]:
+        with self.connect() as connection:
+            bronze = connection.execute(
+                "SELECT COUNT(*) FROM bronze_record WHERE snapshot_id = ?",
+                (snapshot_id,),
+            ).fetchone()[0]
+            silver = connection.execute(
+                "SELECT COUNT(*) FROM silver_record WHERE snapshot_id = ?",
+                (snapshot_id,),
+            ).fetchone()[0]
+        return {"bronze": int(bronze), "silver": int(silver)}
+
+    def latest_manifests(self, bronze_origin: str | None = None) -> list[dict[str, Any]]:
         with self.connect() as connection:
             rows = connection.execute(
                 """
                 SELECT manifest_json FROM gold_run
-                WHERE rowid IN (SELECT MAX(rowid) FROM gold_run GROUP BY channel)
-                ORDER BY channel
+                ORDER BY rowid DESC
                 """
             ).fetchall()
-        return [json.loads(row["manifest_json"]) for row in rows]
+        selected: dict[str, dict[str, Any]] = {}
+        for row in rows:
+            manifest = json.loads(row["manifest_json"])
+            if bronze_origin and manifest.get("bronze_origin") != bronze_origin:
+                continue
+            selected.setdefault(str(manifest["channel"]), manifest)
+        return [selected[channel] for channel in sorted(selected)]
 
     def load_result_payload(self, run_id: str) -> dict[str, Any]:
         with self.connect() as connection:
@@ -157,6 +206,10 @@ class MedallionRepository:
                 raise KeyError(run_id)
             lines = connection.execute(
                 "SELECT payload_json FROM gold_commission_line WHERE run_id = ? ORDER BY row_key",
+                (run_id,),
+            ).fetchall()
+            collected_lines = connection.execute(
+                "SELECT payload_json FROM gold_collected_line WHERE run_id = ? ORDER BY row_key",
                 (run_id,),
             ).fetchall()
             differences = connection.execute(
@@ -173,6 +226,9 @@ class MedallionRepository:
         return {
             "manifest": json.loads(run["manifest_json"]),
             "rows": [json.loads(row["payload_json"]) for row in lines],
+            "collected_rows": [
+                json.loads(row["payload_json"]) for row in collected_lines
+            ],
             "differences": [json.loads(row["payload_json"]) for row in differences],
             "exceptions": [json.loads(row["payload_json"]) for row in exceptions],
         }

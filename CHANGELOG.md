@@ -3,6 +3,71 @@
 > Documentación viva: cada cambio relevante de código o documentación en este proyecto debe
 > dejar una entrada aquí, describiendo el impacto para cualquier persona del equipo.
 
+## [2026-11-10] — Alcance de producción, octubre y aprobador del sistema
+
+### Cambiado
+- “Producción” queda definida como la construcción del stack técnico: extracción Odoo,
+  transformación, API Flask, pantalla Next.js y PostgreSQL. No implica envío a nómina ni
+  vuelve pagable un periodo.
+- Octubre 2026 es el siguiente cierre de prueba después de septiembre; diciembre queda fuera
+  del plan inmediato.
+- La diferencia Nacional de S/ 199,33 sigue abierta. El prorrateo del PRD y el atajo histórico
+  del Excel permanecen visibles para comparación; septiembre continúa no pagable.
+- Dirección Comercial supervisa y valida Nacional, y Gerencia Internacional hace lo mismo
+  con Internacional. El Supervisor de Proyectos de Finanzas ejecuta y registra la aprobación
+  que habilita la entrega a RRHH; durante el piloto, José Montero ocupa ese rol.
+
+### Impacto
+- Se actualizó el PRD, incluidos workflow, RBAC, requisitos, modelo de aprobación, roadmap,
+  riesgos y decisiones cerradas. El código actual aún no implementa roles ni estados de
+  workflow, por lo que no requirió cambios.
+
+## [2026-11-10] — Catálogo ISO único América/LATAM
+
+### Cambiado
+- Luis Chávez y Mayumi Garcilazo comparten el catálogo versionado
+  `MX, GT, BZ, SV, HN, NI, CR, PA, CO, VE, EC, PE, BO, BR, PY, UY, AR, CL, GY, SR, GF`.
+- Las reglas comparan el ISO persistido; Caribe, Estados Unidos y Canadá quedan fuera.
+- El PRD cierra la pregunta de países y las pruebas cubren inclusión y exclusión.
+
+### Impacto
+- El catálogo ya no bloquea por estar vacío. El Excel histórico sí continúa bloqueado para
+  estos alcances porque no contiene el ISO del cliente.
+
+## [2026-11-10] — Análisis SOLID para construir el flujo por roles
+
+### Contexto
+La construcción de producción debe extraer desde Odoo y entregar a RRHH solo después de la aprobación de cada canal.
+
+### Añadido
+- En la arquitectura del PRD, una tabla SOLID aplicada a este sistema: cálculo, aprobación y exportación separados.
+- Cada rol funcional queda atado a un puerto propio: Dirección Comercial valida Nacional,
+  Gerencia Internacional valida Internacional y el Supervisor de Proyectos de Finanzas
+  registra la aprobación en ambos canales.
+- Queda escrito que el exportador del piloto todavía no exige el estado `Aprobado`; ese es el
+  control que falta para habilitar una entrega a RRHH, no para construir el stack técnico.
+
+### Impacto
+- Solo documentación de construcción. No cambia el cálculo ni los Excel de septiembre.
+
+## [2026-11-09] — Background cobrado, overrides y reconciliación Nacional
+
+### Cambiado
+- Se creó el README de equipo con comandos reales, estructura y evidencia de que ambos
+  cierres Bronze de septiembre se cargan desde Excel, no desde Odoo en vivo.
+- Se modeló el override temporal de Ivonne (Sandra/José, factura y producto exactos) y la
+  regla permanente de Mayumi al 0,5% sobre AVIVET + LATAM; septiembre muestra Mayumi en cero.
+- Gold conserva líneas de cobro sin duplicarlas por beneficiario y ambos libros añaden
+  `Cobrado por linea` con cobrado/comisión por línea comercial y categoría.
+- El reporte Nacional muestra S/ 74.710,24 contra S/ 74.510,91 presentados: los deltas
+  visibles por persona suman S/ 298,06, menos S/ 98,73 de Chaman que el pivote omite aunque
+  el detalle calcula. La diferencia de S/ 199,33 queda abierta para iteración; no se declara
+  resuelta por prorrateo/redondeo ni por el atajo histórico.
+
+### Impacto
+- Las entregas siguen separadas, bloqueadas y no pagables. La consulta puntual de la factura
+  de Ivonne fue de solo lectura y no cambió el origen Excel del cierre.
+
 ## [2026-11-09] — Reglas cerradas y entregas separadas por canal
 
 ### Cambiado
@@ -12,8 +77,9 @@
   exportación (`7011001`) o interés (`7599009`).
 - Los nombres de país se resuelven una vez contra `res.country` por nombre y luego código
   exactos; se persisten `country_id`/ISO. América y LATAM quedan vacíos hasta recibir nombres.
-- Sandra propone y aprueba cambios Internacional; durante el piloto José Montero los aplica
-  sin permitir edición de periodos cerrados. Dirección Comercial aprueba Nacional.
+- Sandra propone cambios y valida Internacional; Dirección Comercial valida Nacional.
+  Durante el piloto José Montero aplica los cambios y, como Supervisor de Proyectos de
+  Finanzas, registra la aprobación sin permitir edición de periodos cerrados.
 - `REGV` permanece incluido como regularización de ventas hasta decisión contraria de
   Contabilidad.
 - Streamlit, CLI y exportador generan/descargan un solo canal por vez. RRHH recibe
@@ -42,7 +108,7 @@
   resumen, detalle, excepciones, diferencias y manifest.
 
 ### Verificado
-- Nacional: golden `S/ 74.710,24`; motor correcto `S/ 74.510,25`; 828 diferencias de base,
+- Nacional: golden `S/ 74.710,24`; rama prorrateada del motor `S/ 74.510,25`; 828 diferencias de base,
   principalmente por usar monto real de letra en lugar del atajo por cantidad del Excel.
 - Internacional: golden `USD 12.339,38`; motor `USD 12.605,76`; 704 diferencias de
   elegibilidad por aplicar la regla actual de beneficiarios sobre TODOS en vez de las marcas
@@ -138,15 +204,16 @@ fórmula que realmente produce el monto a pagar.
   con las dos fórmulas reales (`% × subtotal` en facturas, `% × subtotal / Cant LT` en
   letras), la columna `FILTRO` y el total de la tabla dinámica (S/ 74.710,24).
 - Nota en la evidencia de agosto: el ejemplo pagado al 100% coincide con el prorrateo y
-  también con el atajo del libro. La regla del TO-BE sigue siendo el prorrateo.
+  también con el atajo del libro. Ambos quedan visibles para comparación; no se elige una
+  fórmula definitiva hasta iterar la diferencia con octubre.
 - Arquitectura: el stack no cambia. Se deja escrito qué decisión cubre cada hallazgo del
   libro, y se explicita el test de beneficiario obligatorio (el 2% de gerente de PET
   NUTRISCIENCE quedó a nombre `0`).
 
 ### Impacto
 - Solo documentación. No cambia código, modelo de datos ni la elección de Dagster, dbt y Flask.
-- Quien implemente el motor debe usar la base prorrateada de Reglas de negocio, no el atajo
-  del libro de setiembre.
+- Quien implemente el motor debe conservar la base prorrateada y el atajo histórico como
+  resultados comparables hasta que negocio cierre la diferencia.
 
 ## [2026-10-27] — Reglas de transformación ampliadas: boletas, TTG dual-campo, MARKETING en ambos canales, y 2 correcciones a ejemplos previos del PRD
 

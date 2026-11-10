@@ -37,24 +37,110 @@
       "evidence": "Override temporal aprobado para el piloto de septiembre."
     }
   ],
+  "period_overrides": [
+    {
+      "rule_id": "OVR-IVONNE-F522-ATREVIA-2026-09",
+      "beneficiary": "Ivonne Panta",
+      "role": "Ventas Internacionales",
+      "valid_from": "2026-09-01",
+      "valid_to": "2026-09-30",
+      "scope": {
+        "invoice_ref": "F F15-00000522",
+        "product_code": "31392PER00007",
+        "product_name": "ATREVIA TRIO CATS SPOT ON MEDIUM (X 5 PIP, STD)"
+      },
+      "proposer": "Sandra",
+      "applied_by": "José Montero",
+      "reason": "Excepción de septiembre: Ivonne solo comisiona este producto de la factura 522 de Inversiones Monteco.",
+      "approved": true,
+      "evidence": "No aparece en los Excel del ciclo 20-ago–20-sep. Odoo, consultado en solo lectura, confirmó account.move F F15-00000522 (2026-09-28) y account.move.line 4827348; no se infiere comisión sin cobro del periodo."
+    }
+  ],
   "product_families": {},
   "country_groups": {
-    "america": {
-      "approved": false,
-      "values": [],
-      "evidence": "Catálogo vacío y configurable: el usuario entregará nombres de país, que se resolverán una vez contra res.country y se persistirán como country_id/código ISO."
-    },
-    "latam": {
-      "approved": false,
-      "values": [],
-      "evidence": "Catálogo vacío y configurable: el usuario entregará nombres de país, que se resolverán una vez contra res.country y se persistirán como country_id/código ISO."
+    "america_latam": {
+      "approved": true,
+      "values": ["MX", "GT", "BZ", "SV", "HN", "NI", "CR", "PA", "CO", "VE", "EC", "PE", "BO", "BR", "PY", "UY", "AR", "CL", "GY", "SR", "GF"],
+      "evidence": "Decisión de negocio 2026-11-10: América y LATAM son el mismo conjunto ISO, desde México hasta Argentina y Chile, incluyendo Centroamérica y Sudamérica; excluye Caribe, Estados Unidos y Canadá."
     }
   },
   "nacional": {
-    "matrix": [],
+    "matrix": [
+      {"rule_key":"AGROVET/LIMA PROVINCIAS, AYACUCHO Y ANCASH","commercial_line":"AGROVET","roles":[{"role":"Representante de Ventas","person":"RAMOS GUZMAN, IVAN RAFAEL","rate":"0.005"},{"role":"Jefe Tecnico","person":"ESPINOZA ANDRADE, JORGE LUIS","rate":"0.0012"},{"role":"Jefe Comercial","person":"TAUCA TORRES, ALAN ARMANDO","rate":"0.0125"},{"role":"Gerente","person":"BRAVO PEREZ, MANUEL FEDERICO","rate":"0.002"}]},
+      {"rule_key":"AGROVET/LIMA METROPOLITANA - SUR","commercial_line":"AGROVET","roles":[{"role":"Representante de Ventas","person":"SANCHEZ CHAMPI, KEVIN","rate":"0.005"},{"role":"Jefe Tecnico","person":"ESPINOZA ANDRADE, JORGE LUIS","rate":"0.0012"},{"role":"Jefe Comercial","person":"CALDERON OJEDA, PEDRO ALEJANDRO","rate":"0.0125"},{"role":"Gerente","person":"BRAVO PEREZ, MANUEL FEDERICO","rate":"0.002"}]},
+      {"rule_key":"AGROVET/NOR-ORIENTE","commercial_line":"AGROVET","roles":[{"role":"Representante de Ventas","person":"MERA TORO, YOHANI LISETH","rate":"0.005"},{"role":"Jefe Tecnico","person":"ESPINOZA ANDRADE, JORGE LUIS","rate":"0.0012"},{"role":"Jefe Comercial","person":"CHINCHAY MAYORIA, ROMMEL","rate":"0.0125"},{"role":"Gerente","person":"BRAVO PEREZ, MANUEL FEDERICO","rate":"0.002"}]},
+      {"rule_key":"AGROVET/NORTE","commercial_line":"AGROVET","roles":[{"role":"Representante de Ventas","person":"VILCHEZ RIVERA, MICHAEL","rate":"0.005"},{"role":"Jefe Tecnico","person":"ESPINOZA ANDRADE, JORGE LUIS","rate":"0.0012"},{"role":"Jefe Comercial","person":"CHINCHAY MAYORIA, ROMMEL","rate":"0.0125"},{"role":"Gerente","person":"BRAVO PEREZ, MANUEL FEDERICO","rate":"0.002"}]},
+      {"rule_key":"AGROVET/SUR ORIENTE","commercial_line":"AGROVET","roles":[{"role":"Representante de Ventas","person":"QUEA ESPINOZA,JOSÉ BENIGNO","rate":"0.005"},{"role":"Jefe Tecnico","person":"ESPINOZA ANDRADE, JORGE LUIS","rate":"0.0012"},{"role":"Jefe Comercial","person":"PAREDES BACA, FERNANDO SAMUEL","rate":"0.0125"},{"role":"Gerente","person":"BRAVO PEREZ, MANUEL FEDERICO","rate":"0.002"}]},
+      {"rule_key":"AGROVET/CENTRO","commercial_line":"AGROVET","roles":[{"role":"Representante de Ventas","person":"TOMAS HUAMAN, IRVIN ARMANDO","rate":"0.005"},{"role":"Jefe Tecnico","person":"ESPINOZA ANDRADE, JORGE LUIS","rate":"0.0012"},{"role":"Jefe Comercial","person":"HOYOS MIRANDA, ABNER ABAHADT","rate":"0.0125"},{"role":"Gerente","person":"BRAVO PEREZ, MANUEL FEDERICO","rate":"0.002"}]},
+      {"rule_key":"PETMEDICA/LIMA 1/ATREVIA","commercial_line":"PETMEDICA","roles":[{"role":"Representante de Ventas","person":"GUTIERREZ PACHECO, DIEGO ALEXANDER","rate":"0.0035"},{"role":"Jefe Tecnico","person":"ARIAS OTOYA, ERICK RONALDO","rate":"0.0012"},{"role":"Jefe Comercial","person":"DURAN NIZAMA, ANGELINNE KIMBERLY","rate":"0.0015"},{"role":"Gerente","person":"RIOS GERMAN, STEFANNY MARIANELLA","rate":"0.002"}]},
+      {"rule_key":"PETMEDICA/LIMA 2 Y CENTRO/ATREVIA","commercial_line":"PETMEDICA","roles":[{"role":"Representante de Ventas","person":"ROJAS BERNAL, ZAIDA CAROLINA","rate":"0.0035"},{"role":"Jefe Tecnico","person":"ARIAS OTOYA, ERICK RONALDO","rate":"0.0012"},{"role":"Jefe Comercial","person":"DURAN NIZAMA, ANGELINNE KIMBERLY","rate":"0.0015"},{"role":"Gerente","person":"RIOS GERMAN, STEFANNY MARIANELLA","rate":"0.002"}]},
+      {"rule_key":"PETMEDICA/SUR/ATREVIA","commercial_line":"PETMEDICA","roles":[{"role":"Representante de Ventas","person":"ROJAS BERNAL, ZAIDA CAROLINA","rate":"0.0035"},{"role":"Jefe Tecnico","person":"ARIAS OTOYA, ERICK RONALDO","rate":"0.0012"},{"role":"Jefe Comercial","person":"DURAN NIZAMA, ANGELINNE KIMBERLY","rate":"0.0015"},{"role":"Gerente","person":"RIOS GERMAN, STEFANNY MARIANELLA","rate":"0.002"}]},
+      {"rule_key":"PETMEDICA/NORTE Y NOR ORIENTE/ATREVIA","commercial_line":"PETMEDICA","roles":[{"role":"Representante de Ventas","person":"CAMPOS FACUNDO, VERONICA","rate":"0.0035"},{"role":"Jefe Tecnico","person":"ARIAS OTOYA, ERICK RONALDO","rate":"0.0012"},{"role":"Jefe Comercial","person":"DURAN NIZAMA, ANGELINNE KIMBERLY","rate":"0.0015"},{"role":"Gerente","person":"RIOS GERMAN, STEFANNY MARIANELLA","rate":"0.002"}]},
+      {"rule_key":"PETMEDICA/LIMA 1","commercial_line":"PETMEDICA","roles":[{"role":"Representante de Ventas","person":"GUTIERREZ PACHECO, DIEGO ALEXANDER","rate":"0.0065"},{"role":"Jefe Tecnico","person":"ARIAS OTOYA, ERICK RONALDO","rate":"0.0012"},{"role":"Jefe Comercial","person":"DURAN NIZAMA, ANGELINNE KIMBERLY","rate":"0.0015"},{"role":"Gerente","person":"RIOS GERMAN, STEFANNY MARIANELLA","rate":"0.002"}]},
+      {"rule_key":"PETMEDICA/LIMA 2 Y CENTRO","commercial_line":"PETMEDICA","roles":[{"role":"Representante de Ventas","person":"ROJAS BERNAL, ZAIDA CAROLINA","rate":"0.0065"},{"role":"Jefe Tecnico","person":"ARIAS OTOYA, ERICK RONALDO","rate":"0.0012"},{"role":"Jefe Comercial","person":"DURAN NIZAMA, ANGELINNE KIMBERLY","rate":"0.0015"},{"role":"Gerente","person":"RIOS GERMAN, STEFANNY MARIANELLA","rate":"0.002"}]},
+      {"rule_key":"PETMEDICA/SUR","commercial_line":"PETMEDICA","roles":[{"role":"Representante de Ventas","person":"ROJAS BERNAL, ZAIDA CAROLINA","rate":"0.0065"},{"role":"Jefe Tecnico","person":"ARIAS OTOYA, ERICK RONALDO","rate":"0.0012"},{"role":"Jefe Comercial","person":"DURAN NIZAMA, ANGELINNE KIMBERLY","rate":"0.0015"},{"role":"Gerente","person":"RIOS GERMAN, STEFANNY MARIANELLA","rate":"0.002"}]},
+      {"rule_key":"PETMEDICA/NORTE Y NOR ORIENTE","commercial_line":"PETMEDICA","roles":[{"role":"Representante de Ventas","person":"CAMPOS FACUNDO, VERONICA","rate":"0.0065"},{"role":"Jefe Tecnico","person":"ARIAS OTOYA, ERICK RONALDO","rate":"0.0012"},{"role":"Jefe Comercial","person":"DURAN NIZAMA, ANGELINNE KIMBERLY","rate":"0.0015"},{"role":"Gerente","person":"RIOS GERMAN, STEFANNY MARIANELLA","rate":"0.002"}]},
+      {"rule_key":"AVIVET/LIMA Y AREQUIPA","commercial_line":"AVIVET","roles":[{"role":"Representante de Ventas","person":"LOPEZ CADILLO, JOHN EDWARD","rate":"0"},{"role":"Jefe Tecnico","person":null,"rate":"0"},{"role":"Jefe Comercial","person":"LOPEZ CADILLO, JOHN EDWARD","rate":null},{"role":"Gerente","person":"LOPEZ CADILLO, JOHN EDWARD","rate":"0.02"}]},
+      {"rule_key":"AVIVET/NORTE","commercial_line":"AVIVET","roles":[{"role":"Representante de Ventas","person":"LOPEZ CADILLO, JOHN EDWARD","rate":"0"},{"role":"Jefe Tecnico","person":null,"rate":"0"},{"role":"Jefe Comercial","person":"LOPEZ CADILLO, JOHN EDWARD","rate":null},{"role":"Gerente","person":"LOPEZ CADILLO, JOHN EDWARD","rate":"0.02"}]},
+      {"rule_key":"AVIVET/LIMA Y AREQUIPA/AGROVET","commercial_line":"AGROVET","roles":[{"role":"Representante de Ventas","person":"LOPEZ CADILLO, JOHN EDWARD","rate":"0"},{"role":"Jefe Tecnico","person":null,"rate":"0"},{"role":"Jefe Comercial","person":"LOPEZ CADILLO, JOHN EDWARD","rate":null},{"role":"Gerente","person":"LOPEZ CADILLO, JOHN EDWARD","rate":"0.005"}]},
+      {"rule_key":"AVIVET/NORTE/AGROVET","commercial_line":"AGROVET","roles":[{"role":"Representante de Ventas","person":"LOPEZ CADILLO, JOHN EDWARD","rate":"0"},{"role":"Jefe Tecnico","person":null,"rate":"0"},{"role":"Jefe Comercial","person":"LOPEZ CADILLO, JOHN EDWARD","rate":null},{"role":"Gerente","person":"LOPEZ CADILLO, JOHN EDWARD","rate":"0.005"}]},
+      {"rule_key":"PET NUTRISCIENCE/LIMA NORTE Y NORTE DEL PAÍS","commercial_line":"PET NUTRISCIENCE","roles":[{"role":"Representante de Ventas","person":"FRANCISCO PEREZ, SHARON","rate":"0.03"},{"role":"Jefe Tecnico","person":null,"rate":"0"},{"role":"Jefe Comercial","person":null,"rate":null},{"role":"Gerente","person":null,"rate":"0.02"}]},
+      {"rule_key":"PET NUTRISCIENCE/LIMA MODERNA Y SUR DE PAÍS","commercial_line":"PET NUTRISCIENCE","roles":[{"role":"Representante de Ventas","person":"SEMINARIO ROJAS, LOURDES","rate":"0.03"},{"role":"Jefe Tecnico","person":null,"rate":"0"},{"role":"Jefe Comercial","person":null,"rate":null},{"role":"Gerente","person":null,"rate":"0.02"}]},
+      {"rule_key":"INTERPET/LIMA 3","commercial_line":"INTERPET","roles":[{"role":"Representante de Ventas","person":"DE LA CRUZ OCHOCHOQUE, JEAN CARLOS","rate":"0.03"},{"role":"Jefe Tecnico","person":null,"rate":"0"},{"role":"Jefe Comercial","person":"BENDEZU SOLIMANO, NICOLE","rate":"0.01"},{"role":"Gerente","person":"RIOS GERMAN, STEFANNY MARIANELLA","rate":"0.002"}]},
+      {"rule_key":"INTERPET/LIMA 2","commercial_line":"INTERPET","roles":[{"role":"Representante de Ventas","person":"PLASENCIA TORRES, CRISTHY NICOLE","rate":"0.03"},{"role":"Jefe Tecnico","person":null,"rate":"0"},{"role":"Jefe Comercial","person":"BENDEZU SOLIMANO, NICOLE","rate":"0.01"},{"role":"Gerente","person":"RIOS GERMAN, STEFANNY MARIANELLA","rate":"0.002"}]},
+      {"rule_key":"INTERPET/LIMA 1","commercial_line":"INTERPET","roles":[{"role":"Representante de Ventas","person":"BELTRAN FLORES, XIMENA ALEJANDRA","rate":"0.03"},{"role":"Jefe Tecnico","person":null,"rate":"0"},{"role":"Jefe Comercial","person":"BENDEZU SOLIMANO, NICOLE","rate":"0.01"},{"role":"Gerente","person":"RIOS GERMAN, STEFANNY MARIANELLA","rate":"0.002"}]},
+      {"rule_key":"INTERPET/LIMA 4","commercial_line":"INTERPET","roles":[{"role":"Representante de Ventas","person":"PLASENCIA TORRES, CRISTHY NICOLE","rate":"0.03"},{"role":"Jefe Tecnico","person":null,"rate":"0"},{"role":"Jefe Comercial","person":"BENDEZU SOLIMANO, NICOLE","rate":"0.01"},{"role":"Gerente","person":"RIOS GERMAN, STEFANNY MARIANELLA","rate":"0.002"}]},
+      {"rule_key":"EQUESTRIA/LIMA","commercial_line":"EQUESTRIA","roles":[{"role":"Representante de Ventas","person":"CHAMAN COMOTTO, EDUARDO EDGARDO","rate":null},{"role":"Jefe Tecnico","person":null,"rate":null},{"role":"Jefe Comercial","person":null,"rate":null},{"role":"Gerente","person":"CHAMAN COMOTTO, EDUARDO EDGARDO","rate":"0.02"}]}
+    ],
     "zone_variants": []
   },
   "internacional": {
-    "rules": []
+    "rules": [
+      {"rule_id":"INTL-ARIANA-TODOS-V1","beneficiary":"Ariana Carmona","scope":{"type":"todos","values":[]},"rates":{"AGROVET":"0.0001","PETMEDICA":"0.00015","AVIVET":"0.0002"},"approved":true,"evidence":"Regla aprobada en PRD: TODOS."},
+      {"rule_id":"INTL-IVONNE-TODOS-V1","beneficiary":"Ivonne Panta","scope":{"type":"todos","values":[]},"rates":{"AGROVET":"0.0001","PETMEDICA":"0.00015","AVIVET":"0.0002"},"approved":true,"evidence":"Regla aprobada en PRD: TODOS."},
+      {"rule_id":"INTL-SANDRA-TODOS-V1","beneficiary":"Sandra Meneses","scope":{"type":"todos","values":[]},"rates":{"AGROVET":"0.0008","PETMEDICA":"0.0012","AVIVET":"0.0016"},"approved":true,"evidence":"Regla aprobada en PRD: TODOS."},
+      {"rule_id":"INTL-VANESSA-TODOS-V1","beneficiary":"Vanessa Parker","scope":{"type":"todos","values":[]},"rates":{"AGROVET":"0.0002","PETMEDICA":"0.0003","AVIVET":"0.0004"},"approved":true,"evidence":"Regla aprobada en PRD: TODOS."},
+      {"rule_id":"INTL-UMBERTO-TODOS-V1","beneficiary":"Umberto Calderón","scope":{"type":"todos","values":[]},"rates":{"AGROVET":"0.0016","PETMEDICA":"0.0024","AVIVET":"0.0032"},"approved":true,"evidence":"Regla aprobada en PRD: TODOS."},
+      {
+        "rule_id": "INTL-LUIS-PETMEDICA-AMERICA-V1",
+        "beneficiary": "Luis Chávez",
+        "role": "Ventas Internacionales",
+        "scope": {
+          "type": "pais",
+          "values": [],
+          "country_group": "america_latam"
+        },
+        "lines": ["PETMEDICA"],
+        "rates": {
+          "PETMEDICA": "0.005"
+        },
+        "priority": 0,
+        "effect": "include",
+        "version": 1,
+        "valid_from": "2026-01-01",
+        "approved": true,
+        "evidence": "Regla permanente 0,5% solo PETMEDICA y países del catálogo único América/LATAM."
+      },
+      {
+        "rule_id": "INTL-MAYUMI-AVIVET-LATAM-V1",
+        "beneficiary": "Mayumi Garcilazo",
+        "role": "Jefe Tecnico Comercial Latinoamerica Avivet",
+        "scope": {
+          "type": "pais",
+          "values": [],
+          "country_group": "america_latam"
+        },
+        "lines": ["AVIVET"],
+        "rates": {
+          "AVIVET": "0.005"
+        },
+        "priority": 0,
+        "effect": "include",
+        "version": 1,
+        "valid_from": "2026-01-01",
+        "approved": true,
+        "evidence": "Regla permanente 0,5% solo AVIVET y países del catálogo único América/LATAM."
+      }
+    ]
   }
 }

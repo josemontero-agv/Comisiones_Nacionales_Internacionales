@@ -34,6 +34,19 @@ def extract_snapshot(
             raise ValueError(f"{spec.model}: fields must include id")
         for row in client.search_read_paged(spec.model, spec.domain, spec.fields):
             records.append((spec.model, str(row["id"]), row))
+    return store_records_snapshot(
+        repository, channel, period_start, period_end, records
+    )
+
+
+def store_records_snapshot(
+    repository: MedallionRepository,
+    channel: str,
+    period_start: date,
+    period_end: date,
+    records: list[tuple[str, str, dict]],
+) -> str:
+    """Cierra como Bronze Odoo un conjunto ya resuelto mediante lecturas bulk."""
     payload_hash = hashlib.sha256(
         canonical_json(sorted(records, key=lambda item: (item[0], item[1]))).encode(
             "utf-8"

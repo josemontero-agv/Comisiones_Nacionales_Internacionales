@@ -376,7 +376,7 @@
       <div class="meta-badges">
         <span class="badge badge-light">Versión 1.1 — Borrador</span>
         <span class="badge badge-light">Noviembre 2026</span>
-        <span class="badge badge-warn">Fase 0: países América/LATAM configurables pendientes</span>
+        <span class="badge badge-light">Catálogo América/LATAM cerrado por ISO</span>
       </div>
     </div>
   </header>
@@ -410,7 +410,7 @@
         <li><a href="#no-funcionales">Requisitos no funcionales</a></li>
         <li><a href="#roadmap">Roadmap por fases</a></li>
         <li><a href="#riesgos">Riesgos y supuestos</a></li>
-        <li><a href="#preguntas-abiertas">Preguntas abiertas</a></li>
+        <li><a href="#preguntas-abiertas">Decisiones cerradas</a></li>
         <li><a href="#criterios-exito">Criterios de éxito</a></li>
         <li><a href="CHANGELOG.md">Historial de cambios</a></li>
       </ul>
@@ -436,8 +436,10 @@ flowchart LR
   Odoo[("Odoo ERP\nfacturas, pagos, letras")] -->|"ETL incremental\n(write_date)"| Raw["Capa raw\nSupabase/Postgres"]
   Raw --> Rules["Motor de reglas\nparametrizable"]
   Rules --> Calc["Calculo automatico\nde comisiones por periodo"]
-  Calc --> Review["Workflow de aprobacion\nGerente / Direccion Comercial"]
-  Review -->|"Aprobado"| Export["Layout final\npara RRHH / Nomina"]
+  Calc --> Validate["Validacion del canal\nDireccion Comercial / Gerencia Internacional"]
+  Validate --> Review["Aprobacion registrada\nSupervisor de Proyectos de Finanzas"]
+  Review -->|"Aprobado para entrega"| Export["Archivo final\npara RRHH"]
+  Validate -->|"Observado"| Calc
   Review -->|"Rechazado con comentario"| Calc
   Calc --> Dash["Dashboards en tiempo real\nVendedor / Gerencia"]
   Calc --> Disputas["Modulo de disputas\n(tickets por factura)"]
@@ -480,7 +482,7 @@ flowchart LR
             <thead><tr><th>Rol</th><th>Hoy (AS-IS)</th><th>Con el sistema (TO-BE)</th></tr></thead>
             <tbody>
               <tr><td>Vendedor</td><td>Pregunta por correo cuánto ganó</td><td>Dashboard propio en tiempo real, con proyección y ticket de disputa si falta algo</td></tr>
-              <tr><td>Jefe de equipo / Gerencia comercial</td><td>Revisa un Excel completo sin filtros por rol</td><td>Ve solo su equipo; aprueba o rechaza con un clic y comentario</td></tr>
+              <tr><td>Jefe de equipo / Gerencia comercial</td><td>Revisa un Excel completo sin filtros por rol</td><td>Ve solo su equipo; supervisa y valida el canal con comentario auditable</td></tr>
               <tr><td>Analista de comisiones (hoy: Jefa de Aplicaciones)</td><td>Cruza manualmente 5 reportes</td><td>Valida un cálculo ya hecho por el motor de reglas; gestiona disputas</td></tr>
               <tr><td>RRHH</td><td>Recibe un correo con el reporte final</td><td>Recibe un layout de nómina generado automáticamente tras la aprobación</td></tr>
               <tr><td>Finanzas / Auditoría</td><td>No tiene visibilidad del proceso</td><td>Ve el consolidado total y el historial completo de auditoría (quién aprobó, qué se ajustó y por qué)</td></tr>
@@ -490,7 +492,7 @@ flowchart LR
 
         <div class="status-banner status-warn">
           <div>
-            <strong>Fase 0 avanzada, con decisiones nuevas ya cerradas:</strong> Internacional asigna porcentajes por experiencia/años, no por rol; Ariana Carmona, Vanessa Parker, Sandra Meneses, Umberto Calderón e Ivonne Panta cobran sobre <strong>TODOS</strong> los clientes. Luis Chávez se limita a países de América y PETMEDICA; Mayumi Garcilazo queda registrada con 0,5% para AVIVET en LATAM aunque no tenga comisión en el periodo. La cuenta de venta elegible es <code>7022101</code>; <code>NO VA</code> se explica por cuentas excluidas y deja de ser criterio libre. RRHH recibe dos archivos y dos aprobaciones independientes: Nacional por Dirección Comercial e Internacional por Gerencia Internacional. Solo falta que el usuario indique por nombre los países de América/LATAM.
+            <strong>Fase 0 avanzada, con decisiones nuevas ya cerradas:</strong> Internacional asigna porcentajes por experiencia/años, no por rol; Ariana Carmona, Vanessa Parker, Sandra Meneses, Umberto Calderón e Ivonne Panta cobran sobre <strong>TODOS</strong> los clientes. Luis Chávez se limita a PETMEDICA y Mayumi Garcilazo a AVIVET al 0,5%; ambos usan el mismo catálogo ISO América/LATAM. La cuenta de venta elegible es <code>7022101</code>; <code>NO VA</code> se explica por cuentas excluidas y deja de ser criterio libre. RRHH recibe dos archivos separados. Dirección Comercial valida Nacional y Gerencia Internacional valida Internacional; en ambos casos, la aprobación registrada que habilita la entrega a RRHH la da el Supervisor de Proyectos de Finanzas.
           </div>
         </div>
       </section>
@@ -506,6 +508,12 @@ flowchart LR
           <li>Canal <strong>INTERNACIONAL</strong> (moneda USD): facturas, con el soporte residual de letras que hoy existe (menos del 5% de los casos, confirmado en Odoo con 1.9% de facturas trazadas a letra en el ciclo analizado).</li>
           <li>Las 9 mejoras solicitadas: dashboards, RBAC, workflow de aprobación, SSO/2FA, motor de reglas, ETL automatizado, auditoría y disputas, más la exportación al layout de RRHH.</li>
         </ul>
+
+        <div class="status-banner status-info">
+          <div>
+            <strong>Definición de “producción” para este PRD:</strong> construir y operar el stack técnico de extracción Odoo, transformación, API Flask, pantalla Next.js y base PostgreSQL. Llevar esos componentes a producción <strong>no</strong> significa enviar importes a nómina, declarar un periodo pagable ni autorizar el pago. La entrega a RRHH es una acción posterior y controlada por el workflow.
+          </div>
+        </div>
 
         <h3>Fuera de alcance de la v1 (decisión confirmada con el solicitante)</h3>
         <ul>
@@ -637,7 +645,7 @@ Letra 202603174, factura F F01-00006938, 6 letras
 
         <div class="status-banner status-warn">
           <div>
-            <strong>Dos fragilidades del libro, que el TO-BE no debe copiar.</strong> <code>CONSOLIDADO</code> es una foto: si cambia un porcentaje, <code>CONTADO - CREDITO</code> y <code>LETRAS</code> se recalculan, y la tabla dinámica sigue mostrando el consolidado viejo hasta que alguien lo vuelva a armar. Y un porcentaje sin nombre (el gerente de PET NUTRISCIENCE) produce plata que la dinámica esconde en vez de avisar. La fórmula que automatiza el sistema sigue siendo el prorrateo ya adoptado en <a href="#reglas-negocio">Reglas de negocio</a>, no el atajo <code>% × subtotal</code> de este libro. El encaje con la arquitectura está en <a href="#arquitectura-confirmacion">Arquitectura: qué confirma este flujo</a>.
+            <strong>Comparación abierta; septiembre no es pagable.</strong> <code>CONSOLIDADO</code> es una foto: si cambia un porcentaje, <code>CONTADO - CREDITO</code> y <code>LETRAS</code> se recalculan, y la tabla dinámica sigue mostrando el consolidado viejo hasta que alguien lo vuelva a armar. Además, un porcentaje sin nombre produce plata que la dinámica esconde. Para septiembre se mantienen visibles, sin declarar ganador definitivo, el prorrateo por cobro real del PRD y el atajo histórico del Excel (<code>% × subtotal</code>; en letras, por cantidad). La diferencia Nacional de <strong>S/ 199,33</strong> se seguirá iterando y comparando en el cierre de prueba de octubre; no queda cerrada en esta etapa. El encaje con la arquitectura está en <a href="#arquitectura-confirmacion">Arquitectura: qué confirma este flujo</a>.
           </div>
         </div>
 
@@ -646,7 +654,7 @@ Letra 202603174, factura F F01-00006938, 6 letras
         <ul>
           <li>El <strong>Supervisor de Proyectos de Finanzas</strong> calcula directamente la comisión de cada vendedor aplicando una <strong>matriz de porcentajes fijos por vendedor y línea comercial</strong> (AGROVET / PETMEDICA / AVIVET) — ver la matriz real en <a href="#reglas-negocio">Reglas de negocio confirmadas</a>. Nacional también usa una matriz de porcentajes, con 4 roles y clave de zona; el recorrido de archivos está en <a href="#as-is-flujo-nacional">el flujo de setiembre</a>.</li>
           <li>En los últimos meses se han ido agregando <strong>letras también en Internacional</strong>, aunque hoy representan menos del 5% de los casos (confirmado: 1,9% de las facturas internacionales del ciclo analizado tienen planilla de letras asociada).</li>
-          <li><strong>El cálculo NO pasa por Dirección Comercial.</strong> El Supervisor lo envía directamente a la <strong>Gerencia de Ventas Internacional</strong> para su revisión y aprobación, y de ahí pasa a RRHH.</li>
+          <li><strong>El cálculo NO pasa por Dirección Comercial.</strong> En el AS-IS, el Supervisor lo envía directamente a la <strong>Gerencia de Ventas Internacional</strong> para su revisión antes de RRHH. En el sistema TO-BE, esa Gerencia supervisa y valida Internacional, y el Supervisor registra la aprobación que habilita la entrega.</li>
         </ul>
 
         <h3>Diagrama consolidado del proceso manual (2 personas en Nacional, ruta distinta en Internacional)</h3>
@@ -958,7 +966,7 @@ BASE_PARA_CALCULO_COMISIONES_S/ = PAGO_POR_ARTICULO_USD × TC_FECHA_DE_PAGO   (e
 
         <div class="status-banner status-ok">
           <div>
-            <strong>Ambigüedad “SI/TODOS” resuelta por negocio:</strong> Ariana Carmona, Vanessa Parker, Sandra Meneses, Umberto Calderón e Ivonne Panta comisionan sobre <strong>TODOS</strong> los clientes. La marca “SI” del Excel histórico no se convierte en una restricción de cartera para estas personas. Luis Chávez aplica únicamente a clientes cuyo país pertenezca al catálogo versionado de América y a productos PETMEDICA. Mayumi Garcilazo, Jefe Técnico Comercial Latinoamérica Avivet, aplica 0,5% solo a AVIVET y países LATAM. Una regla vigente debe existir aunque en un periodo produzca cero líneas.
+            <strong>Ambigüedad “SI/TODOS” resuelta por negocio:</strong> Ariana Carmona, Vanessa Parker, Sandra Meneses, Umberto Calderón e Ivonne Panta comisionan sobre <strong>TODOS</strong> los clientes. La marca “SI” del Excel histórico no se convierte en una restricción de cartera para estas personas. Luis Chávez aplica únicamente a PETMEDICA y Mayumi Garcilazo, Jefe Técnico Comercial Latinoamérica Avivet, aplica 0,5% solo a AVIVET; ambos usan el catálogo versionado único América/LATAM por código ISO. Una regla vigente debe existir aunque en un periodo produzca cero líneas.
           </div>
         </div>
 
@@ -1006,7 +1014,7 @@ Comision_rol = Base_linea × %_rol(linea_comercial, zona)
 # Gerente (Ríos Germán, Stefanny Marianella), % = 0.20%
 #   731.0 × 0.002 = 1.4619      ✔ coincide EXACTO</code></pre>
         <p>Para letras, la misma fórmula aplica usando <code>ValorLT</code> (el monto de esa letra específica ya reconocida en el periodo, consistente con la regla "letras pagadas en el periodo" confirmada antes) en vez de <code>Monto_Pagado</code>. Se verificó con un segundo ejemplo real (letra 202602736, AGROVET/LIMA METROPOLITANA - SUR) que las 4 comisiones (0,882 / 0,212 / 2,205 / 0,353) también coinciden exactamente con <code>ValorLT_sin_IGV × Subtotal/SubTotalFT × %_rol</code>.</p>
-        <p>Ese ejemplo de agosto está pagado al 100% (12.453,72 / 1,18 ≈ 10.554, igual al subtotal de la factura), así que el prorrateo y multiplicar el porcentaje por el subtotal de la línea dan el mismo número. El libro que produce el monto a pagar de setiembre no usa la columna <code>Base para el cálculo</code>: multiplica el porcentaje por el subtotal crudo de la línea y, en letras, divide entre la cantidad de letras. El recorrido completo está en <a href="#as-is-flujo-nacional">el flujo AS-IS de Nacional</a>. La regla que adopta el TO-BE sigue siendo este prorrateo, porque es el que ya calculan los reportes de SEP y el que cubre un pago parcial.</p>
+        <p>Ese ejemplo de agosto está pagado al 100% (12.453,72 / 1,18 ≈ 10.554, igual al subtotal de la factura), así que el prorrateo y multiplicar el porcentaje por el subtotal de la línea dan el mismo número. El libro de setiembre no usa la columna <code>Base para el cálculo</code>: multiplica el porcentaje por el subtotal crudo de la línea y, en letras, divide entre la cantidad de letras. El recorrido completo está en <a href="#as-is-flujo-nacional">el flujo AS-IS de Nacional</a>. El TO-BE conserva el prorrateo y el atajo histórico como alternativas comparables hasta resolver la diferencia Nacional de S/ 199,33; septiembre permanece no pagable y octubre es el siguiente cierre de prueba.</p>
 
         <div class="status-banner status-info">
           <div>
@@ -1014,7 +1022,7 @@ Comision_rol = Base_linea × %_rol(linea_comercial, zona)
           </div>
         </div>
 
-        <p>El Excel distingue 3 fuentes que se suman al total de cada persona: <strong>CONTADO</strong>, <strong>CRÉDITO</strong> y <strong>LETRAS</strong> (hoja <code>RESUMEN COMISIONES</code>). Esa estructura queda adoptada en dos entregas independientes, ambas con persona y puesto: Nacional para RRHH/Dirección Comercial e Internacional para RRHH/Gerencia Internacional. Nunca se mezclan los totales ni la aprobación de ambos canales. Solo queda pendiente un eventual formato técnico de importación al ERP de nómina.</p>
+        <p>El Excel distingue 3 fuentes que se suman al total de cada persona: <strong>CONTADO</strong>, <strong>CRÉDITO</strong> y <strong>LETRAS</strong> (hoja <code>RESUMEN COMISIONES</code>). Esa estructura queda adoptada en dos entregas independientes, ambas con persona y puesto: Nacional para RRHH/Dirección Comercial e Internacional para RRHH/Gerencia Internacional. Nunca se mezclan los totales ni los estados de ambos canales. El Supervisor aprueba cada periodo por separado después de la validación correspondiente. Solo queda pendiente un eventual formato técnico de importación al ERP de nómina.</p>
 
         <h3>Plantillas reales de exportación manual desde Odoo</h3>
         <p>Estas son las 3 plantillas de exportación configuradas hoy en Odoo (vista "Campos a exportar"), con sus campos técnicos exactos — insumo directo para diseñar las consultas del ETL:</p>
@@ -1085,8 +1093,10 @@ flowchart LR
   Odoo[("Odoo ERP\nfacturas, pagos, letras")] -->|"ETL incremental\n(write_date)"| Raw["Capa raw\nSupabase/Postgres"]
   Raw --> Rules["Motor de reglas\nparametrizable"]
   Rules --> Calc["Calculo automatico\nde comisiones por periodo"]
-  Calc --> Review["Workflow de aprobacion\nGerente / Direccion Comercial"]
-  Review -->|"Aprobado"| Export["Layout final\npara RRHH / Nomina"]
+  Calc --> Validate["Validacion del canal\nDireccion Comercial / Gerencia Internacional"]
+  Validate --> Review["Aprobacion registrada\nSupervisor de Proyectos de Finanzas"]
+  Review -->|"Aprobado para entrega"| Export["Archivo final\npara RRHH"]
+  Validate -->|"Observado"| Calc
   Review -->|"Rechazado con comentario"| Calc
   Calc --> Dash["Dashboards en tiempo real\nVendedor / Gerencia"]
   Calc --> Disputas["Modulo de disputas\n(tickets por factura)"]
@@ -1110,11 +1120,11 @@ flowchart LR
 stateDiagram-v2
   [*] --> Abierto
   Abierto --> Calculado : ETL + motor de reglas ejecuta
-  Calculado --> EnRevision : enviado a Gerente/Direccion Comercial
+  Calculado --> EnRevision : enviado a validacion del canal
   EnRevision --> Rechazado : rechazo con comentario
   Rechazado --> Calculado : ajuste y recalculo
-  EnRevision --> Aprobado : aprobacion un clic
-  Aprobado --> ExportadoRRHH : genera layout nomina
+  EnRevision --> Aprobado : Supervisor registra aprobacion
+  Aprobado --> ExportadoRRHH : habilita entrega a RRHH
   ExportadoRRHH --> Cerrado : snapshot congelado
   Cerrado --> [*]
   EnRevision --> EnDisputa : vendedor abre ticket
@@ -1127,11 +1137,11 @@ stateDiagram-v2
           <tbody>
             <tr><td><code>Abierto</code></td><td>Periodo creado, aún sin datos calculados</td><td>Sistema (automático, según calendario del canal)</td></tr>
             <tr><td><code>Calculado</code></td><td>ETL + motor de reglas generaron las líneas de comisión</td><td>Supervisor de Proyectos de Finanzas</td></tr>
-            <tr><td><code>EnRevision</code></td><td>Enviado para aprobación</td><td>Nacional: Jefa de Aplicaciones → Dirección Comercial. Internacional: directo a Gerencia de Ventas Internacional</td></tr>
+            <tr><td><code>EnRevision</code></td><td>Enviado para supervisión y validación del canal</td><td>Nacional: Dirección Comercial. Internacional: Gerencia de Ventas Internacional</td></tr>
             <tr><td><code>EnDisputa</code></td><td>Un vendedor abrió un ticket sobre una línea específica</td><td>Vendedor abre; Supervisor de Proyectos de Finanzas resuelve</td></tr>
-            <tr><td><code>Rechazado</code></td><td>El revisor pidió ajustes con comentario</td><td>Dirección Comercial (Nacional) / Gerencia de Ventas Internacional (Internacional)</td></tr>
-            <tr><td><code>Aprobado</code></td><td>Confirmado para pago</td><td>Dirección Comercial (Nacional) / Gerencia de Ventas Internacional (Internacional)</td></tr>
-            <tr><td><code>ExportadoRRHH</code></td><td>Layout de nómina generado</td><td>Sistema (automático tras aprobación)</td></tr>
+            <tr><td><code>Rechazado</code></td><td>La validación del canal o el aprobador pidió ajustes con comentario</td><td>Dirección Comercial (Nacional), Gerencia Internacional (Internacional) o Supervisor de Proyectos de Finanzas</td></tr>
+            <tr><td><code>Aprobado</code></td><td>Aprobación registrada que habilita la entrega a RRHH; no declara el periodo pagable ni autoriza nómina</td><td>Supervisor de Proyectos de Finanzas (durante el piloto: José Montero)</td></tr>
+            <tr><td><code>ExportadoRRHH</code></td><td>Archivo entregable a RRHH generado después de la aprobación</td><td>Sistema, únicamente tras aprobación del Supervisor</td></tr>
             <tr><td><code>Cerrado</code></td><td>Snapshot congelado; ya no se recalcula</td><td>Sistema</td></tr>
           </tbody>
         </table>
@@ -1152,8 +1162,8 @@ stateDiagram-v2
               <tr><td>RF-03</td><td>Trazabilidad letra → factura vía <code>account.bill.form</code>, con canal heredado de la factura origen</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
               <tr><td>RF-04</td><td>Motor de reglas parametrizable y versionado sin tocar código: Nacional por rol/línea/zona; Internacional por beneficiario, experiencia, alcance geográfico y producto/línea</td><td><span class="pill pill-must">Must</span></td><td>2</td></tr>
               <tr><td>RF-05</td><td>Cálculo automático de comisiones por periodo y por canal (Nacional PEN / Internacional USD)</td><td><span class="pill pill-must">Must</span></td><td>2</td></tr>
-              <tr><td>RF-06</td><td>Workflow de aprobación: envío automático a Gerente/Dirección Comercial, aprobar/rechazar con comentario en un clic</td><td><span class="pill pill-must">Must</span></td><td>2</td></tr>
-              <tr><td>RF-07</td><td>Dos entregas independientes con el mismo contrato de resumen persona/puesto × Contado/Crédito/Letras/Total: Nacional para RRHH/Dirección Comercial e Internacional para RRHH/Gerencia Internacional, sin mezclar archivo ni aprobación</td><td><span class="pill pill-must">Must</span></td><td>2</td></tr>
+              <tr><td>RF-06</td><td>Workflow de validación y aprobación: Dirección Comercial valida Nacional, Gerencia Internacional valida Internacional y el Supervisor de Proyectos de Finanzas registra la aprobación que habilita la entrega a RRHH, con rechazo/comentario auditable</td><td><span class="pill pill-must">Must</span></td><td>2</td></tr>
+              <tr><td>RF-07</td><td>Dos entregas independientes con el mismo contrato de resumen persona/puesto × Contado/Crédito/Letras/Total: Nacional para RRHH/Dirección Comercial e Internacional para RRHH/Gerencia Internacional, sin mezclar archivos; un único rol aprobador registrado en ambos canales</td><td><span class="pill pill-must">Must</span></td><td>2</td></tr>
               <tr><td>RF-08</td><td>Dashboard del vendedor: proyección y comisión ganada en tiempo real</td><td><span class="pill pill-should">Should</span></td><td>3</td></tr>
               <tr><td>RF-09</td><td>Dashboard de gerencia: gasto total de comisiones por línea de negocio, Nacional vs. Internacional</td><td><span class="pill pill-should">Should</span></td><td>3</td></tr>
               <tr><td>RF-10</td><td>RBAC real y bloqueante desde el día 1 (vendedor/gerente/analista/RRHH/Finanzas/auditor)</td><td><span class="pill pill-must">Must</span></td><td>2</td></tr>
@@ -1167,7 +1177,7 @@ stateDiagram-v2
               <tr><td>RF-20</td><td>Exclusión de Boletas y Nota de Crédito-Boleta (<code>l10n_latam_document_type_id</code>) en ambos canales</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
               <tr><td>RF-21</td><td>Exclusión por TTG verificando ambos campos (<code>sale_type_id</code> OR <code>invoice_payment_term_id</code>), no solo uno</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
               <tr><td>RF-22</td><td>Trazabilidad completa Letra → Planilla → Factura → <code>invoice_origin</code> (número de pedido), para heredar canal/línea/pedido hasta el nivel de letra</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
-              <tr><td>RF-18</td><td>Cálculo de base neta con prorrateo por línea: usar importes/impuestos reales de Odoo; dividir entre 1,18 solo cuando corresponda IGV 18%, nunca en exportaciones exoneradas</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
+              <tr><td>RF-18</td><td>Comparación trazable de las dos bases Nacional: prorrateo por cobro real e impuestos reales de Odoo frente al atajo histórico del Excel; mostrar ambas y su delta sin seleccionar una como definitiva mientras siga abierta la diferencia de S/ 199,33</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
               <tr><td>RF-19</td><td>Seguimiento por factura/planilla de letras: total emitidas, pagadas antes del periodo, pagadas en el periodo, faltantes, monto y estado; reconocimiento único por letra/conciliación, protestada excluye y descontada incluye</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
               <tr><td>RF-23</td><td>Exclusión por línea de intereses moratorios/compensatorios, gastos de exportación, seguro, flete, gastos administrativos/financieros y reajustes de costo, en ambos canales; en Internacional nunca comisionan</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
               <tr><td>RF-24</td><td>Notas de Débito evaluadas línea por línea: solo comisiona la porción cuyo concepto origen sea venta real de producto y cuya cuenta pertenezca al catálogo aprobado de ingresos por mercadería/productos</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
@@ -1175,7 +1185,7 @@ stateDiagram-v2
               <tr><td>RF-26</td><td>Reglas y excepciones versionadas por beneficiario con alcance todos/país/cliente/línea/producto/factura, vigencia, prioridad, inclusión/exclusión, motivo, evidencia, creador, aprobador y audit log; override de periodo separado de regla permanente</td><td><span class="pill pill-must">Must</span></td><td>2</td></tr>
               <tr><td>RF-27</td><td>Resolver país en bulk por <code>commercial_partner_id.country_id</code>, luego <code>partner_id.country_id</code> y fallback controlado a <code>partner_shipping_id.country_id</code>; faltantes bloquean o van a revisión, nunca se infieren del nombre</td><td><span class="pill pill-must">Must</span></td><td>1</td></tr>
               <tr><td>RF-28</td><td>Clasificación versionada para discrepancias de maestro, incluido Aminoplex Forte x 100 ml como PETMEDICA por decisión aprobada mientras Odoo lo reporte como AGROVET</td><td><span class="pill pill-must">Must</span></td><td>2</td></tr>
-              <tr><td>RF-29</td><td>Consulta y exportación separada por canal: Dirección Comercial supervisa/analiza/aprueba Nacional y Gerencia Internacional hace lo propio con Internacional; RRHH recibe dos libros sin consolidación cruzada</td><td><span class="pill pill-must">Must</span></td><td>2</td></tr>
+              <tr><td>RF-29</td><td>Consulta y exportación separada por canal: Dirección Comercial supervisa/valida Nacional y Gerencia Internacional supervisa/valida Internacional; el Supervisor de Proyectos de Finanzas aprueba ambos en el sistema y RRHH recibe dos libros sin consolidación cruzada</td><td><span class="pill pill-must">Must</span></td><td>2</td></tr>
             </tbody>
           </table>
         </div>
@@ -1185,15 +1195,16 @@ stateDiagram-v2
       <section id="reglas-negocio" class="audience-business">
         <span class="audience-tag tag-biz">Audiencia: Negocio y Producto</span>
         <h2>Reglas de negocio confirmadas (con evidencia real de Odoo y de los Excel del proceso manual)</h2>
-        <p>A diferencia de la primera versión de este PRD, estas reglas ya no son "propuestas a validar": están confirmadas por el solicitante y, en la mayoría de los casos, verificadas con fórmulas de celda reales de los Excel de <code>Proceso_Manual/</code> (ver <a href="#evidencia-odoo">Evidencia verificada en Odoo</a>). Solo quedan pendientes los puntos listados al final y en <a href="#preguntas-abiertas">Preguntas abiertas</a>.</p>
+        <p>A diferencia de la primera versión de este PRD, estas reglas ya no son "propuestas a validar": están confirmadas por el solicitante y, en la mayoría de los casos, verificadas con fórmulas de celda reales de los Excel de <code>Proceso_Manual/</code> (ver <a href="#evidencia-odoo">Evidencia verificada en Odoo</a>). Las decisiones cerradas se resumen al final.</p>
 
-        <h3>Base de cálculo: neta de impuestos y prorrateada por línea de producto</h3>
-        <p>La constante <code>1,18</code> solo aplica cuando el documento/línea tiene IGV de 18%; no debe aplicarse ciegamente a exportaciones exoneradas. La implementación usa los importes sin impuesto de Odoo y distribuye cada cobro entre líneas por su proporción neta:</p>
+        <h3>Bases de cálculo Nacional en comparación</h3>
+        <p>La diferencia Nacional de S/ 199,33 mantiene abierta la elección de fórmula. El sistema debe calcular y mostrar en paralelo (a) el prorrateo por cobro real del PRD y (b) el atajo histórico del Excel, con su delta y trazabilidad. La rama prorrateada usa los importes sin impuesto de Odoo y distribuye cada cobro entre líneas por su proporción neta:</p>
         <pre><code>Pago_neto = Monto_pagado × (Subtotal_neto_factura / Total_con_impuestos_factura)
 Base_linea = Pago_neto × (Subtotal_neto_linea / Subtotal_neto_factura)
 
 # Equivale a Monto_pagado / 1,18 cuando toda la factura nacional tiene IGV 18%.
 # En exportación sin IGV: Pago_neto = Monto_pagado; no se divide entre 1,18.</code></pre>
+        <p>La rama histórica conserva <code>% × subtotal de línea</code> para facturas y <code>% × subtotal de línea / cantidad total de letras</code> para letras. Ninguna de las dos ramas se declara definitiva en septiembre; el contraste continúa con octubre y el periodo permanece no pagable.</p>
 
         <h3>Fecha efectiva de cobro y tipo de cambio</h3>
         <ul>
@@ -1211,7 +1222,7 @@ Faltantes = Total_emitidas - Pagadas_antes - Pagadas_hasta_fin_periodo
 Monto_pagado_periodo = SUM(monto efectivamente cobrado de cada letra en el periodo)</code></pre>
         <ul>
           <li>Si una factura tiene 5 letras y en el periodo se pagan 2, se comisiona una sola vez sobre el monto real de esas 2 <strong>en ese periodo</strong>; no se espera a que se paguen las 5.</li>
-          <li>El AS-IS de setiembre usa <code>Total factura × cantidad pagada / cantidad total</code>. El TO-BE conserva ese cálculo solo como control de paridad cuando todas las letras tienen igual monto; si difieren, prevalece la suma del monto real cobrado.</li>
+          <li>El AS-IS de setiembre usa <code>Total factura × cantidad pagada / cantidad total</code>. El TO-BE conserva ese cálculo y la suma del monto real cobrado como alternativas visibles para comparación; octubre aportará la siguiente evidencia y ninguna prevalece todavía.</li>
           <li>Letra en estado <code>protested</code> (protestada): <strong>no comisiona</strong>.</li>
           <li>Letra en estado <code>discount</code> (descontada en banco): <strong>sí comisiona</strong>, y se cuenta igual que las letras en cartera (<code>portfolio</code>) y cobranza (<code>collection</code>).</li>
           <li>El canal de una letra se hereda siempre de su factura origen (vía <code>account.bill.form</code>), nunca de un campo propio de la letra (que no existe).</li>
@@ -1292,9 +1303,9 @@ flowchart TB
           <li>Los ajustes manuales solo se permiten con motivo obligatorio y quedan en <code>audit_log</code>.</li>
         </ul>
 
-        <h3>Configuración pendiente de la Fase 0</h3>
+        <h3>Catálogo geográfico cerrado</h3>
         <ul>
-          <li>El usuario indicará nombres de país para los catálogos América de Luis y LATAM de Mayumi. Hasta entonces ambos catálogos permanecen vacíos; no se inventan países.</li>
+          <li>América y LATAM son el mismo conjunto versionado para Luis y Mayumi: <code>MX, GT, BZ, SV, HN, NI, CR, PA, CO, VE, EC, PE, BO, BR, PY, UY, AR, CL, GY, SR, GF</code>. Incluye Centroamérica y Sudamérica desde México hasta Argentina y Chile; excluye Caribe, Estados Unidos y Canadá. Las reglas guardan y comparan el código ISO, no el nombre textual por línea.</li>
         </ul>
       </section>
 
@@ -1309,10 +1320,10 @@ flowchart TB
             <thead><tr><th>Rol</th><th>Ve</th><th>Puede hacer</th><th>Base en Odoo</th></tr></thead>
             <tbody>
               <tr><td>Vendedor / beneficiario de comisión</td><td>Solo sus propias facturas/comisiones</td><td>Ver dashboard, abrir disputas</td><td><code>account.move.invoice_user_id</code>; en Nacional incluye los 4 roles comisionables confirmados (Representante de Venta, Jefe Técnico, Jefe Comercial, Gerente de línea)</td></tr>
-              <tr><td>Supervisor de Proyectos de Finanzas</td><td>Ambos canales, todo el ciclo de cálculo</td><td>Ejecutar el 1er cálculo, configurar reglas, resolver disputas, ejecutar ajustes manuales</td><td>Rol nuevo (hoy: solicitante de este PRD, en ambos canales)</td></tr>
+              <tr><td>Supervisor de Proyectos de Finanzas</td><td>Ambos canales, todo el ciclo de cálculo, validaciones de negocio y estado del periodo</td><td>Ejecutar el cálculo, configurar reglas, resolver disputas, ejecutar ajustes manuales y registrar la aprobación que habilita la entrega a RRHH</td><td>Rol aprobador del sistema; durante el piloto lo ocupa José Montero</td></tr>
               <tr><td>Jefa de Aplicaciones</td><td>Periodos Nacional en estado <code>Calculado</code></td><td>Procesar/validar el cálculo antes de enviarlo a Dirección Comercial</td><td>Rol nuevo (hoy: 2do punto único de falla en Nacional)</td></tr>
-              <tr><td>Dirección Comercial</td><td>Resumen persona/puesto con Contado, Crédito, Letras y Total, más detalle y trazabilidad de periodos <strong>Nacional</strong></td><td>Aprobación final de Nacional; consultar facturas, reglas y evidencia</td><td>Rol nuevo (hoy: valida Nacional, NO interviene en Internacional)</td></tr>
-              <tr><td>Gerencia de Ventas Internacional (Sandra)</td><td>Resumen y detalle exclusivamente de periodos <strong>Internacional</strong></td><td>Supervisar, analizar y aprobar Internacional; proponer reglas permanentes y overrides con motivo/evidencia. Durante el piloto José Montero los aplica. Sandra no altera periodos cerrados</td><td>Rol nuevo (hoy: aprueba directo, sin pasar por Dirección Comercial)</td></tr>
+              <tr><td>Dirección Comercial</td><td>Resumen persona/puesto con Contado, Crédito, Letras y Total, más detalle y trazabilidad de periodos <strong>Nacional</strong></td><td>Supervisar y validar Nacional; consultar facturas, reglas y evidencia. Su validación no sustituye la aprobación registrada del Supervisor</td><td>Rol de validación Nacional; no interviene en Internacional</td></tr>
+              <tr><td>Gerencia de Ventas Internacional (Sandra)</td><td>Resumen y detalle exclusivamente de periodos <strong>Internacional</strong></td><td>Supervisar y validar Internacional; proponer reglas permanentes y overrides con motivo/evidencia. Durante el piloto José Montero los aplica. Sandra no altera periodos cerrados ni registra la aprobación final</td><td>Rol de validación Internacional, sin pasar por Dirección Comercial</td></tr>
               <tr><td>RRHH</td><td>Dos archivos separados, cada uno con persona/puesto y columnas Contado, Crédito, Letras y Total, únicamente de periodos aprobados/exportables; sin detalle de cliente/factura</td><td>Descargar el layout Nacional y el Internacional por separado</td><td>Rol nuevo</td></tr>
               <tr><td>Finanzas / Admin</td><td>Consolidado total, configuración de reglas</td><td>Editar motor de reglas, gestionar accesos</td><td>Rol nuevo</td></tr>
               <tr><td>Auditor</td><td>Audit log completo, solo lectura</td><td>Consultar histórico de cambios y aprobaciones</td><td>Rol nuevo</td></tr>
@@ -1345,7 +1356,7 @@ flowchart TB
             <thead><tr><th>Lo que muestra el Excel de setiembre</th><th>Decisión de arquitectura</th></tr></thead>
             <tbody>
               <tr><td>Un mes nacional son ~2.400 líneas de factura y ~6.300 filas de letra; al abrir los 4 roles quedan ~35.000 filas.</td><td><strong>Sin cambio.</strong> Sigue siendo un volumen chico. Flask no calcula; dbt sí. No justifica FastAPI, Django ni un orquestador más pesado que Dagster.</td></tr>
-              <tr><td>El libro de pago hace <code>% × subtotal crudo</code> en facturas y <code>% × subtotal / cantidad de letras</code> en letras. Los reportes SEP ya traen la base prorrateada y el libro no la usa. Con la factura pagada al 100%, o con letras de igual monto, los dos caminos coinciden.</td><td><strong>Sin cambio de fórmula.</strong> Los modelos <code>mart_base_comision</code> y <code>mart_letras_periodo</code> implementan el prorrateo de <a href="#reglas-negocio">Reglas de negocio</a>. Copiar el atajo del libro reproduciría las 8 líneas de pago parcial que hoy comisionan el subtotal entero, y repartiría las letras por cantidad en vez de por monto.</td></tr>
+              <tr><td>El libro de pago hace <code>% × subtotal crudo</code> en facturas y <code>% × subtotal / cantidad de letras</code> en letras. Los reportes SEP ya traen la base prorrateada y el libro no la usa. Con la factura pagada al 100%, o con letras de igual monto, los dos caminos coinciden.</td><td><strong>Comparación abierta.</strong> <code>mart_base_comision</code> y <code>mart_letras_periodo</code> deben exponer lado a lado el prorrateo y el atajo histórico. La diferencia Nacional de S/ 199,33 se itera en octubre; septiembre no es pagable y ninguna alternativa se declara definitiva todavía.</td></tr>
               <tr><td>La salida que ve el negocio es la tabla dinámica: Puesto → Línea → Nombre, columnas Contado / Crédito / Letras / Total, filtro <code>COMISIONA</code>. Total de setiembre: S/ 74.710,24.</td><td><strong>Sin cambio de capa.</strong> Ese grano ya es <code>comision_linea</code> (persona, rol, línea, tipo de cobro, periodo). El resumen de RRHH es una consulta de ese mart. El formato de archivo que RRHH importa sigue pendiente; la estructura del resumen ya no.</td></tr>
               <tr><td><code>CONSOLIDADO</code> es una foto pegada. La tabla de porcentajes del libro también. Un cambio de % no llega a la dinámica hasta que alguien rearma la foto.</td><td><strong>Sin cambio.</strong> Es la razón de dbt: la lógica vive en Git y el resumen se recalcula, no se pega.</td></tr>
               <tr><td>S/ 3.076,36 de gerente de PET NUTRISCIENCE quedaron a nombre <code>0</code> porque el porcentaje existe y la persona no. La dinámica oculta ese nombre, y también oculta a Chamán (S/ 98,75).</td><td><strong>Se explicita un test que el diseño ya debía tener.</strong> <code>dbt test</code> bloquea el paso a <code>Calculado</code> si una comisión distinta de cero no tiene beneficiario. Nombre y porcentaje se resuelven por la zona, no por el primer <code>BUSCARV</code> del representante.</td></tr>
@@ -1354,11 +1365,27 @@ flowchart TB
           </table>
         </div>
 
+        <h3 id="arquitectura-solid">Construcción con SOLID y roles funcionales</h3>
+        <p>El cálculo, la validación de negocio, la aprobación registrada y la entrega a RRHH son responsabilidades distintas. Un rol no se modela como un <code>if</code> dentro del motor: cada actor del <a href="#roles-rbac">RBAC</a> entra por un caso de uso que ya recibe un periodo de un solo canal. Dirección Comercial valida Nacional y Gerencia Internacional valida Internacional. El Supervisor de Proyectos de Finanzas ejecuta el cálculo y aprueba ambos canales en el sistema; durante el piloto ese rol lo ocupa José Montero. RRHH solo recibe un periodo que ya está en <code>Aprobado</code>.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Principio</th><th>Cómo se construye aquí</th><th>Qué no puede hacer el código</th></tr></thead>
+            <tbody>
+              <tr><td><strong>S — una responsabilidad</strong></td><td>Extracción Odoo, elegibilidad por cuenta y producto, cálculo, seguimiento de letras, aprobación, exportación y auditoría son módulos separados. El piloto ya separa <code>mvp/domain</code>, <code>mvp/infrastructure</code> y <code>mvp/export</code>.</td><td>Flask o Next.js no calculan la comisión. El exportador no decide si una línea comisiona. El motor no sabe quién está mirando la pantalla.</td></tr>
+              <tr><td><strong>O — abierto a extensión</strong></td><td>Una cuenta nueva, un país, un override de Sandra o un formato de nómina entra como dato versionado o como un adaptador nuevo.</td><td>No se agrega un <code>if persona == "Ivonne"</code> ni un <code>if cuenta == "7011001"</code> dentro de la ruta HTTP. Esas reglas viven en el catálogo y en el override del periodo.</td></tr>
+              <tr><td><strong>L — sustitución por canal</strong></td><td>Nacional e Internacional cumplen el mismo ciclo <code>Abierto → Calculado → EnRevision → Aprobado → ExportadoRRHH → Cerrado</code>. Cambia el validador de negocio y el calendario, no el aprobador registrado ni el contrato del periodo.</td><td>No existe un flujo “especial” que mezcle los dos canales o que permita exportar sin la aprobación del Supervisor.</td></tr>
+              <tr><td><strong>I — interfaces pequeñas</strong></td><td>Cada rol consume solo su puerto: el vendedor ve sus líneas y abre disputas; Jefa de Aplicaciones procesa Nacional; Dirección Comercial valida Nacional; Sandra propone reglas y valida Internacional; el Supervisor aprueba; José ocupa ese rol y aplica overrides durante el piloto; RRHH descarga el archivo ya aprobado; Auditor lee el log.</td><td>RRHH no recibe el puerto de detalle de factura. Dirección Comercial no recibe periodos Internacional. Sandra no edita un periodo <code>Cerrado</code>.</td></tr>
+              <tr><td><strong>D — depender de contratos</strong></td><td>El dominio depende de periodos, reglas y dinero. Odoo, SQLite, Postgres, Excel y la pantalla son adaptadores. Next.js llama a Flask; Flask llama a casos de uso; los casos de uso no importan React ni XML-RPC.</td><td>Cambiar Streamlit por Next.js, o el Excel de septiembre por la extracción Odoo, no reescribe la fórmula ni los roles.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>El orden de construcción sigue ese corte. Primero el cálculo determinista y sus pruebas. Después la validación por canal y la aprobación del Supervisor. Al final la pantalla y el archivo de RRHH, que solo pueden leer un periodo <code>Aprobado</code>. El piloto actual todavía exporta desde la línea de comandos sin pasar por ese estado: sirve para comparar septiembre y no autoriza su entrega ni lo vuelve pagable. “Producción” describe la construcción del stack técnico, no una decisión de nómina.</p>
+
         <h3>¿Flask sigue siendo una buena elección para el backend?</h3>
         <p><strong>Sí, para la capa de API.</strong> Flask es apropiado aquí porque el volumen real es modesto (897 facturas/mes en Nacional, 53 en Internacional — cientos a miles de filas, no millones) y el equipo ya lo conoce. No hay ninguna razón de rendimiento para migrar a FastAPI o Django: el cuello de botella de este proyecto nunca va a ser el framework web, va a ser <strong>la calidad y trazabilidad de las transformaciones de datos</strong> (hoy fórmulas de Excel sin versión ni test). Por eso la recomendación no es "cambiar Flask", sino "no dejar que toda la lógica de negocio viva dentro de rutas Flask como en Finanzas AGV" — la base de cálculo, el prorrateo y las reglas de letras deben vivir en una capa de transformación independiente, testeada y versionada en Git.</p>
 
         <h3>¿Conviene usar prácticas de ingeniería de datos open source? Sí, y aquí es donde más impacto tiene</h3>
-        <p>Los reportes de <code>Proceso_Manual/</code> ya calculan la base que el sistema debe conservar: prorrateo sin IGV, letras del periodo y, en Internacional, el tipo de cambio del día de pago. El libro que arma el monto a pagar de setiembre usa un atajo encima de esa base (<a href="#as-is-flujo-nacional">flujo AS-IS</a>). Las dos cosas viven <strong>sin control de versiones, sin tests y sin historial de quién las cambió</strong>. Ese es el problema que resuelven las herramientas de abajo, y son gratuitas:</p>
+        <p>Los reportes de <code>Proceso_Manual/</code> calculan una base prorrateada sin IGV, letras del periodo y, en Internacional, el tipo de cambio del día de pago. El libro de setiembre usa un atajo encima de esa base (<a href="#as-is-flujo-nacional">flujo AS-IS</a>). Mientras se itera la diferencia Nacional de S/ 199,33, ambos caminos deben permanecer visibles y versionados, sin declarar uno definitivo. Hoy los dos viven <strong>sin control de versiones, sin tests y sin historial de quién los cambió</strong>. Ese es el problema que resuelven las herramientas de abajo, y son gratuitas:</p>
 
         <div class="table-wrap">
           <table>
@@ -1596,7 +1623,10 @@ erDiagram
   APROBACION {
     int id
     int periodo_id
+    string validador_negocio
+    string rol_validador
     string aprobador
+    string rol_aprobador
     string decision
   }
   DISPUTA {
@@ -1624,6 +1654,7 @@ erDiagram
           <li><code>override_periodo</code> es temporal y expira con el periodo. No modifica la regla permanente ni un snapshot cerrado; todo cambio genera <code>audit_log</code>.</li>
           <li><code>mart_seguimiento_letra</code> materializa, por factura/planilla y periodo, total emitidas, pagadas históricas antes del corte, pagadas actuales, faltantes, montos y estados. Una restricción única por letra/conciliación evita doble pago entre periodos.</li>
           <li><code>periodo_comision.fecha_corte</code> es configurable por canal: mes calendario para Nacional, ciclo 21→22 para Internacional.</li>
+          <li><code>aprobacion</code> conserva por separado la validación de negocio del canal y la aprobación registrada del Supervisor de Proyectos de Finanzas. En el piloto, <code>aprobador</code> es José Montero; solo esa decisión habilita la entrega a RRHH y no equivale a marcar el periodo como pagable.</li>
         </ul>
       </section>
 
@@ -1635,7 +1666,7 @@ erDiagram
         <ul>
           <li><strong>Extracción incremental por <code>write_date</code>:</strong> mismo patrón de watermark que usa Finanzas AGV — primera corrida trae histórico completo paginado, corridas siguientes solo traen registros modificados desde el último watermark exitoso. El watermark se guarda al <strong>inicio</strong> de la corrida, no al final, para no perder registros modificados durante la sincronización.</li>
           <li><strong>Consultas Odoo en bulk:</strong> <code>search_read</code> paginado por <code>id</code>, dominios por canal/periodo/<code>write_date</code> y listas explícitas de campos. Primero se obtienen facturas; luego, en lotes, líneas, partners comerciales/entrega, países, productos, cuentas y pedidos. Queda prohibido consultar una relación por cada factura (N+1).</li>
-          <li><strong>Resolución de país determinista:</strong> el usuario configura nombres de país, no grupos ni códigos. Cada nombre se resuelve una sola vez contra <code>res.country.name</code> y, como fallback exacto, <code>res.country.code</code>; se persisten <code>country_id</code> y código ISO. Luego las líneas usan <code>account.move.commercial_partner_id.country_id</code>; si falta, <code>partner_id.country_id</code> y finalmente <code>partner_shipping_id.country_id</code>. Si el nombre configurado no coincide exactamente, queda bloqueado para revisión (sin búsqueda difusa); si una factura no tiene país, no entra a reglas de Luis/Mayumi. América y LATAM permanecen vacíos hasta que el usuario entregue los nombres.</li>
+          <li><strong>Resolución de país determinista:</strong> el catálogo único América/LATAM almacena códigos ISO. La extracción resuelve <code>res.country</code> una sola vez y persiste <code>country_id</code> y código ISO; luego las líneas usan <code>account.move.commercial_partner_id.country_id</code>, si falta <code>partner_id.country_id</code> y finalmente <code>partner_shipping_id.country_id</code>. Las reglas de Luis y Mayumi comparan solo el ISO persistido; si una factura no tiene país, no entra a esas reglas y queda para revisión.</li>
           <li><strong>Extracción idempotente:</strong> upsert por clave natural de Odoo (no por autoincremental propio), para poder repetir una corrida sin duplicar filas.</li>
           <li><strong>Transformación en dbt, no en Python ad-hoc:</strong> <code>stg_facturas</code>, <code>stg_lineas_documento</code>, <code>stg_pagos</code>, <code>mart_base_comision</code> y <code>mart_seguimiento_letras</code> encapsulan base neta por impuesto real, prorrateo, exclusiones por línea/cuenta/concepto, ND, reglas de alcance y letras por periodo.</li>
           <li><strong>Trazabilidad letra→factura resuelta en la capa de transformación</strong>, no en una vista SQL separada que dependa de un modelo de "planillas" que nunca se puebla (evitar el bug ya documentado en <code>ANALISIS_ESTRATEGIA_DATOS.md</code> de Finanzas AGV).</li>
@@ -1651,7 +1682,7 @@ erDiagram
           <li>Aminoplex Forte x 100 ml usa la clasificación aprobada PETMEDICA mientras exista la discrepancia con el maestro AGROVET, dejando ID de regla y evidencia.</li>
           <li><code>total_emitidas = pagadas_hasta_fin + faltantes</code>; <code>pagadas_periodo</code> no intersecta pagadas históricas; ninguna letra/conciliación genera comisión en dos periodos.</li>
           <li>Una excepción de factura prevalece sobre línea/país/TODOS; conflictos de igual alcance y prioridad bloquean. Un periodo cerrado no acepta mutaciones.</li>
-          <li>El libro Nacional contiene solo totales Nacional y lo aprueba Dirección Comercial; el libro Internacional contiene solo totales Internacional y lo aprueba Gerencia Internacional. Ambos mantienen persona/puesto y columnas Contado/Crédito/Letras/Total.</li>
+          <li>El libro Nacional contiene solo totales Nacional y lo valida Dirección Comercial; el libro Internacional contiene solo totales Internacional y lo valida Gerencia Internacional. El Supervisor de Proyectos de Finanzas registra la aprobación de ambos. Los dos mantienen persona/puesto y columnas Contado/Crédito/Letras/Total.</li>
         </ul>
       </section>
 
@@ -1724,7 +1755,7 @@ erDiagram
       <section id="roadmap" class="audience-cross">
         <span class="audience-tag tag-cross">Transversal — Roadmap</span>
         <h2>Roadmap por fases</h2>
-        <p>Criterio de salida transversal para pasar de una fase a la siguiente: <strong>paridad 100% contra el Excel histórico de al menos 2-3 cierres reales</strong> (Nacional e Internacional), validada por la Jefa de Aplicaciones y Dirección Comercial.</p>
+        <p>El siguiente cierre de prueba después de septiembre es <strong>octubre 2026</strong> para ambos canales. Diciembre queda fuera del plan inmediato. Septiembre y octubre se usan para iterar diferencias y validaciones; construir el stack técnico de producción no autoriza pagos ni vuelve pagable ningún periodo.</p>
 
         <div class="table-wrap">
           <table>
@@ -1733,7 +1764,7 @@ erDiagram
               <tr>
                 <td><strong>Fase 0 — Levantamiento</strong></td>
                 <td>Documentar formalmente las reglas de cálculo reales de Nacional e Internacional</td>
-                <td><strong>Avance real — avanzada:</strong> fórmulas, matrices Nacional, alcance TODOS/Luis/Mayumi, cuenta elegible <code>7022101</code>, exclusiones contables y regla de <code>NO VA</code>, entregas/aprobaciones separadas y modelo de excepciones definidos. <strong>Pendiente:</strong> nombres de país para América/LATAM, validación formal de Aminoplex y usuario de integración dedicado.</td>
+                <td><strong>Avance real — avanzada:</strong> fórmulas, matrices Nacional, alcance TODOS/Luis/Mayumi, catálogo ISO América/LATAM, cuenta elegible <code>7022101</code>, exclusiones contables y regla de <code>NO VA</code>, entregas/aprobaciones separadas y modelo de excepciones definidos. <strong>Pendiente:</strong> validación formal de Aminoplex y usuario de integración dedicado.</td>
               </tr>
               <tr>
                 <td><strong>Fase 1 — ETL y conciliación</strong></td>
@@ -1743,7 +1774,7 @@ erDiagram
               <tr>
                 <td><strong>Fase 2 — MVP de cálculo y aprobación</strong></td>
                 <td>Motor de reglas, cálculo automático, workflow de aprobación y exportación a RRHH</td>
-                <td>RF-04 a RF-07, RF-10, RF-11, RF-13 operando en producción para al menos un ciclo real completo de cada canal</td>
+                <td>RF-04 a RF-07, RF-10, RF-11 y RF-13 operando en el stack técnico; cierre de octubre comparado y validado, sin habilitar nómina ni declarar el periodo pagable</td>
               </tr>
               <tr>
                 <td><strong>Fase 3 — Visibilidad y autoservicio</strong></td>
@@ -1772,11 +1803,12 @@ erDiagram
               <tr><td>La plantilla técnica del ERP de nómina difiere del resumen acordado</td><td>RRHH ve el total correcto, pero no puede importarlo automáticamente</td><td>Mantener como contrato canónico persona/puesto + Contado/Crédito/Letras/Total y agregar un adaptador de exportación cuando RRHH entregue la especificación</td></tr>
               <tr><td>Aparece una cuenta distinta de <code>7022101</code> y de las exclusiones confirmadas</td><td>Una venta real podría quedar fuera o un concepto no comercial entrar indebidamente</td><td>Bloquear cuentas desconocidas para revisión y ampliar el catálogo versionado solo con decisión explícita</td></tr>
               <tr><td>Odoo clasifica Aminoplex Forte x 100 ml como AGROVET mientras negocio indica PETMEDICA</td><td>Luis Chávez podría cobrar de menos o la línea equivocada</td><td>Override versionado PETMEDICA con evidencia hasta corregir el maestro; test específico y alerta de reconciliación</td></tr>
-              <tr><td>Los grupos América/LATAM se comparan como texto en cada línea o se inventan antes de recibir países</td><td>Cambios de nombres, territorios o criterios comerciales producen resultados inconsistentes</td><td>Resolver cada nombre una vez contra <code>res.country</code>, persistir <code>country_id</code>/ISO y dejar catálogos vacíos mientras el usuario no entregue nombres</td></tr>
+              <tr><td>Una fuente no trae el código ISO del país</td><td>Las reglas geográficas de Luis y Mayumi no pueden evaluarse con seguridad</td><td>Persistir <code>country_id</code>/ISO desde <code>res.country</code>, comparar contra el catálogo único versionado y bloquear solo la línea sin ISO; nunca comparar nombres por línea</td></tr>
               <tr><td>Dagster/dbt no forman parte explícita del brochure de formación</td><td>Curva de aprendizaje y dependencia de pocas personas</td><td>Spike en Fase 1, capacitación/runbooks y alternativa compatible Python programado + SQL versionado si el costo no se justifica</td></tr>
               <tr><td>El usuario de integración de Odoo sigue siendo una cuenta personal</td><td>Si la persona cambia de rol o se desactiva su cuenta, el ETL completo deja de funcionar</td><td>Crear cuenta de servicio dedicada antes de Fase 1 (ver Hallazgos de seguridad)</td></tr>
               <tr><td>Canal Digital crece y queda fuera del sistema más tiempo del previsto</td><td>Un tercer proceso manual sigue existiendo en paralelo, sin visibilidad</td><td>Revisar volumetría de Digital cada trimestre como criterio de entrada a Fase 4</td></tr>
               <tr><td>Se reutiliza el texto histórico <code>NO VA</code> como regla</td><td>Una anotación manual podría excluir ventas válidas sin causa auditable</td><td>Excluir por las causas contables cerradas: <code>7011001</code> gasto de exportación o <code>7599009</code> interés; nunca por texto ni monto</td></tr>
+              <tr><td>Se trata la diferencia Nacional de S/ 199,33 como resuelta o se elige una fórmula antes de comparar octubre</td><td>Septiembre podría declararse pagable con una regla aún no cerrada</td><td>Mantener visibles el prorrateo y el atajo histórico, iterar en octubre y bloquear la condición pagable</td></tr>
             </tbody>
           </table>
         </div>
@@ -1784,8 +1816,8 @@ erDiagram
 
       <!-- PREGUNTAS ABIERTAS -->
       <section id="preguntas-abiertas" class="audience-cross">
-        <span class="audience-tag tag-cross">Transversal — Preguntas abiertas</span>
-        <h2>Preguntas abiertas</h2>
+        <span class="audience-tag tag-cross">Transversal — Decisiones cerradas</span>
+        <h2>Decisiones cerradas</h2>
 
         <h3>Respondidas y confirmadas en esta iteración</h3>
         <div class="table-wrap">
@@ -1801,19 +1833,17 @@ erDiagram
               <tr><td>Exclusión de TTG</td><td>Confirmado excluido</td></tr>
               <tr><td>Canal Digital</td><td>No se automatiza hasta que Dirección Comercial lo solicite explícitamente; queda fuera de toda fase de este PRD</td></tr>
               <tr><td>Catálogo contable y <code>NO VA</code></td><td><code>7022101</code> es venta elegible; <code>7011001</code>, <code>7599001</code>, <code>7599006</code>, <code>7599007</code> y <code>7599009</code> no comisionan. <code>NO VA</code> no es criterio libre: corresponde a gasto de exportación o interés</td></tr>
-              <tr><td>Países América/LATAM</td><td>El usuario dará nombres de país. Se resuelven una vez contra <code>res.country</code> y se persisten como <code>country_id</code>/ISO; no se inventan listas</td></tr>
-              <tr><td>Aplicación y aprobación de cambios Internacional</td><td>Sandra propone y aprueba Internacional; durante el piloto José Montero aplica sus cambios. Sandra no modifica periodos cerrados. Dirección Comercial aprueba Nacional</td></tr>
+              <tr><td>Países América/LATAM</td><td>Son un único catálogo ISO versionado: <code>MX, GT, BZ, SV, HN, NI, CR, PA, CO, VE, EC, PE, BO, BR, PY, UY, AR, CL, GY, SR, GF</code>. Incluye Centroamérica y Sudamérica; excluye Caribe, Estados Unidos y Canadá</td></tr>
+              <tr><td>Aprobador registrado del sistema</td><td>El Supervisor de Proyectos de Finanzas ejecuta el cálculo y registra la aprobación que habilita la entrega a RRHH en ambos canales. Durante el piloto, José Montero ocupa ese rol. Dirección Comercial supervisa/valida Nacional y Gerencia Internacional supervisa/valida Internacional</td></tr>
               <tr><td>Diario <code>REGV</code></td><td>Apareció en Odoo como regularización de ventas y queda incluido hasta que Contabilidad indique lo contrario</td></tr>
-              <tr><td>Entregas a RRHH</td><td>Dos Excel y dos aprobaciones independientes: Nacional por Dirección Comercial e Internacional por Gerencia Internacional</td></tr>
+              <tr><td>Entregas a RRHH</td><td>Dos Excel separados, disponibles solo después de la aprobación registrada del Supervisor. RRHH recibe; no aprueba</td></tr>
+              <tr><td>Significado de producción</td><td>Construcción del stack técnico: extracción Odoo, transformación, API Flask, pantalla Next.js y PostgreSQL. No significa envío a nómina ni periodo pagable</td></tr>
+              <tr><td>Siguiente cierre de prueba</td><td>Octubre 2026. Diciembre queda fuera del plan inmediato</td></tr>
+              <tr><td>Diferencia Nacional de S/ 199,33</td><td>No está cerrada: se mantienen visibles el prorrateo del PRD y el atajo histórico del Excel, se itera con octubre y septiembre permanece no pagable</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h3>Configuración pendiente, no pregunta de negocio</h3>
-        <p>Los catálogos América de Luis y LATAM de Mayumi permanecen vacíos hasta que el
-        usuario indique nombres concretos de país. Un nombre sin coincidencia exacta en
-        <code>res.country</code> genera una excepción bloqueante para corrección; no se infiere
-        ni se aplica coincidencia difusa.</p>
       </section>
 
       <!-- CRITERIOS DE EXITO -->
@@ -1824,7 +1854,7 @@ erDiagram
           <li>El equipo de Dirección Comercial puede responder "¿cuánto gastamos en comisiones este mes, por canal?" sin pedir un reporte a nadie.</li>
           <li>Ningún cálculo depende de una sola persona: cualquier analista autorizado puede ejecutar y revisar un periodo.</li>
           <li>El ciclo completo (extracción → cálculo → aprobación → exportación a RRHH) se completa en menos de 3 días hábiles, frente a los ~13-20 días actuales.</li>
-          <li>Paridad 100% contra el Excel histórico en al menos 2-3 cierres reales de cada canal antes de cualquier go-live con datos de pago reales.</li>
+          <li>Octubre 2026 comparado como siguiente cierre de prueba, con las diferencias entre prorrateo y atajo histórico visibles y trazables; diciembre queda fuera del plan inmediato.</li>
           <li>Cero pagos indebidos atribuibles a la casuística de contado/pago adelantado, verificado con la nueva regla de fecha efectiva de cobro.</li>
           <li>RBAC bloqueante en producción desde el primer despliegue (sin modo "solo log").</li>
           <li>El usuario de integración de Odoo es una cuenta de servicio dedicada, no una cuenta personal.</li>

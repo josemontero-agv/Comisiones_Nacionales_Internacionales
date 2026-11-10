@@ -80,6 +80,7 @@ class GoldRow:
     commission_raw: Decimal
     rule_id: str
     source_key: str
+    commercial_line: str = ""
 
     @property
     def key(self) -> str:
@@ -95,6 +96,39 @@ class GoldRow:
             **_json_value(asdict(self)),
             "commission_presented": decimal_text(self.commission_presented),
             "comparison_policy": COMPARISON_POLICY,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class CollectedLine:
+    """Cobro atribuible a una línea fuente, sin duplicarlo por beneficiario."""
+
+    channel: str
+    category: str
+    commercial_line: str
+    document: str
+    line: str
+    allocation: str
+    currency: str
+    collected_raw: Decimal
+    source_key: str
+
+    @property
+    def key(self) -> str:
+        return (
+            f"{self.channel}|{self.category}|{self.document}|{self.line}|"
+            f"{self.allocation}|{self.source_key}"
+        )
+
+    @property
+    def collected_presented(self) -> Decimal:
+        return quantize_money(self.collected_raw)
+
+    def contract(self) -> dict[str, Any]:
+        return {
+            "key": self.key,
+            **_json_value(asdict(self)),
+            "collected_presented": decimal_text(self.collected_presented),
         }
 
 
@@ -120,6 +154,7 @@ class RunResult:
     expected_total: Decimal
     actual_total: Decimal
     rows: list[GoldRow] = field(default_factory=list)
+    collected_rows: list[CollectedLine] = field(default_factory=list)
     differences: list[ParityDifference] = field(default_factory=list)
     exceptions: list[dict[str, Any]] = field(default_factory=list)
     metadata: dict[str, Any] = field(default_factory=dict)
@@ -137,6 +172,14 @@ class RunResult:
                 )
             ).encode("utf-8")
         ).hexdigest()
+        collected_hash = hashlib.sha256(
+            (
+                "\n".join(
+                    canonical_json(row.contract())
+                    for row in sorted(self.collected_rows, key=lambda item: item.key)
+                )
+            ).encode("utf-8")
+        ).hexdigest()
         return {
             "run_id": self.run_id,
             "snapshot_id": self.snapshot_id,
@@ -149,9 +192,11 @@ class RunResult:
             "actual_total": decimal_text(self.actual_total),
             "delta": decimal_text(self.delta),
             "row_count": len(self.rows),
+            "collected_row_count": len(self.collected_rows),
             "difference_count": len(self.differences),
             "exception_count": len(self.exceptions),
             "gold_sha256": rows_hash,
+            "collected_sha256": collected_hash,
             "comparison_policy": COMPARISON_POLICY,
             **self.metadata,
         }

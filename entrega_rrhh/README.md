@@ -15,5 +15,7 @@ python -m mvp.cli export-xlsx --channel internacional `
 ```
 
 Cada libro contiene `Resumen RRHH` (persona/puesto × Contado/Crédito/Letras/Total),
-`Detalle`, `Excepciones`, `Diferencias` y `Manifest` exclusivamente de su canal. Dirección
-Comercial aprueba Nacional; Gerencia Internacional aprueba Internacional.
+`Cobrado por linea` (background cobrado y comisión por línea comercial), `Detalle`,
+`Excepciones`, `Diferencias` y `Manifest` exclusivamente de su canal. Dirección Comercial
+aprueba Nacional; Gerencia Internacional aprueba Internacional. El piloto sigue bloqueado y
+no es pagable.

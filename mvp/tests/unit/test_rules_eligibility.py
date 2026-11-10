@@ -127,3 +127,95 @@ def test_country_name_is_resolved_once_to_persistable_identity() -> None:
         "code",
     )
     assert resolve_country_name("América", countries).reason == "COUNTRY_NOT_FOUND"
+
+
+def test_ivonne_override_and_international_country_rules_are_structured() -> None:
+    ruleset = load_ruleset_file(RULESET)
+    override = next(
+        item
+        for item in ruleset.period_overrides
+        if item.rule_id == "OVR-IVONNE-F522-ATREVIA-2026-09"
+    )
+    assert override.proposer == "Sandra"
+    assert override.applied_by == "José Montero"
+    assert override.matches(
+        day=date(2026, 9, 28),
+        invoice_ref="F F15-00000522",
+        product_code="31392PER00007",
+        product_name="ATREVIA TRIO CATS SPOT ON MEDIUM (X 5 PIP, STD)",
+    )
+    assert not override.matches(
+        day=date(2026, 9, 28),
+        invoice_ref="F F15-00000522",
+        product_code="OTRO",
+        product_name="ATREVIA TRIO CATS SPOT ON MEDIUM (X 5 PIP, STD)",
+    )
+
+    mayumi = next(
+        rule
+        for rule in ruleset.intl_rules
+        if rule.rule_id == "INTL-MAYUMI-AVIVET-LATAM-V1"
+    )
+    luis = next(
+        rule
+        for rule in ruleset.intl_rules
+        if rule.rule_id == "INTL-LUIS-PETMEDICA-AMERICA-V1"
+    )
+    assert mayumi.role == "Jefe Tecnico Comercial Latinoamerica Avivet"
+    assert mayumi.rate_for("AVIVET") == Decimal("0.005")
+    assert luis.rate_for("PETMEDICA") == Decimal("0.005")
+    assert mayumi.country_group == luis.country_group == "america_latam"
+
+    country_catalog = ruleset.country_groups["america_latam"]
+    assert country_catalog.approved
+    assert country_catalog.values == (
+        "MX",
+        "GT",
+        "BZ",
+        "SV",
+        "HN",
+        "NI",
+        "CR",
+        "PA",
+        "CO",
+        "VE",
+        "EC",
+        "PE",
+        "BO",
+        "BR",
+        "PY",
+        "UY",
+        "AR",
+        "CL",
+        "GY",
+        "SR",
+        "GF",
+    )
+
+    for beneficiary, line in (
+        ("Luis Chávez", "PETMEDICA"),
+        ("Mayumi Garcilazo", "AVIVET"),
+    ):
+        included = resolve_beneficiary(
+            beneficiary,
+            ruleset.intl_rules,
+            LineContext("F1", "P1", line, "C1", "PE", date(2026, 9, 1)),
+            ruleset.country_groups,
+        )
+        assert included.reason == "RULE_APPLIED"
+        assert included.rate == Decimal("0.005")
+        for excluded_code in ("US", "CA", "DO", "Perú"):
+            excluded = resolve_beneficiary(
+                beneficiary,
+                ruleset.intl_rules,
+                LineContext(
+                    "F1",
+                    "P1",
+                    line,
+                    "C1",
+                    excluded_code,
+                    date(2026, 9, 1),
+                ),
+                ruleset.country_groups,
+            )
+            assert excluded.reason == "NO_RULE_IN_SCOPE"

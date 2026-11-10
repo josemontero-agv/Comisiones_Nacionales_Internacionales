@@ -44,6 +44,13 @@ CREATE TABLE IF NOT EXISTS gold_commission_line (
     PRIMARY KEY (run_id, row_key)
 );
 
+CREATE TABLE IF NOT EXISTS gold_collected_line (
+    run_id TEXT NOT NULL REFERENCES gold_run(run_id),
+    row_key TEXT NOT NULL,
+    payload_json TEXT NOT NULL,
+    PRIMARY KEY (run_id, row_key)
+);
+
 CREATE TABLE IF NOT EXISTS gold_difference (
     run_id TEXT NOT NULL REFERENCES gold_run(run_id),
     difference_key TEXT NOT NULL,

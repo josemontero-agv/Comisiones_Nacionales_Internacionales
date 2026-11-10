@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import json
-from collections import defaultdict
-from decimal import Decimal
 from pathlib import Path
 from typing import Any
 
@@ -12,9 +10,12 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
 
+from mvp.application.reporting import (
+    CATEGORIES,
+    build_collected_by_line,
+    build_commission_pivot,
+)
 from mvp.infrastructure.sqlite import MedallionRepository
-
-CATEGORIES = ("CONTADO", "CREDITO", "LETRAS")
 
 
 def _style_sheet(worksheet: Any) -> None:
@@ -39,14 +40,18 @@ def _append_dicts(
 
 
 def export_rrhh_workbook(
-    database: Path | str, output: Path | str, channel: str
+    database: Path | str,
+    output: Path | str,
+    channel: str,
+    *,
+    bronze_origin: str | None = None,
 ) -> Path:
     if channel not in {"nacional", "internacional"}:
         raise ValueError(f"canal no soportado: {channel}")
     repository = MedallionRepository(database)
     manifests = [
         manifest
-        for manifest in repository.latest_manifests()
+        for manifest in repository.latest_manifests(bronze_origin=bronze_origin)
         if manifest["channel"] == channel
     ]
     if not manifests:
@@ -56,40 +61,63 @@ def export_rrhh_workbook(
         for manifest in manifests
     ]
 
-    summary: dict[tuple[str, str, str], dict[str, Decimal]] = defaultdict(
-        lambda: {category: Decimal(0) for category in CATEGORIES}
-    )
     detail: list[dict[str, Any]] = []
     differences: list[dict[str, Any]] = []
     exceptions: list[dict[str, Any]] = []
     for payload in payloads:
         manifest = payload["manifest"]
-        for row in payload["rows"]:
-            category = str(row["category"])
-            key = (
-                str(row["currency"]),
-                str(row["person"]),
-                str(row["role"]),
-            )
-            summary[key][category] = summary[key].get(category, Decimal(0)) + Decimal(
-                str(row["commission_presented"])
-            )
-            detail.append(row)
+        detail.extend(payload["rows"])
         differences.extend(payload["differences"])
         exceptions.extend(payload["exceptions"])
 
     workbook = Workbook()
     resumen = workbook.active
-    resumen.title = "Resumen RRHH"
-    resumen.append(["Moneda", "Persona", "Puesto", *CATEGORIES, "TOTAL"])
-    for key in sorted(summary):
-        values = summary[key]
-        total = sum(values.values(), Decimal(0))
+    resumen.title = "RESUMEN COMISIONES"
+    pivot = build_commission_pivot(payloads)
+    resumen.append(["Puesto", "Línea comercial", "Nombre", *CATEGORIES, "Total"])
+    for row in pivot:
         resumen.append(
-            [*key, *(float(values[category]) for category in CATEGORIES), float(total)]
+            [
+                row["Puesto"],
+                row["Línea comercial"],
+                row["Nombre"],
+                *(float(row[category]) for category in CATEGORIES),
+                float(row["Total"]),
+            ]
         )
     _style_sheet(resumen)
     for row in resumen.iter_rows(min_row=2, min_col=4, max_col=7):
+        for cell in row:
+            cell.number_format = "#,##0.00"
+
+    cobrado = workbook.create_sheet("Cobrado por linea")
+    cobrado.append(
+        [
+            "Moneda",
+            "Línea comercial",
+            "Cobrado CONTADO",
+            "Cobrado CREDITO",
+            "Cobrado LETRAS",
+            "Total cobrado",
+            "Comisión CONTADO",
+            "Comisión CREDITO",
+            "Comisión LETRAS",
+            "Total comisión",
+        ]
+    )
+    for row in build_collected_by_line(payloads):
+        cobrado.append(
+            [
+                row["Moneda"],
+                row["Línea comercial"],
+                *(float(row[f"Cobrado {category}"]) for category in CATEGORIES),
+                float(row["Total cobrado"]),
+                *(float(row[f"Comisión {category}"]) for category in CATEGORIES),
+                float(row["Total comisión"]),
+            ]
+        )
+    _style_sheet(cobrado)
+    for row in cobrado.iter_rows(min_row=2, min_col=3, max_col=10):
         for cell in row:
             cell.number_format = "#,##0.00"
 
@@ -99,6 +127,7 @@ def export_rrhh_workbook(
         "document",
         "line",
         "allocation",
+        "commercial_line",
         "person",
         "role",
         "currency",
@@ -133,5 +162,11 @@ def export_rrhh_workbook(
 
     destination = Path(output)
     destination.parent.mkdir(parents=True, exist_ok=True)
-    workbook.save(destination)
-    return destination
+    try:
+        workbook.save(destination)
+        return destination
+    except PermissionError:
+        fallback = Path(database).parent / destination.name
+        fallback.parent.mkdir(parents=True, exist_ok=True)
+        workbook.save(fallback)
+        return fallback

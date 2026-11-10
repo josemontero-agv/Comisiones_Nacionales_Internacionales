@@ -366,10 +366,11 @@ El motor no importará Streamlit ni administrará estado de sesión. La UI futur
 - Internacional aplica porcentajes por beneficiario y experiencia:
   Ariana, Vanessa, Sandra, Umberto e Ivonne sobre TODOS; Luis sobre América + PETMEDICA;
   Mayumi al `0.5%` sobre AVIVET + LATAM.
-- Los catálogos América y LATAM permanecen vacíos hasta que el usuario entregue nombres de
-  país. Cada nombre se resuelve una sola vez, por coincidencia exacta de `res.country.name` y
-  luego por `res.country.code`, y se persiste como `country_id`/ISO. Sin coincidencia exacta
-  se bloquea para revisión; no se compara texto por cada línea ni se usa coincidencia difusa.
+- América y LATAM usan un único catálogo versionado con códigos ISO:
+  `MX, GT, BZ, SV, HN, NI, CR, PA, CO, VE, EC, PE, BO, BR, PY, UY, AR, CL, GY, SR, GF`.
+  El conjunto cubre Centroamérica y Sudamérica desde México hasta Argentina y Chile; excluye
+  Caribe, Estados Unidos y Canadá. Las líneas comparan el código ISO persistido, nunca el
+  nombre del país.
 - Aminoplex Forte x 100 ml usa un override versionado a PETMEDICA mientras Odoo informe
   AGROVET.
 - La precedencia es factura > producto > línea > cliente > país > TODOS. A igual alcance,
@@ -534,11 +535,12 @@ criterios y ramas anteriores deben tener al menos una prueba positiva y una nega
 3. Sandra propone cambios Internacional y aprueba ese canal. Durante el piloto José Montero
    los aplica; Sandra no edita periodos cerrados. Dirección Comercial aprueba Nacional.
 4. `REGV` queda incluido hasta una decisión contraria de Contabilidad.
-5. América/LATAM son catálogos vacíos y configurables por nombres de país; no se inventan
-   países para Luis o Mayumi.
+5. América/LATAM comparten el catálogo ISO aprobado
+   `MX, GT, BZ, SV, HN, NI, CR, PA, CO, VE, EC, PE, BO, BR, PY, UY, AR, CL, GY, SR, GF`;
+   Luis y Mayumi referencian la misma versión.
 
 ## Puerta de aprobación
 
-La SPEC fue aprobada por el usuario antes de la implementación. Los catálogos América/LATAM
-vacíos bloquean únicamente reglas que los requieran, pero no la ejecución diagnóstica del
-piloto.
+La SPEC fue aprobada por el usuario antes de la implementación. El catálogo América/LATAM
+está cerrado por código ISO; una fuente histórica sin ISO puede seguir bloqueando la regla
+afectada, pero no la ejecución diagnóstica del piloto.

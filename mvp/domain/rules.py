@@ -94,6 +94,7 @@ class ScopedRule:
     approved: bool = True
     country_group: str | None = None
     evidence: str = ""
+    role: str = "Ventas Internacionales"
 
     def rate_for(self, commercial_line: str | None) -> Decimal | None:
         key = normalize_key(commercial_line)
@@ -115,6 +116,41 @@ class ProductOverride:
     commercial_line: str
     approved: bool
     evidence: str
+
+
+@dataclass(frozen=True, slots=True)
+class PeriodOverride:
+    """Excepción temporal auditable que exige factura y producto exactos."""
+
+    rule_id: str
+    beneficiary: str
+    role: str
+    valid_from: date
+    valid_to: date
+    invoice_ref: str
+    product_code: str
+    product_name: str
+    proposer: str
+    applied_by: str
+    reason: str
+    approved: bool
+    evidence: str = ""
+
+    def matches(
+        self,
+        *,
+        day: date,
+        invoice_ref: str,
+        product_code: str | None,
+        product_name: str | None,
+    ) -> bool:
+        return (
+            self.approved
+            and self.valid_from <= day <= self.valid_to
+            and normalize_key(invoice_ref) == normalize_key(self.invoice_ref)
+            and normalize_key(product_code) == normalize_key(self.product_code)
+            and normalize_key(product_name) == normalize_key(self.product_name)
+        )
 
 
 @dataclass(frozen=True, slots=True)
@@ -148,6 +184,7 @@ class Ruleset:
     letter_eligible_status: tuple[str, ...]
     letter_excluded_status: tuple[str, ...]
     product_overrides: tuple[ProductOverride, ...]
+    period_overrides: tuple[PeriodOverride, ...]
     nacional_rules: tuple[NacionalRule, ...]
     zone_variants: tuple[ZoneVariant, ...]
     product_families: dict[str, Catalog]
@@ -196,6 +233,9 @@ class Ruleset:
         items += [(r.rule_id, r.evidence) for r in self.intl_rules if not r.approved]
         items += [
             (o.rule_id, o.evidence) for o in self.product_overrides if not o.approved
+        ]
+        items += [
+            (o.rule_id, o.evidence) for o in self.period_overrides if not o.approved
         ]
         return sorted(items)
 
@@ -267,6 +307,7 @@ def load_ruleset(data: dict) -> Ruleset:
             approved=bool(r.get("approved", False)),
             country_group=r["scope"].get("country_group"),
             evidence=str(r.get("evidence", "")),
+            role=str(r.get("role", "Ventas Internacionales")),
         )
         for r in data.get("internacional", {}).get("rules", [])
     )
@@ -287,6 +328,29 @@ def load_ruleset(data: dict) -> Ruleset:
         )
         for o in data.get("product_overrides", [])
     )
+    period_overrides = tuple(
+        PeriodOverride(
+            rule_id=o["rule_id"],
+            beneficiary=o["beneficiary"],
+            role=o["role"],
+            valid_from=parse_date(o["valid_from"]),
+            valid_to=parse_date(o["valid_to"]),
+            invoice_ref=o["scope"]["invoice_ref"],
+            product_code=o["scope"]["product_code"],
+            product_name=o["scope"]["product_name"],
+            proposer=o["proposer"],
+            applied_by=o["applied_by"],
+            reason=o["reason"],
+            approved=bool(o.get("approved", False)),
+            evidence=str(o.get("evidence", "")),
+        )
+        for o in data.get("period_overrides", [])
+    )
+    if any(
+        override.valid_from is None or override.valid_to is None
+        for override in period_overrides
+    ):
+        raise ValueError("period overrides require valid_from and valid_to")
     letters = data.get("letters", {})
     return Ruleset(
         version=data["ruleset_version"],
@@ -303,6 +367,7 @@ def load_ruleset(data: dict) -> Ruleset:
             normalize_key(s) for s in letters.get("excluded_status", [])
         ),
         product_overrides=overrides,
+        period_overrides=period_overrides,
         nacional_rules=nac_rules,
         zone_variants=variants,
         product_families=families,
