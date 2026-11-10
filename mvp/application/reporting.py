@@ -105,9 +105,7 @@ def build_collected_by_line(
             {
                 "Moneda": currency_by_line[commercial_line],
                 "Línea comercial": commercial_line,
-                **{
-                    f"Cobrado {category}": paid[category] for category in CATEGORIES
-                },
+                **{f"Cobrado {category}": paid[category] for category in CATEGORIES},
                 "Total cobrado": sum(paid.values(), Decimal(0)),
                 **{
                     f"Comisión {category}": commission[category]

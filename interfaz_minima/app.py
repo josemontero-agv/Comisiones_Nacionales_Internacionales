@@ -58,7 +58,9 @@ else:
     columns = st.columns(4)
     columns[0].metric("Estado", str(selected["status"]))
     columns[1].metric("Periodo", period)
-    columns[2].metric("Total comisión", f"{selected['currency']} {selected['actual_total']}")
+    columns[2].metric(
+        "Total comisión", f"{selected['currency']} {selected['actual_total']}"
+    )
     columns[3].metric("Filas Bronze", int(selected.get("bronze_row_count", 0)))
 
     pivot_tab, collected_tab, detail_tab, exceptions_tab, manifest_tab = st.tabs(

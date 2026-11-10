@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import hashlib
+import json
 from collections import defaultdict
 from collections.abc import Iterable
 from dataclasses import asdict
-from datetime import date
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from pathlib import Path
 from typing import Any
@@ -49,9 +50,7 @@ ROOT = Path(__file__).resolve().parents[2]
 RULESET_PATH = ROOT / "mvp/rulesets/2026-09.v1.json"
 SEPTEMBER_PERIODS = {
     "nacional": Period("nacional", date(2026, 9, 1), date(2026, 9, 30)),
-    "internacional": Period(
-        "internacional", date(2026, 8, 20), date(2026, 9, 20)
-    ),
+    "internacional": Period("internacional", date(2026, 8, 20), date(2026, 9, 20)),
 }
 
 PARTIAL_FIELDS = (
@@ -261,7 +260,13 @@ def _zone_for_line(
     orders: dict[int, dict[str, Any]],
 ) -> tuple[str, bool]:
     zones = {
-        normalize_key(_name(orders.get(_id(sale_lines.get(int(sale_id), {}).get("order_id")) or -1, {}).get("line_commercial_zone_id")))
+        normalize_key(
+            _name(
+                orders.get(
+                    _id(sale_lines.get(int(sale_id), {}).get("order_id")) or -1, {}
+                ).get("line_commercial_zone_id")
+            )
+        )
         for sale_id in line.get("sale_line_ids") or []
     }
     zones.discard("")
@@ -281,6 +286,23 @@ def _exception(
     key: str, code: str, detail: str, *, blocking: bool = True
 ) -> dict[str, Any]:
     return {"key": key, "code": code, "blocking": blocking, "detail": detail}
+
+
+def _record_load_error(channel: str, period: Period, exc: Exception) -> None:
+    """Deja evidencia local del fallo sin incluir credenciales ni activar fallback."""
+    destination = ROOT / "var/odoo_load_errors.jsonl"
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    record = {
+        "occurred_at": datetime.now(UTC).isoformat(),
+        "channel": channel,
+        "period_start": period.start.isoformat(),
+        "period_end": period.end.isoformat(),
+        "error_type": type(exc).__name__,
+        "error": str(exc),
+        "fallback_used": False,
+    }
+    with destination.open("a", encoding="utf-8") as stream:
+        stream.write(json.dumps(record, ensure_ascii=False, sort_keys=True) + "\n")
 
 
 def _extract(
@@ -311,9 +333,7 @@ def _extract(
         "account.move.line", all_line_ids, RECONCILE_LINE_FIELDS
     )
     all_move_ids = {
-        move_id
-        for row in all_reconcile_lines
-        if (move_id := _id(row.get("move_id")))
+        move_id for row in all_reconcile_lines if (move_id := _id(row.get("move_id")))
     }
     all_moves = client.read_by_ids("account.move", all_move_ids, MOVE_FIELDS)
     all_move_by_id = _by_id(all_moves)
@@ -352,8 +372,7 @@ def _extract(
     direct_source_ids = {
         move_id
         for move_id, move in all_move_by_id.items()
-        if move.get("move_type") == "out_invoice"
-        and _channel_matches(move, channel)
+        if move.get("move_type") == "out_invoice" and _channel_matches(move, channel)
     }
     letter_source_ids = {
         move_id
@@ -435,7 +454,11 @@ def _extract(
         for sale_id in line.get("sale_line_ids") or []
     }
     accounts = _read(
-        client, bronze, "account.account", account_ids, ("id", "code", "name", "write_date")
+        client,
+        bronze,
+        "account.account",
+        account_ids,
+        ("id", "code", "name", "write_date"),
     )
     products = _read(
         client,
@@ -508,9 +531,7 @@ def _extract(
         ("id", "name", "payment_type", "operation_type", "write_date"),
     )
     journal_ids = {
-        journal_id
-        for move in moves
-        if (journal_id := _id(move.get("journal_id")))
+        journal_id for move in moves if (journal_id := _id(move.get("journal_id")))
     }
     journals = _read(
         client,
@@ -557,6 +578,57 @@ def _extract(
         "letter_source_ids": letter_source_ids,
     }
     return client._transport.server_version, payload, bronze
+
+
+def _payload_from_bronze(
+    records: list[tuple[str, dict[str, Any]]], channel: str
+) -> dict[str, Any]:
+    """Reconstruye el input de cálculo sin volver a consultar Odoo."""
+    grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for model, payload in records:
+        grouped[model].append(payload)
+    moves = grouped["account.move"]
+    forms = grouped["account.bill.form"]
+    direct_source_ids = {
+        int(move["id"])
+        for move in moves
+        if move.get("move_type") == "out_invoice" and _channel_matches(move, channel)
+    }
+    form_by_id = _by_id(forms)
+    letter_source_ids = {
+        int(move["id"])
+        for move in moves
+        if move.get("move_type") == "out_bill"
+        and any(
+            int(invoice_id) in direct_source_ids
+            for invoice_id in form_by_id.get(
+                _id(move.get("bill_form_id")) or -1, {}
+            ).get("invoice_ids", [])
+        )
+    }
+    move_lines = grouped["account.move.line"]
+    return {
+        "partials": grouped["account.partial.reconcile"],
+        "reconcile_lines": [
+            row
+            for row in move_lines
+            if "balance" in row and "price_subtotal" not in row
+        ],
+        "moves": moves,
+        "forms": forms,
+        "invoice_lines": [row for row in move_lines if "price_subtotal" in row],
+        "accounts": grouped["account.account"],
+        "products": grouped["product.product"],
+        "sale_lines": grouped["sale.order.line"],
+        "orders": grouped["sale.order"],
+        "partners": grouped["res.partner"],
+        "countries": grouped["res.country"],
+        "terms": grouped["account.payment.term"],
+        "journals": grouped["account.journal"],
+        "doc_types": grouped["l10n_latam.document.type"],
+        "direct_source_ids": direct_source_ids,
+        "letter_source_ids": letter_source_ids,
+    }
 
 
 def _calculate(
@@ -637,9 +709,7 @@ def _calculate(
         for line in lines_by_move.get(move_id, []):
             product = maps["products"].get(_id(line.get("product_id")) or -1, {})
             account = maps["accounts"].get(_id(line.get("account_id")) or -1, {})
-            zone, conflict = _zone_for_line(
-                line, maps["sale_lines"], maps["orders"]
-            )
+            zone, conflict = _zone_for_line(line, maps["sale_lines"], maps["orders"])
             domain_lines[int(line["id"])] = DocumentLine(
                 doc_key=documents[move_id].doc_key,
                 line_key=str(line["id"]),
@@ -647,9 +717,14 @@ def _calculate(
                 price_total=abs(to_decimal(line.get("price_total"))),
                 product_code=str(product.get("default_code") or "") or None,
                 product_name=str(
-                    product.get("name") or product.get("display_name") or line.get("name") or ""
+                    product.get("name")
+                    or product.get("display_name")
+                    or line.get("name")
+                    or ""
                 ),
-                commercial_line=_commercial_line(channel, line, maps["products"], ruleset),
+                commercial_line=_commercial_line(
+                    channel, line, maps["products"], ruleset
+                ),
                 line_category=("MULTIPLE_ZONES" if conflict else zone),
                 account_code=str(account.get("code") or "") or None,
                 source_keys=(f"account.move.line:{line['id']}",),
@@ -763,7 +838,9 @@ def _calculate(
         for line in lines_by_move.get(move_id, []):
             line_id = int(line["id"])
             if line_id in domain_lines:
-                silver.append(("document_line", str(line_id), asdict(domain_lines[line_id])))
+                silver.append(
+                    ("document_line", str(line_id), asdict(domain_lines[line_id]))
+                )
     for invoice_id, partial_id, allocation, category in allocations:
         silver.append(
             (
@@ -807,19 +884,6 @@ def _calculate(
                 Decimal(0),
             )
             commercial_line = normalize_key(line.commercial_line)
-            collected.append(
-                CollectedLine(
-                    channel=channel,
-                    category=category,
-                    commercial_line=commercial_line,
-                    document=document.doc_key,
-                    line=line.line_key,
-                    allocation=allocation.allocation_key,
-                    currency=period.currency,
-                    collected_raw=base,
-                    source_key=f"account.partial.reconcile:{partial_id}",
-                )
-            )
             if channel == "nacional":
                 if line.line_category == "MULTIPLE_ZONES":
                     exceptions.append(
@@ -845,6 +909,20 @@ def _calculate(
                         )
                     )
                     continue
+                report_line = normalize_key(rule.commercial_line)
+                collected.append(
+                    CollectedLine(
+                        channel=channel,
+                        category=category,
+                        commercial_line=report_line,
+                        document=document.doc_key,
+                        line=line.line_key,
+                        allocation=allocation.allocation_key,
+                        currency=period.currency,
+                        collected_raw=base,
+                        source_key=f"account.partial.reconcile:{partial_id}",
+                    )
+                )
                 for assignment in rule.roles:
                     if not assignment.rate or assignment.rate <= 0:
                         continue
@@ -872,10 +950,23 @@ def _calculate(
                             commission_raw=base * assignment.rate,
                             rule_id=rule.rule_id,
                             source_key=f"account.partial.reconcile:{partial_id}",
-                            commercial_line=commercial_line,
+                            commercial_line=report_line,
                         )
                     )
             else:
+                collected.append(
+                    CollectedLine(
+                        channel=channel,
+                        category=category,
+                        commercial_line=commercial_line,
+                        document=document.doc_key,
+                        line=line.line_key,
+                        allocation=allocation.allocation_key,
+                        currency=period.currency,
+                        collected_raw=base,
+                        source_key=f"account.partial.reconcile:{partial_id}",
+                    )
+                )
                 ctx = LineContext(
                     doc_key=document.doc_key,
                     product_code=line.product_code,
@@ -891,15 +982,12 @@ def _calculate(
                         ctx,
                         ruleset.country_groups,
                     )
-                    if (
-                        resolution.conflict
-                        or (
-                            resolution.rule
-                            and resolution.rule.country_group
-                            and not ruleset.country_groups[
-                                resolution.rule.country_group
-                            ].approved
-                        )
+                    if resolution.conflict or (
+                        resolution.rule
+                        and resolution.rule.country_group
+                        and not ruleset.country_groups[
+                            resolution.rule.country_group
+                        ].approved
                     ):
                         exceptions.append(
                             _exception(
@@ -956,7 +1044,9 @@ def _calculate(
         period_start=period.start,
         period_end=period.end,
         currency=period.currency,
-        status="blocked" if any(item["blocking"] for item in exceptions) else "completed",
+        status="blocked"
+        if any(item["blocking"] for item in exceptions)
+        else "completed",
         expected_total=total,
         actual_total=total,
         rows=rows,
@@ -978,40 +1068,64 @@ def _calculate(
 
 def load_september(
     channel: str,
-    database: Path | str,
+    database: Path | str | None = None,
     *,
+    repository: Any | None = None,
     page_size: int = 300,
+    refresh: bool = False,
 ) -> RunResult:
     """Ejecuta el único load autorizado: septiembre de 2026 por canal."""
     if channel not in SEPTEMBER_PERIODS:
         raise ValueError(f"canal no soportado: {channel}")
     load_dotenv(ROOT / ".env")
     period = SEPTEMBER_PERIODS[channel]
-    repository = MedallionRepository(database)
-    client = OdooReadOnlyClient(
-        XmlRpcTransport(OdooCredentials.from_env()), page_size=page_size
+    if repository is None:
+        if database is None:
+            raise ValueError("load_september necesita un repositorio o una base desechable")
+        repository = MedallionRepository(database)
+    snapshot_id = (
+        None
+        if refresh
+        else repository.latest_snapshot(
+            channel,
+            period.start.isoformat(),
+            period.end.isoformat(),
+            "odoo:xmlrpc-readonly",
+        )
     )
-    try:
-        server_version, payload, bronze = _extract(client, channel, period)
-    except Exception as exc:
-        raise RuntimeError(
-            f"falló la extracción Odoo de {channel}; no se usó Excel como reemplazo"
-        ) from exc
-    snapshot_id = store_records_snapshot(
-        repository,
-        channel,
-        period.start,
-        period.end,
-        bronze.records(),
-    )
+    if snapshot_id:
+        payload = _payload_from_bronze(
+            repository.load_snapshot_records(snapshot_id), channel
+        )
+        server_version = "cached-snapshot"
+        odoo_call_count = 0
+    else:
+        transport = XmlRpcTransport(OdooCredentials.from_env())
+        client = OdooReadOnlyClient(transport, page_size=page_size)
+        try:
+            server_version, payload, bronze = _extract(client, channel, period)
+        except Exception as exc:
+            _record_load_error(channel, period, exc)
+            raise RuntimeError(
+                f"falló la extracción Odoo de {channel}; no se usó Excel como reemplazo"
+            ) from exc
+        snapshot_id = store_records_snapshot(
+            repository,
+            channel,
+            period.start,
+            period.end,
+            bronze.records(),
+        )
+        odoo_call_count = len(client.calls)
     ruleset = load_ruleset_file(RULESET_PATH)
     result, silver = _calculate(channel, period, snapshot_id, payload, ruleset)
     result.metadata.update(
         {
             "odoo_server_version": server_version,
-            "bronze_row_count": len(bronze.records()),
+            "bronze_row_count": repository.snapshot_counts(snapshot_id)["bronze"],
             "silver_row_count": len(silver),
-            "odoo_call_count": len(client.calls),
+            "odoo_call_count": odoo_call_count,
+            "snapshot_reused": odoo_call_count == 0,
         }
     )
     repository.store_silver_records(snapshot_id, silver)

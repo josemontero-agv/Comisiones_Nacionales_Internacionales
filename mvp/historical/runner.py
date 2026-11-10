@@ -440,8 +440,10 @@ def _international_rows() -> tuple[
 
 def run_historical_parity(
     channel: str,
-    database: Path | str,
+    database: Path | str | None = None,
     root: Path | None = None,
+    *,
+    repository: Any | None = None,
 ) -> RunResult:
     """Ejecuta septiembre y persiste evidencia Bronze y resultados Gold."""
     del root  # Las rutas aprobadas son deliberadamente fijas respecto del repositorio.
@@ -588,7 +590,10 @@ def run_historical_parity(
             ),
         },
     )
-    repository = MedallionRepository(database)
+    if repository is None:
+        if database is None:
+            raise ValueError("run_historical_parity necesita un repositorio o una base desechable")
+        repository = MedallionRepository(database)
     repository.store_snapshot(
         snapshot_id=snapshot_id,
         channel=channel,

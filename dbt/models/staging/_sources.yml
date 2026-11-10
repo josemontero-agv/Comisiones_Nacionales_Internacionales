@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: Tablas tipadas ya aterrizadas. dbt no calcula comisiones aquí.
+    tables:
+      - name: factura
+      - name: linea_documento
+      - name: pago
+      - name: letra

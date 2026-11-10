@@ -45,10 +45,17 @@ def export_rrhh_workbook(
     channel: str,
     *,
     bronze_origin: str | None = None,
+    repository: Any | None = None,
 ) -> Path:
+    """Escribe el libro de un solo canal.
+
+    `repository` permite leer el mismo contrato desde Postgres/Supabase sin abrir
+    SQLite. Si no se pasa, el comportamiento sigue siendo el adaptador SQLite.
+    """
     if channel not in {"nacional", "internacional"}:
         raise ValueError(f"canal no soportado: {channel}")
-    repository = MedallionRepository(database)
+    if repository is None:
+        repository = MedallionRepository(database)
     manifests = [
         manifest
         for manifest in repository.latest_manifests(bronze_origin=bronze_origin)

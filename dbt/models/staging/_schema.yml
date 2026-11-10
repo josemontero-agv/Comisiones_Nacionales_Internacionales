@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: stg_factura
+    description: Factura de staging. No deriva comisión ni canal.
+    columns:
+      - name: clave
+        tests: [not_null, unique]
+      - name: snapshot_id
+        tests: [not_null]
+      - name: factura_id
+        tests: [not_null]
+  - name: stg_linea_documento
+    description: Línea de documento. Comisión y beneficiario ya vienen en raw.
+    columns:
+      - name: clave
+        tests: [not_null, unique]
+      - name: snapshot_id
+        tests: [not_null]
+      - name: linea_id
+        tests: [not_null]
+      - name: comision
+        description: Importe aterrizado. dbt no aplica el porcentaje.
+      - name: beneficiario
+        description: Beneficiario aterrizado. dbt no elige el rol.
+  - name: stg_pago
+    description: Pago de staging, sin prorrateo.
+    columns:
+      - name: clave
+        tests: [not_null, unique]
+      - name: snapshot_id
+        tests: [not_null]
+      - name: pago_id
+        tests: [not_null]
+  - name: stg_letra
+    description: Letra de staging, sin regla de reconocimiento.
+    columns:
+      - name: clave
+        tests: [not_null, unique]
+      - name: snapshot_id
+        tests: [not_null]
+      - name: letra_id
+        tests: [not_null]

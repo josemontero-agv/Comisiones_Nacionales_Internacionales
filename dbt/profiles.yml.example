@@ -1,0 +1,20 @@
+# Copie a dbt/profiles.yml. Ese archivo está en .gitignore: no lo commitee.
+# Pooler de sesión del proyecto Comisiones_Nacionales_Internacionales
+# (ref yodazdangiajmjpzvtio), puerto 5432. No use el puerto 6543.
+# Región del proyecto: us-west-2. El pooler de este proyecto es aws-1, no aws-0.
+# La contraseña entra solo por COMMISSION_DB_PASSWORD.
+
+comisiones:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: aws-1-us-west-2.pooler.supabase.com
+      port: 5432
+      user: postgres.yodazdangiajmjpzvtio
+      password: "{{ env_var('COMMISSION_DB_PASSWORD') }}"
+      dbname: postgres
+      schema: staging
+      sslmode: require
+      threads: 2
+      connect_timeout: 10

@@ -1,0 +1,20 @@
+name: comisiones_nacional_internacional
+version: "0.1.0"
+config-version: 2
+profile: comisiones
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+target-path: target
+clean-targets:
+  - target
+  - dbt_packages
+  - logs
+
+# Staging solamente. Los porcentajes y los roles los decide el motor Python.
+models:
+  comisiones_nacional_internacional:
+    staging:
+      +materialized: view
+      +schema: staging

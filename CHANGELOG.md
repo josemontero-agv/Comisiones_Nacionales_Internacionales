@@ -3,6 +3,100 @@
 > Documentación viva: cada cambio relevante de código o documentación en este proyecto debe
 > dejar una entrada aquí, describiendo el impacto para cualquier persona del equipo.
 
+## [2026-11-10] — requirements.txt con las librerías usadas
+
+### Cambiado
+- `requirements.txt` fija también `dbt-core==1.10.15`, `dbt-postgres==1.10.0`,
+  `requests==2.34.2` y `Werkzeug==3.1.9`, además de Flask, openpyxl, psycopg, pytest,
+  python-dotenv, ruff y streamlit. Las versiones son las ya instaladas en `.venv` y en
+  `dbt/.venv`. No se ejecutó `pip install`.
+
+### Impacto
+- Quien recree el entorno ve el motor, la API, Streamlit, las pruebas, el script de
+  investigación que usa `requests` y el staging de dbt. dbt sigue pudiendo vivir en
+  `dbt/.venv`; el archivo solo declara los pines. Septiembre sigue no pagable.
+- `kluster_dependency_validator` no está en esta sesión.
+
+## [2026-11-10] — La base de trabajo pasa a Supabase
+
+### Cambiado
+- La API, la CLI (`load`, `run-parity`, `export-xlsx`) y el exportador leen y escriben
+  Gold en Supabase (`yodazdangiajmjpzvtio`, región `us-west-2`). SQLite deja de ser el almacén de la aplicación.
+- `copy-sqlite-gold` copia una vez el medallón local y fuerza `payable: false`.
+- `project-typed-raw` llena `raw.factura`, `raw.linea_documento`, `raw.pago` y `raw.letra`
+  desde lo ya guardado. dbt no calcula porcentajes ni roles.
+- dbt 1.10 queda en `dbt/.venv`. El perfil local apunta al pooler `aws-1-us-west-2`.
+- La página usa la paleta de `docs/PALETA_COLORES.md`, con estado de error, carga vacía
+  y cifras tabulares.
+
+### Impacto
+- Septiembre sigue no pagable. La copia y `dbt test` necesitan que la contraseña de
+  `DATABASE_URL` sea la del rol `postgres` del proyecto. El host directo no resuelve aquí;
+  el pooler de este proyecto es `aws-1-us-west-2.pooler.supabase.com`.
+- `kluster_dependency_validator` y `kluster_code_review_auto` no están en esta sesión.
+
+## [2026-11-10] — API de lectura, página Next.js y staging dbt
+
+### Añadido
+- Página Next.js en `web/` (selector Nacional/Internacional, aviso de no pagabilidad,
+  totales esperado/calculado/diferencia, persona × puesto, detalle, excepciones y
+  diferencias). Como máximo muestra 80 filas por tabla; el Excel trae el libro completo.
+  Paleta de `docs/PALETA_COLORES.md` en `web/app/globals.css`.
+- Proyecto `dbt/` con vistas de staging sobre `raw.factura`, `raw.linea_documento`,
+  `raw.pago` y `raw.letra`, tests `not_null`/`unique`, test singular de beneficiario si la
+  comisión es distinta de cero, y macro `generate_schema_name` para el esquema `staging`.
+- `.env.example` y `web/.env.example` con placeholders, sin secretos.
+- Prueba `api/tests/test_health.py`: `/health` con un sqlite inexistente devuelve
+  `payable: false` y `database_ready: false`.
+
+### Cambiado
+- README con los comandos PowerShell de Flask (`COMMISSION_DB`) y de Next.js
+  (`npm install`, `npm run dev` en `web/`).
+- Se instalaron Flask y psycopg en `.venv` porque faltaban. El pin de `python-dotenv`
+  quedó en 1.0.0.
+
+### Verificación
+- `python -m pytest mvp/tests api/tests -q`: 21 pruebas aprobadas.
+- `/health` con el `.env` actual (sin `COMMISSION_DB` ni `DATABASE_URL`): `status` ok,
+  `payable` false, backend sqlite, `database_ready` true porque el SQLite del piloto existe.
+- `PostgresMedallionRepository.ping()` no se llamó: no hay `DATABASE_URL` en el entorno.
+- Next.js 15 compiló con `npx next build` y `npm run dev` sirvió la página en el puerto 3000.
+- dbt quedó escrito y no instalado. Un dry-run de pip resuelve el paquete en Python 3.14,
+  pero instalarlo subiría `python-dotenv` sobre el pin de `requirements.txt`. No se ejecutó
+  `dbt run` ni `dbt compile`.
+- `kluster_dependency_validator` y `kluster_code_review_auto` no existen en esta sesión; no
+  se invocaron.
+- No se reaplicó la migración de Supabase ni se tocó el proyecto de Finanzas.
+
+### Impacto
+- Septiembre sigue siendo piloto y no pagable. Flask no calcula. dbt no calcula porcentajes
+  ni roles. La base `giadbtrcwhlmxkdezbyj` sigue con RLS forzado, sin políticas, y con Gold
+  vacío: para ver números desde Supabase falta cargar Gold y definir `COMMISSION_DB=supabase`
+  junto con `DATABASE_URL` del pooler. Mientras el interruptor no esté, la API lee el Gold
+  local del SQLite del piloto.
+
+## [2026-11-10] — Load Odoo real de septiembre
+
+### Añadido
+- `python -m mvp.cli load --channel <canal>` extrae Odoo en solo lectura, persiste
+  Bronze/Silver/Gold en SQLite y exporta un libro independiente por canal.
+- La extracción usa `account.partial.reconcile.max_date`, campos explícitos, paginación y
+  resolución bulk de facturas, letras, planillas, productos, cuentas, pedidos y países.
+- Streamlit consume el mismo Gold y muestra la pivote Puesto → Línea comercial → Nombre,
+  además del cobrado por línea. “Validar contra Excel” queda como acción opcional separada.
+- El snapshot cerrado se reutiliza para evitar repetir una extracción larga; `--refresh`
+  permite renovarlo de forma explícita.
+
+### Cambiado
+- La matriz Nacional y las reglas Internacional quedan versionadas en el ruleset; el cálculo
+  ya no lee el Excel histórico ni copia su atajo porcentaje × subtotal.
+- Los Excel usan la hoja `RESUMEN COMISIONES` con CONTADO, CREDITO, LETRAS y Total. Si el
+  destino está bloqueado por Windows, se escribe una copia en `var/`.
+
+### Impacto
+- Septiembre sigue bloqueado y no pagable: las cuentas distintas de las aprobadas se
+  registran como excepciones, sin fallback silencioso a Excel.
+
 ## [2026-11-10] — Alcance de producción, octubre y aprobador del sistema
 
 ### Cambiado

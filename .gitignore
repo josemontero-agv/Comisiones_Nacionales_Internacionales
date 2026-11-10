@@ -19,3 +19,13 @@ var/
 entrega_rrhh/*.xlsx
 entrega_rrhh/*.xls
 
+# Stack web local y perfiles con secretos
+web/node_modules/
+web/.next/
+web/.env.local
+dbt/profiles.yml
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+dbt/.venv/
+

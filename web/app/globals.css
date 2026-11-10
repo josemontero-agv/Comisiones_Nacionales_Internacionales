@@ -1,0 +1,272 @@
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --primary: #714B67;
+  --primary-foreground: #ffffff;
+  --secondary: #875A7B;
+  --secondary-foreground: #ffffff;
+  --success: #10b981;
+  --success-foreground: #ffffff;
+  --warning: #f59e0b;
+  --warning-foreground: #ffffff;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #f3e8ff;
+  --accent-foreground: #714B67;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #714B67;
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: #0a0a0f;
+  --foreground: #f1f5f9;
+  --card: #1a1a24;
+  --card-foreground: #f1f5f9;
+  --primary: #875A7B;
+  --primary-foreground: #ffffff;
+  --secondary: #9d6b91;
+  --secondary-foreground: #ffffff;
+  --success: #22c55e;
+  --success-foreground: #ffffff;
+  --warning: #fbbf24;
+  --warning-foreground: #0a0a0f;
+  --destructive: #f87171;
+  --destructive-foreground: #ffffff;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #2d1b3d;
+  --accent-foreground: #c084fc;
+  --border: #2d3748;
+  --input: #2d3748;
+  --ring: #875A7B;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: "Segoe UI", sans-serif;
+  line-height: 1.5;
+}
+
+::selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+* {
+  scrollbar-color: var(--primary) var(--muted);
+}
+
+button,
+a {
+  font: inherit;
+}
+
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+h1,
+h2 {
+  margin: 1.25rem 0 0.4rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  margin-top: 0;
+  font-size: 1.7rem;
+}
+
+h2 {
+  font-size: 1.15rem;
+}
+
+.lead,
+.note,
+.empty {
+  color: var(--muted-foreground);
+  margin: 0.25rem 0 0;
+}
+
+.banner {
+  background: var(--warning);
+  color: var(--warning-foreground);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  margin: 1rem 0;
+}
+
+.banner strong {
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.toolbar,
+.totals,
+.stack {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.toolbar {
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  margin-bottom: 1rem;
+}
+
+.channels {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.channel,
+.ghost,
+.download {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 0.55rem 0.9rem;
+  cursor: pointer;
+  text-decoration: none;
+  background: var(--card);
+  color: var(--card-foreground);
+}
+
+.channel[aria-pressed="true"],
+.download {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+.channel:focus-visible,
+.ghost:focus-visible,
+.download:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.ghost {
+  background: var(--muted);
+  color: var(--foreground);
+}
+
+.totals {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 1rem;
+}
+
+.card,
+.panel {
+  background: var(--card);
+  color: var(--card-foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.9rem 1rem;
+}
+
+.card span,
+.meta {
+  display: block;
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+}
+
+.card strong {
+  font-size: 1.35rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.stack {
+  margin-top: 0.75rem;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin-top: 0.6rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 0.45rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+th {
+  background: var(--accent);
+  color: var(--accent-foreground);
+  font-weight: 650;
+}
+
+.status-ok {
+  color: var(--success);
+}
+
+.status-wait {
+  color: var(--warning);
+}
+
+.limit-note {
+  margin: 0.55rem 0 0;
+  color: var(--secondary);
+}
+
+.error {
+  background: var(--destructive);
+  color: var(--destructive-foreground);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+}
+
+.loading {
+  color: var(--muted-foreground);
+}
+
+@media (max-width: 800px) {
+  .toolbar,
+  .totals {
+    grid-template-columns: 1fr;
+  }
+
+  .header {
+    flex-direction: column;
+  }
+}

@@ -181,7 +181,43 @@ class MedallionRepository:
             ).fetchone()[0]
         return {"bronze": int(bronze), "silver": int(silver)}
 
-    def latest_manifests(self, bronze_origin: str | None = None) -> list[dict[str, Any]]:
+    def latest_snapshot(
+        self,
+        channel: str,
+        period_start: str,
+        period_end: str,
+        source_path: str,
+    ) -> str | None:
+        with self.connect() as connection:
+            row = connection.execute(
+                """
+                SELECT snapshot_id FROM bronze_snapshot
+                WHERE channel = ? AND period_start = ? AND period_end = ?
+                  AND source_path = ? AND status = 'closed'
+                ORDER BY loaded_at DESC LIMIT 1
+                """,
+                (channel, period_start, period_end, source_path),
+            ).fetchone()
+        return str(row["snapshot_id"]) if row else None
+
+    def load_snapshot_records(
+        self, snapshot_id: str
+    ) -> list[tuple[str, dict[str, Any]]]:
+        with self.connect() as connection:
+            rows = connection.execute(
+                """
+                SELECT source_model, payload_json FROM bronze_record
+                WHERE snapshot_id = ? ORDER BY source_model, source_key
+                """,
+                (snapshot_id,),
+            ).fetchall()
+        return [
+            (str(row["source_model"]), json.loads(row["payload_json"])) for row in rows
+        ]
+
+    def latest_manifests(
+        self, bronze_origin: str | None = None
+    ) -> list[dict[str, Any]]:
         with self.connect() as connection:
             rows = connection.execute(
                 """
